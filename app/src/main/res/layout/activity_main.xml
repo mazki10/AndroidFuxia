@@ -6,14 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="113dp"
-        tools:layout_editor_absoluteY="442dp" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -21,5 +13,13 @@
         android:text="Hola mundo"
         tools:layout_editor_absoluteX="179dp"
         tools:layout_editor_absoluteY="239dp" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="160dp"
+        tools:layout_editor_absoluteY="385dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
