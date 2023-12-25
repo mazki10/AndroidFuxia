@@ -85,5 +85,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.028"
-        app:srcCompat="@drawable/logoEIE" />
+        app:srcCompat="@mipmap/ic_launcher_foreground" />
 </androidx.constraintlayout.widget.ConstraintLayout>
