@@ -92,7 +92,7 @@
     <EditText
         android:id="@+id/editTextText3"
         android:layout_width="72dp"
-        android:layout_height="43dp"
+        android:layout_height="48dp"
         android:ems="10"
         android:inputType="number"
         android:text="Name"
