@@ -1,4 +1,4 @@
-package com.example.almohadascomodasademsbonitas;
+/*package com.example.almohadascomodasademsbonitas;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -106,11 +106,11 @@ public class CircularLayout extends View {
         }
     }
 
-    @Override
+     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Drawable[] images = new Drawable[NUM_ITEMS];
+       Drawable[] images = new Drawable[NUM_ITEMS];
         images[0] = getResources().getDrawable(R.drawable.agenda);
         images[1] = getResources().getDrawable(R.drawable.enviar);
         images[2] = getResources().getDrawable(R.drawable.pedidos);
@@ -138,5 +138,5 @@ public class CircularLayout extends View {
         }
     }
 }
-
+*/
 
