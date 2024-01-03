@@ -13,4 +13,5 @@
     <string name="comprar">COMPRAR</string>
     <string name="cantidad">CANTIDAD:</string>
     <string name="num">NUMERO</string>
+    <string name="abrirCal">abrir calendario</string>
 </resources>

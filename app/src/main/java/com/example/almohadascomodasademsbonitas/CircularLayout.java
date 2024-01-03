@@ -1,4 +1,4 @@
-/*package com.example.almohadascomodasademsbonitas;
+package com.example.almohadascomodasademsbonitas;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -138,5 +138,5 @@ public class CircularLayout extends View {
         }
     }
 }
-*/
+
 
