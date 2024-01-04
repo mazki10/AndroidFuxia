@@ -159,7 +159,7 @@ public class CircularLayout extends View {
                             break;
                         case 4:
                             // Acción cuando se presiona el botón 4 (Partners)
-                            //openPartnersActivity();
+                            openPartnersActivity();
                             break;
                         case 5:
                             // Acción cuando se presiona el botón 5 (Información)
@@ -189,6 +189,11 @@ public class CircularLayout extends View {
     private void openAgendaActivity() {
         // Abre la actividad de Agenda al hacer clic en el botón de Agenda
         Intent intent = new Intent(getContext(), agenda.class);
+        getContext().startActivity(intent);
+    }
+    private void openPartnersActivity() {
+        // Abre la actividad de Agenda al hacer clic en el botón de Agenda
+        Intent intent = new Intent(getContext(), partners.class);
         getContext().startActivity(intent);
     }
 }
