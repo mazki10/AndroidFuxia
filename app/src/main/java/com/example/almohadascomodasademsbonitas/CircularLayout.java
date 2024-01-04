@@ -1,11 +1,11 @@
 package com.example.almohadascomodasademsbonitas;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -137,6 +137,35 @@ public class CircularLayout extends View {
 
             imageButtonList.add(imageButton); // Agregar a la lista
             ((RelativeLayout) getParent()).addView(imageButton);
+
+            // Agrega el listener de clic para cada botón
+            imageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (v.getId()) {
+                        case 1:
+                            // Acción cuando se presiona el botón 1 (Agenda)
+                            openAgendaActivity();
+                            break;
+                        case 2:
+                            // Acción cuando se presiona el botón 2 (Enviar)
+                            //openEnviarActivity();
+                            break;
+                        case 3:
+                            // Acción cuando se presiona el botón 3 (Pedidos)
+                            //openPedidosActivity();
+                            break;
+                        case 4:
+                            // Acción cuando se presiona el botón 4 (Partners)
+                            //openPartnersActivity();
+                            break;
+                        case 5:
+                            // Acción cuando se presiona el botón 5 (Información)
+                            //openInformacionActivity();
+                            break;
+                    }
+                }
+            });
         }
     }
 
@@ -155,4 +184,9 @@ public class CircularLayout extends View {
         }
     }
 
+    private void openAgendaActivity() {
+        // Abre la actividad de Agenda al hacer clic en el botón de Agenda
+        Intent intent = new Intent(getContext(), agenda.class);
+        getContext().startActivity(intent);
+    }
 }
