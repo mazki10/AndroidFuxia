@@ -24,4 +24,9 @@
     <style name="MyActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="ImageButtonRounded">
+        <item name="android:background">@drawable/button_shape</item>
+    </style>
+
 </resources>

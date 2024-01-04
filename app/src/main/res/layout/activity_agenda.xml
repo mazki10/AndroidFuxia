@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingLeft="50dp"
     android:paddingRight="50dp"
-    tools:context=".presentation.agenda.activity_agenda">
+    tools:context=".agenda">
 
     <TextView
         android:id="@+id/tv"
@@ -22,4 +22,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="@string/abrirCal" />
+
 </LinearLayout>

@@ -1,6 +1,4 @@
-package com.example.almohadascomodasademsbonitas.presentation.agenda;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.almohadascomodasademsbonitas;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -8,25 +6,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.almohadascomodasademsbonitas.R;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Calendar;
 
-public class activity_agenda extends AppCompatActivity {
-    TextView textView;
-    Button boton;
+public class agenda extends AppCompatActivity {
+    private TextView tv;
+    private Button bt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_agenda);
 
-        textView = findViewById(R.id.tv);
-        boton = findViewById(R.id.bt);
+        tv = findViewById(R.id.tv);
+        bt = findViewById(R.id.bt);
 
-        boton.setOnClickListener(new View.OnClickListener() {
+
+        bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 abrirCalendario(v);
@@ -34,7 +32,7 @@ public class activity_agenda extends AppCompatActivity {
         });
     }
 
-    public void abrirCalendario(View view) {
+    public void abrirCalendario(View v) {
         Calendar cal = Calendar.getInstance();
         int anio = cal.get(Calendar.YEAR);
         int mes = cal.get(Calendar.MONTH);
@@ -44,9 +42,9 @@ public class activity_agenda extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 String fecha = dayOfMonth + "/" + month + "/" + year;
-                textView.setText(fecha);
+                tv.setText(fecha);
             }
-        },anio, mes, dia);
+        }, anio, mes, dia);
         dpd.show();
     }
-    }
+}

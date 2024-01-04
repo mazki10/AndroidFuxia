@@ -13,10 +13,7 @@
         android:theme="@style/Theme.AlmohadasComodasAdemásBonitas"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.agenda.activity_agenda"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.agenda.agenda"
+            android:name=".agenda"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
