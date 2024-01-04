@@ -15,15 +15,30 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95" />
+        app:layout_constraintVertical_bias="0.976" />
 
     <ListView
         android:id="@+id/lvPartners"
         android:layout_width="409dp"
-        android:layout_height="627dp"
+        android:layout_height="560dp"
         app:layout_constraintBottom_toTopOf="@+id/btNuevo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.897" />
+
+    <TextView
+        android:id="@+id/tvPartners"
+        android:layout_width="142dp"
+        android:layout_height="49dp"
+        android:fontFamily="monospace"
+        android:text="@string/partners"
+        android:textAlignment="center"
+        android:textColor="@color/material_dynamic_secondary10"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/lvPartners"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
