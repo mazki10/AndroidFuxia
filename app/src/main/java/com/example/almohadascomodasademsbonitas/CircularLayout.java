@@ -1,5 +1,6 @@
 package com.example.almohadascomodasademsbonitas;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -45,6 +46,7 @@ public class CircularLayout extends View {
         init();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void init() {
         // Configura eventos táctiles
         setOnTouchListener((v, event) -> {
