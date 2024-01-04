@@ -16,4 +16,14 @@
     <string name="abrirCal">abrir calendario</string>
     <string name="nuevo">NUEVO</string>
     <string name="partners">PARTNERS</string>
+    <string name="nombre">NOMBRE:</string>
+    <string name="direccion">DIRECCION:</string>
+    <string name="telefono">TELEFONO:</string>
+    <string name="email">EMAIL:</string>
+    <string name="nuevo_partner">NUEVO PARTNER</string>
+    <string name="nombreTexto">NOMBRE</string>
+    <string name="direccionTexto">DIRECCION</string>
+    <string name="emailTexto">EMAIL</string>
+    <string name="comercialTexto">COMERCIAL</string>
+    <string name="tlf">TLF</string>
 </resources>

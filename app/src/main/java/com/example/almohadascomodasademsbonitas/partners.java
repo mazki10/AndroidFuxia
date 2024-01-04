@@ -1,7 +1,9 @@
 package com.example.almohadascomodasademsbonitas;
-
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +15,7 @@ public class partners extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.partners); // Asegúrate de que es tu layout correcto
+        setContentView(R.layout.partners);
 
         // Obtén una referencia al ListView en tu diseño
         ListView listView = findViewById(R.id.lvPartners);
@@ -29,5 +31,22 @@ public class partners extends AppCompatActivity {
 
         // Asigna el adaptador al ListView
         listView.setAdapter(adapter);
+
+        // Obtén una referencia al botón btNuevo en tu diseño
+        Button btNuevo = findViewById(R.id.btNuevo);
+
+        // Agrega un OnClickListener al botón para abrir la actividad nuevo_partner
+        btNuevo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNuevoPartnerActivity();
+            }
+        });
+    }
+
+    private void openNuevoPartnerActivity() {
+        // Abre la actividad nuevo_partner al hacer clic en el botón btNuevo
+        Intent intent = new Intent(this, nuevo_partner.class);
+        startActivity(intent);
     }
 }

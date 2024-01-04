@@ -17,6 +17,10 @@
             android:exported="false" />
         <activity android:name=".partners" />
         <activity
+            android:name=".nuevo_partner"
+            android:label="Nuevo Partner">
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
