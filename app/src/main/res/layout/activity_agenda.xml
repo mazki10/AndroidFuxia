@@ -10,9 +10,23 @@
     android:paddingRight="15dp"
     tools:context=".agenda">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btBus"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textSize="34sp"
+            app:icon="?android:attr/actionModeWebSearchDrawable" />
+    </LinearLayout>
+
     <Button
-        android:id="@+id/bt"
-        android:layout_width="wrap_content"
+        android:id="@+id/btNue"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/abrirCal" />
 
@@ -23,9 +37,10 @@
 
         <Button
             android:id="@+id/btAntMes"
-            android:layout_width="wrap_content"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:text="@string/anterior" />
+            android:text="@string/anterior"
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tv"
@@ -33,19 +48,21 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/MES"
             android:textAlignment="center"
             android:textSize="24sp" />
 
         <Button
             android:id="@+id/btSigMes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/siguiente" />
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/siguiente"
+            android:textSize="20sp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ListView
+        android:id="@+id/lvAg"
         android:layout_width="match_parent"
-        android:layout_height="429dp" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>
