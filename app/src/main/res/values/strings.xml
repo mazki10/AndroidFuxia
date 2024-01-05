@@ -26,14 +26,10 @@
     <string name="comercialTexto">COMERCIAL</string>
     <string name="tlf">TLF</string>
     //AGENDA
-    <string name="mes">mes actual</string>
+    <string name="MES">mes actual</string>
     <string name="siguiente"><![CDATA[>]]></string>
     <string name="anterior"><![CDATA[<]]></string>
     <string name="abrirCal">añadir nueva actividad +</string>
-    <string name="añadir">añadir</string>
-    <string name="titulo">Titulo de la actividad</string>
-    <string name="descripcion">Descripcion de la actividad</string>
-    <string name="fecha">fecha</string>
 
     <string-array name="nombremeses">
         <item>Enero</item>
