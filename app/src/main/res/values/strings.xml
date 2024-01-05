@@ -13,7 +13,6 @@
     <string name="comprar">COMPRAR</string>
     <string name="cantidad">CANTIDAD:</string>
     <string name="num">NUMERO</string>
-    <string name="abrirCal">abrir calendario</string>
     <string name="nuevo">NUEVO</string>
     <string name="partners">PARTNERS</string>
     <string name="nombre">NOMBRE:</string>
@@ -26,4 +25,25 @@
     <string name="emailTexto">EMAIL</string>
     <string name="comercialTexto">COMERCIAL</string>
     <string name="tlf">TLF</string>
+    //AGENDA
+    <string name="MES">mes actual</string>
+    <string name="siguiente"><![CDATA[>]]></string>
+    <string name="anterior"><![CDATA[<]]></string>
+    <string name="abrirCal">añadir nueva actividad +</string>
+
+    <string-array name="nombremeses">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+
 </resources>
