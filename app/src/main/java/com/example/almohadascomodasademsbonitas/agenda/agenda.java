@@ -2,12 +2,15 @@ package com.example.almohadascomodasademsbonitas.agenda;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Xml;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,6 +18,8 @@ import android.widget.DatePicker;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.almohadascomodasademsbonitas.R;
@@ -26,10 +31,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 public class agenda extends AppCompatActivity {
@@ -65,7 +73,7 @@ public class agenda extends AppCompatActivity {
         String fecha = nombreMesActual + " " + anio;
         tv.setText(fecha);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, actividades);
+        adapter = new ActividadAdapter(this, actividades);
         lvAct.setAdapter(adapter);
 
         cargarDatosDesdeXml();
@@ -149,6 +157,7 @@ public class agenda extends AppCompatActivity {
             }
         });
     }
+
     private void eliminarActividad(Actividad actividad) {
         actividades.remove(actividad); // Remover del ArrayList
 
@@ -248,11 +257,29 @@ public class agenda extends AppCompatActivity {
                 tv.setText(fecha);
 
                 cargarDatosDesdeXml();
-                adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
+                cargarActividadesDeFechaSeleccionada(dayOfMonth, month, year);
             }
         }, anio, mes, dia);
         dpd.show();
     }
+
+
+    private void cargarActividadesDeFechaSeleccionada(int dayOfMonth, int month, int year) {
+        String fechaSeleccionada = dayOfMonth + "/" + (month + 1) + "/" + year;
+
+        ArrayList<Actividad> actividadesFechaSeleccionada = new ArrayList<>();
+
+        for (Actividad actividad : actividades) {
+            if (actividad.getFecha().equals(fechaSeleccionada)) {
+                actividadesFechaSeleccionada.add(actividad);
+            }
+        }
+
+        adapter.clear();
+        adapter.addAll(actividadesFechaSeleccionada);
+        adapter.notifyDataSetChanged();
+    }
+
 
 
     private void cargarDatosDesdeXml() {
@@ -294,6 +321,22 @@ public class agenda extends AppCompatActivity {
                 eventType = parser.next();
             }
             fis.close();
+            Collections.sort(actividades, new Comparator<Actividad>() {
+                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+                @Override
+                public int compare(Actividad actividad1, Actividad actividad2) {
+                    try {
+                        Date fechaHora1 = dateFormat.parse(actividad1.getFecha() + " " + actividad1.getHora());
+                        Date fechaHora2 = dateFormat.parse(actividad2.getFecha() + " " + actividad2.getHora());
+                        return fechaHora1.compareTo(fechaHora2);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        return 0;
+                    }
+                }
+            });
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -324,6 +367,35 @@ public class agenda extends AppCompatActivity {
             return false; // Manejo de errores, retorna false si hay algún problema al analizar la fecha
         }
     }
+
+    public class ActividadAdapter extends ArrayAdapter<Actividad> {
+
+        public ActividadAdapter(Context context, ArrayList<Actividad> actividades) {
+            super(context, 0, actividades);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            Actividad actividad = getItem(position);
+
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
+            }
+
+            TextView text1 = convertView.findViewById(android.R.id.text1);
+            TextView text2 = convertView.findViewById(android.R.id.text2);
+
+            if (actividad != null) {
+                String fechaHora = actividad.getFechaActividad();
+                text1.setText(fechaHora + "- " + actividad.getTitulo() + "\n" + actividad.getHora());
+                text2.setText(actividad.getDescripcion());
+            }
+
+            return convertView;
+        }
+    }
+
 
     public void nuevoAgenda(View v) {
         Intent intent = new Intent(this, nuevo_agenda.class);

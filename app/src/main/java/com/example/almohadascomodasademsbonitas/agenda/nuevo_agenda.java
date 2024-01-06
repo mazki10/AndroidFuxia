@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,6 +28,7 @@ import java.util.Locale;
 public class nuevo_agenda extends AppCompatActivity {
     private EditText edtTit, edtDes;
     private Button btFec, btNue;
+    private TextView tvFec;
     private String FILE_NAME = "actividades.xml";
 
     private Calendar cal = Calendar.getInstance();
@@ -44,6 +47,7 @@ public class nuevo_agenda extends AppCompatActivity {
 
         edtTit = findViewById(R.id.edtTit);
         edtDes = findViewById(R.id.edtDes);
+        tvFec = findViewById(R.id.tvFec);
         btFec = findViewById(R.id.botFec);
         btNue = findViewById(R.id.botNue);
 
@@ -63,11 +67,18 @@ public class nuevo_agenda extends AppCompatActivity {
             }
         });
     }
+    private void actualizarTextView() {
+        if (fechaSeleccionada != null && horaSeleccionada != null) {
+            String fechaActividad = fechaSeleccionada + " " + horaSeleccionada;
+            tvFec.setText(fechaActividad);
+        }
+    }
     private void agregarActividad() {
         String titulo = edtTit.getText().toString();
         String descripcion = edtDes.getText().toString();
         String hora = obtenerHoraSeleccionada();
         String fecha = obtenerFechaSeleccionada();
+        if (!titulo.isEmpty() && fechaSeleccionada != null && horaSeleccionada != null) {
         try {
             File directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
             File file = new File(directory, FILE_NAME);
@@ -102,6 +113,9 @@ public class nuevo_agenda extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        } else {
+            Toast.makeText(this, "Por favor, rellena el título, la fecha y la hora", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String obtenerFechaSeleccionada() {
@@ -115,6 +129,7 @@ public class nuevo_agenda extends AppCompatActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 fechaSeleccionada = dayOfMonth + "/" + (month + 1) + "/" + year;
+                actualizarTextView();
             }
         }, anio, mes, dia);
         dpd.show();
@@ -124,6 +139,7 @@ public class nuevo_agenda extends AppCompatActivity {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 horaSeleccionada = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                actualizarTextView();
             }
         }, hora, minuto, true);
         tpd.show();

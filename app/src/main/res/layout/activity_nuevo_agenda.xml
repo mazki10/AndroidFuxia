@@ -28,6 +28,13 @@
         android:hint="@string/descrpActividad"
         android:inputType="textMultiLine" />
 
+    <TextView
+        android:id="@+id/tvFec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20sp" />
+
     <Button
         android:id="@+id/botFec"
         android:layout_width="match_parent"
@@ -40,4 +47,5 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="@string/añadir" />
+
 </LinearLayout>
