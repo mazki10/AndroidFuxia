@@ -1,4 +1,4 @@
-package com.example.almohadascomodasademsbonitas;
+package com.example.almohadascomodasademsbonitas.agenda;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -105,7 +107,6 @@ public class nuevo_agenda extends AppCompatActivity {
     public String obtenerFechaSeleccionada() {
         return fechaSeleccionada;
     }
-
     public String obtenerHoraSeleccionada() {
         return horaSeleccionada;
     }

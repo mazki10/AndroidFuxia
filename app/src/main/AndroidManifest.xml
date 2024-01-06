@@ -15,10 +15,10 @@
         android:theme="@style/Theme.AlmohadasComodasAdemásBonitas"
         tools:targetApi="31">
         <activity
-            android:name=".nuevo_agenda"
+            android:name=".agenda.nuevo_agenda"
             android:exported="false" />
         <activity
-            android:name=".agenda"
+            android:name=".agenda.agenda"
             android:exported="false" />
         <activity android:name=".partners" />
         <activity

@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:paddingLeft="15dp"
     android:paddingRight="15dp"
-    tools:context=".agenda">
+    tools:context=".agenda.agenda">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,18 +17,28 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/btRfr"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:textSize="34sp"
+            app:icon="@android:drawable/ic_popup_sync" />
+
+        <TextView
+            android:id="@+id/tvAg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/agenda"
+            android:textSize="48sp" />
+
+        <Button
             android:id="@+id/btBus"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textSize="34sp"
             app:icon="?android:attr/actionModeWebSearchDrawable" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btNue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/abrirCal" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,8 +49,8 @@
             android:id="@+id/btAntMes"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:text="@string/anterior"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_media_previous" />
 
         <TextView
             android:id="@+id/tv"
@@ -56,9 +66,15 @@
             android:layout_width="60dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/siguiente"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:icon="@android:drawable/ic_media_next" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btNue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/abrirCal" />
 
     <ListView
         android:id="@+id/lvAg"
