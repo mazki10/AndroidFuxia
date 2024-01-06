@@ -15,4 +15,13 @@
     <color name="violet">#FFEE82EE</color>
     <color name="cyan">#FF00FFFF</color>
     <color name="indigo">#FF4B0082</color>
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#00796B</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="lightGrey">#D3D3D3</color>
+    <color name="darkGrey">#222222</color>
+    <color name="purple_700">#512DA8</color>
+    <color name="purple_900">#311B92</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="grey_300">#E0E0E0</color>
 </resources>

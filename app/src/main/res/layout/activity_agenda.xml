@@ -24,7 +24,7 @@
             app:icon="@android:drawable/ic_popup_sync" />
 
         <TextView
-            android:id="@+id/tvAg"
+            android:id="@+id/tvCont"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

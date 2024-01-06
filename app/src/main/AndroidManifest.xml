@@ -4,6 +4,13 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
+
+
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -14,6 +21,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AlmohadasComodasAdemásBonitas"
         tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyC2WbfpRBeZb2w36d9Syd5PtVmuu1NZj-Y" />
+
+        <activity
+            android:name=".info"
+            android:exported="false" />
         <activity
             android:name=".agenda.nuevo_agenda"
             android:exported="false" />
@@ -23,7 +38,7 @@
         <activity android:name=".partners" />
         <activity
             android:name=".nuevo_partner"
-            android:label="Nuevo Partner"></activity>
+            android:label="Nuevo Partner" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

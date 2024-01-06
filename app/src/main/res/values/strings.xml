@@ -17,7 +17,7 @@
     <string name="partners">PARTNERS</string>
     <string name="nombre">NOMBRE:</string>
     <string name="direccion">DIRECCION:</string>
-    <string name="telefono">TELEFONO:</string>
+    <string name="telefono">TELEFONO</string>
     <string name="email">EMAIL:</string>
     <string name="nuevo_partner">NUEVO PARTNER</string>
     <string name="nombreTexto">NOMBRE</string>
@@ -44,6 +44,8 @@
     <string name="CONTACTOV">CONTACTO</string>
     <string name="zona">ZONA:</string>
     <string name="agenda">AGENDA</string>
+    <string name="delegacion">Delegacion Provincial</string>
+    <string name="direccionInfo">Calle Ficticia, Número 123\nCiudad Imaginaria\nProvincia de Sueñolandia\nCódigo Postal: 12345</string>
 
 
     <string-array name="nombremeses">
