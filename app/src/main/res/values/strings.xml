@@ -30,6 +30,20 @@
     <string name="siguiente"><![CDATA[>]]></string>
     <string name="anterior"><![CDATA[<]]></string>
     <string name="abrirCal">añadir nueva actividad +</string>
+    <string name="titulo">Nombre de la actividad</string>
+    <string name="descrpActividad">Descripcion de la actividad</string>
+    <string name="fecha">Seleccionar fecha</string>
+    <string name="añadir">añadir</string>
+
+    //PARTNERS
+    <string name="guardar">GUARDAR</string>
+    <string name="CIF">CIF:</string>
+    <string name="CIFV">CIF</string>
+    <string name="contacto">CONTACTO:</string>
+    <string name="idzona">ZONA</string>
+    <string name="CONTACTOV">CONTACTO</string>
+    <string name="zona">ZONA:</string>
+
 
     <string-array name="nombremeses">
         <item>Enero</item>

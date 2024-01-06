@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:gravity="center|top"
-        android:hint="@string/descripcion"
+        android:hint="@string/descrpActividad"
         android:inputType="textMultiLine" />
 
     <Button
