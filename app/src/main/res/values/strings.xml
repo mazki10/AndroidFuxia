@@ -46,6 +46,7 @@
     <string name="agenda">AGENDA</string>
     <string name="delegacion">Delegacion Provincial</string>
     <string name="direccionInfo">Calle Ficticia, Número 123\nCiudad Imaginaria\nProvincia de Sueñolandia\nCódigo Postal: 12345</string>
+    <string name="llamar">Llamar</string>
 
 
     <string-array name="nombremeses">

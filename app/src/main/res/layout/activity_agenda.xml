@@ -21,7 +21,9 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textSize="34sp"
-            app:icon="@android:drawable/ic_popup_sync" />
+            app:icon="@drawable/actualizar" />
+            />
+
 
         <TextView
             android:id="@+id/tvCont"
@@ -37,7 +39,7 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textSize="34sp"
-            app:icon="?android:attr/actionModeWebSearchDrawable" />
+            app:icon="@drawable/buscar" />
     </LinearLayout>
 
     <LinearLayout
@@ -50,7 +52,8 @@
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            app:icon="@android:drawable/ic_media_previous" />
+            app:icon="@drawable/anterior"
+            />
 
         <TextView
             android:id="@+id/tv"
@@ -67,7 +70,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:textSize="20sp"
-            app:icon="@android:drawable/ic_media_next" />
+            app:icon="@drawable/siguiente" />
     </LinearLayout>
 
     <Button

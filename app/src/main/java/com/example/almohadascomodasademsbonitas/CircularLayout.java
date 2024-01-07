@@ -126,6 +126,10 @@ public class CircularLayout extends View {
             // Establece las imágenes para cada botón de imagen
             imageButton.setImageResource(imageResources[i]);
 
+            // Establece el tamaño de la imagen para que se ajuste al tamaño del botón
+            imageButton.setPadding(50, 50, 50, 50);
+
+
             imageButton.setBackgroundResource(R.drawable.button_shape);
 
             // Escala la imagen dentro del botón
