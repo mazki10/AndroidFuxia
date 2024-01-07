@@ -1,49 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Estilo para los botones -->
-    <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
-        <item name="android:backgroundTint">#FF6F00</item> <!-- Anaranjado intenso -->
-        <item name="android:textColor">#FFFFFF</item> <!-- Blanco -->
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ListViews" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <!-- Tema base -->
-    <style name="Base.Theme.AlmohadasComodasAdemásBonitas" parent="Theme.AppCompat.DayNight">
-
-        <!-- Colores -->
-        <item name="colorPrimary">#FF6F00</item> <!-- Anaranjado intenso -->
-        <item name="colorPrimaryDark">#E65100</item> <!-- Naranja oscuro -->
-        <item name="colorAccent">#FFD600</item> <!-- Amarillo -->
-
-        <!-- Texto -->
-        <item name="android:textColorPrimary">#FFFFFF</item> <!-- Blanco -->
-        <item name="android:textColorSecondary">#BDBDBD</item> <!-- Gris -->
-
-        <!-- ActionBar -->
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-
-        <!-- Estilo para los botones -->
-        <item name="android:buttonStyle">@style/MyButtonStyle</item>
-    </style>
-
-    <!-- Aplicar el tema base -->
-    <style name="Theme.AlmohadasComodasAdemásBonitas" parent="Base.Theme.AlmohadasComodasAdemásBonitas" />
-
-    <!-- Estilo para la ActionBar -->
-    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar">
-        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
-        <item name="android:background">#FF6F00</item> <!-- Anaranjado intenso -->
-        <item name="android:titleTextColor">#FFFFFF</item> <!-- Blanco -->
-    </style>
-
-    <!-- Estilo para el texto del título de la ActionBar -->
-    <style name="MyActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">#FFFFFF</item> <!-- Blanco -->
-    </style>
-
-    <!-- Estilo para los botones -->
-    <style name="ImageButtonStyle" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/button_shape</item>
-        <item name="android:textColor">#FFFFFF</item> <!-- Color del texto -->
-        <!-- Otros atributos que desees para el botón -->
-    </style>
-
+    <style name="Theme.ListViews" parent="Base.Theme.ListViews" />
 </resources>

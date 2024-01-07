@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp"
-    app:ignore="NamespaceTypo">
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    xmlns:map="http://schemas.android.com/apk/res-auto">
 
     <!-- Logo o imagen -->
     <ImageView
@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:text="@string/emailTexto"
-            app:icon="@drawable/email"
+            app:icon="@android:drawable/sym_action_email"
             app:iconGravity="textEnd" />
 
         <Button
@@ -69,7 +69,8 @@
             android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:text="@string/llamar"
-            app:icon="@drawable/llamada"
+            android:textSize="12sp"
+            app:icon="@android:drawable/stat_sys_phone_call"
             app:iconGravity="textEnd" />
     </LinearLayout>
 

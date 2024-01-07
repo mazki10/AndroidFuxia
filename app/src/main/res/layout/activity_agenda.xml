@@ -22,7 +22,6 @@
             android:layout_height="wrap_content"
             android:textSize="34sp"
             app:icon="@drawable/actualizar" />
-            />
 
 
         <TextView
