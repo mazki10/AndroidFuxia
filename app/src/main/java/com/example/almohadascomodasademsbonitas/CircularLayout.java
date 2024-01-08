@@ -158,7 +158,7 @@ public class CircularLayout extends View {
                             break;
                         case 2:
                             // Acción cuando se presiona el botón 2 (Enviar)
-                            //openEnviarActivity();
+                            openEnviarActivity();
                             break;
                         case 3:
                             // Acción cuando se presiona el botón 3 (Pedidos)
@@ -211,6 +211,12 @@ public class CircularLayout extends View {
     private void openPedidosActivity() {
         // Abre la actividad de Agenda al hacer clic en el botón de Agenda
         Intent intent = new Intent(getContext(), actividad_pedido.class);
+        getContext().startActivity(intent);
+    }
+
+    private void openEnviarActivity() {
+        // Abre la actividad de Enviar al hacer clic en el botón de Enviar
+        Intent intent = new Intent(getContext(), Enviar.class);
         getContext().startActivity(intent);
     }
 }
