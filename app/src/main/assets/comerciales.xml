@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<comerciales>
+    <comercial>
+        <nombre>Juan</nombre>
+        <apellido1>Gomez</apellido1>
+        <apellido2>Perez</apellido2>
+        <dni>12345678X</dni>
+        <direccion>Calle Principal 123</direccion>
+        <email>juan@example.com</email>
+        <zona1>1</zona1>
+        <zona2>2</zona2>
+    </comercial>
+    <comercial>
+        <nombre>Pedro</nombre>
+        <apellido1>Martínez</apellido1>
+        <apellido2>Sanchez</apellido2>
+        <dni>56789012Z</dni>
+        <direccion>Plaza Principal 789</direccion>
+        <email>pedro@example.com</email>
+        <zona1>3</zona1>
+        <zona2>1</zona2>
+    </comercial>
+    <comercial>
+        <nombre>Maria</nombre>
+        <apellido1>Lopez</apellido1>
+        <apellido2>Garcia</apellido2>
+        <dni>98765432Y</dni>
+        <direccion>98765432Y</direccion>
+        <email>maria@example.com</email>
+        <zona1>2</zona1>
+        <zona2>3</zona2>
+    </comercial>
+</comerciales>

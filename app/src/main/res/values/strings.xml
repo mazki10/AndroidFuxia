@@ -2,9 +2,9 @@
 
     //LOGIN
     <string name="app_name">ACAB</string>
-    <string name="login">LOGIN</string>
-    <string name="usuario">USUARIO:</string>
-    <string name="contraseña">CONTRASEÑA:</string>
+    <string name="login">INICIAR SESION</string>
+    <string name="usuario">USUARIO</string>
+    <string name="contraseña">CONTRASEÑA</string>
     <string name="in_usu">Introduce el nombre de usuario</string>
     <string name="in_con">Introduce la contraseña</string>
     //PEDIDOS
@@ -25,6 +25,19 @@
     <string name="emailTexto">EMAIL</string>
     <string name="comercialTexto">COMERCIAL</string>
     <string name="tlf">TLF</string>
+    <string name="conf">COFIRMAR</string>
+    <string name="np">NºPRODUCTOS ELEGUIDOS</string>
+    <string name="n">0</string>
+    <string name="bor">BORRAR</string>
+    <string name="precio">PRECIO: 30€</string>
+    <string name="pefinal">EL PEDIDO</string>
+    <string name="prefinal">PRECIO TOTAL:</string>
+    <string name="hpedido">HACER PEDIDO</string>
+    <string name="descuento">DESCUENTO</string>
+    <string name="productos">PRODUCTOS</string>
+    <string name="precioUn">PRECIO UNITARIO</string>
+    <string name="cantidadSinPuntos">CANTIDAD</string>
+    <string name="eleguir">Para eleguir una almohada clica en la almohada</string>
     //AGENDA
     <string name="MES">mes actual</string>
     <string name="siguiente"><![CDATA[>]]></string>

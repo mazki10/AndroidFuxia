@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.almohadascomodasademsbonitas.agenda.agenda;
+import com.example.almohadascomodasademsbonitas.pedidos.actividad_pedido;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +162,7 @@ public class CircularLayout extends View {
                             break;
                         case 3:
                             // Acción cuando se presiona el botón 3 (Pedidos)
-                            //openPedidosActivity();
+                            openPedidosActivity();
                             break;
                         case 4:
                             // Acción cuando se presiona el botón 4 (Partners)
@@ -205,6 +206,11 @@ public class CircularLayout extends View {
     private void openInformacionActivity() {
         // Abre la actividad de Agenda al hacer clic en el botón de Agenda
         Intent intent = new Intent(getContext(), info.class);
+        getContext().startActivity(intent);
+    }
+    private void openPedidosActivity() {
+        // Abre la actividad de Agenda al hacer clic en el botón de Agenda
+        Intent intent = new Intent(getContext(), actividad_pedido.class);
         getContext().startActivity(intent);
     }
 }

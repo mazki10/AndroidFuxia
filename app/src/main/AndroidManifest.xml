@@ -40,6 +40,12 @@
             android:name=".nuevo_partner"
             android:label="Nuevo Partner" />
         <activity
+            android:name=".pedidos.actividad_pedido"
+            android:exported="false"/>
+        <activity
+            android:name=".pedidos.pagina2pedido"
+            android:exported="false"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

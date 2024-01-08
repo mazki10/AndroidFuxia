@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:textStyle="bold"/>
+
+
+
+    <TextView
+        android:id="@+id/idName"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="Milind"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/idSurname1"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="AmrutKar"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/idSurname2"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="AmrutKar2"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/idDni"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="dni"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/idDireccion"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="dire"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/idEmall"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="email"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/idZona1"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="zon1"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/idZona2"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#5d5d5d"
+        android:text="zon2"
+        android:textStyle="bold"/>
+
+</LinearLayout>
