@@ -1,4 +1,4 @@
-package com.example.almohadascomodasademsbonitas;
+package com.example.almohadascomodasademsbonitas.partners;
 
 
 
@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
 

@@ -1,4 +1,4 @@
-package com.example.almohadascomodasademsbonitas;
+package com.example.almohadascomodasademsbonitas.partners;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.almohadascomodasademsbonitas.R;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

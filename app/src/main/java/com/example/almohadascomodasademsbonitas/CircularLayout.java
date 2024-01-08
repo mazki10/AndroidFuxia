@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.example.almohadascomodasademsbonitas.agenda.agenda;
+import com.example.almohadascomodasademsbonitas.partners.partners;
 import com.example.almohadascomodasademsbonitas.pedidos.actividad_pedido;
 
 import java.util.ArrayList;
