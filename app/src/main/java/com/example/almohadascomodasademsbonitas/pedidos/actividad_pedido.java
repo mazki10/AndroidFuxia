@@ -50,6 +50,8 @@ public class actividad_pedido extends AppCompatActivity {
     RecyclerView rvLista;
     private TextView TextConf;  // Añade esta línea
     private ArrayList<String>mImagesUrls = new ArrayList<>();
+    private ArrayList<String>mNames = new ArrayList<>();
+    String nombrePartnerelegido;
     ArrayList<HashMap<String, String>> comerciales;
     ArrayList<HashMap<String, String>> partners;
 
@@ -151,10 +153,10 @@ public class actividad_pedido extends AppCompatActivity {
                 } else {
                     // El valor de TextConf no es 0, procede con la acción deseada
                     // En este caso, envía la lista de pedidos a la nueva actividad
-                    Intent intent = new Intent(actividad_pedido.this, pagina2pedido.class);
+                    Intent intent = new Intent(actividad_pedido.this, com.example.almohadascomodasademsbonitas.pedidos.pagina2pedido.class);
                     intent.putExtra("pedidos", listaPedidos);
                     intent.putExtra("fecha",tvfecha.getText().toString());
-                    intent.putExtra("partners",partnerEleguido);
+                    intent.putExtra("partners",nombrePartnerelegido);
                     intent.putExtra("comerciales",nombreComercialElegido);
                     intent.putExtra("pro_elegido",TextConf.getText().toString());
                     startActivity(intent);
@@ -253,13 +255,21 @@ public class actividad_pedido extends AppCompatActivity {
 
     private void getImages(){
         mImagesUrls.add(String.valueOf(R.drawable.jordi));
+        mNames.add("jordi elegido");
         mImagesUrls.add(String.valueOf(R.drawable.bale));
+        mNames.add("bale elegido");
         mImagesUrls.add(String.valueOf(R.drawable.bob));
+        mNames.add("bob elegido");
         mImagesUrls.add(String.valueOf(R.drawable.cartas));
+        mNames.add("jordi cartas");
         mImagesUrls.add(String.valueOf(R.drawable.hello));
+        mNames.add("hello elegido");
         mImagesUrls.add(String.valueOf(R.drawable.patriota));
+        mNames.add("patriota elegido");
         mImagesUrls.add(String.valueOf(R.drawable.pistola));
+        mNames.add("pistola elegido");
         mImagesUrls.add(String.valueOf(R.drawable.verde));
+        mNames.add("verde elegido");
 
         getRecycleView();
 
@@ -288,7 +298,7 @@ public class actividad_pedido extends AppCompatActivity {
         rvLista = findViewById(R.id.lista);
         rvLista.setLayoutManager(linearLayoutManager);
 
-        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(mImagesUrls, this);
+        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(mImagesUrls, this,mNames);
 
         // Agrega un listener para manejar los clics en las imágenes
         adaptadorRecycleView.setOnItemClickListener(new adaptadorRecycleView.OnItemClickListener() {
@@ -519,6 +529,7 @@ public class actividad_pedido extends AppCompatActivity {
                 // Ejemplo: HashMap<String, String> comercialSeleccionado = comerciales.get(position);
 
                 partnerEleguido = position;
+                nombrePartnerelegido = partners.get(position).get("id_partners");
 
             }
 
