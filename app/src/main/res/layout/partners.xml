@@ -7,6 +7,17 @@
     android:paddingLeft="15dp">
 
     <Button
+        android:id="@+id/btRfr2"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:textSize="34sp"
+        app:icon="@drawable/actualizar"
+        app:layout_constraintBottom_toTopOf="@+id/lvPartners"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvPartners"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
         android:id="@+id/btNuevo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,8 +41,8 @@
 
     <TextView
         android:id="@+id/tvPartners"
-        android:layout_width="142dp"
-        android:layout_height="49dp"
+        android:layout_width="140dp"
+        android:layout_height="33dp"
         android:fontFamily="monospace"
         android:text="@string/partners"
         android:textAlignment="center"

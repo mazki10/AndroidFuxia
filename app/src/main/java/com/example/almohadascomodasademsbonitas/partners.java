@@ -46,6 +46,7 @@ public class partners extends AppCompatActivity {
 
         // Obtén una referencia al botón btNuevo en tu diseño
         Button btNuevo = findViewById(R.id.btNuevo);
+        Button btRrfs = findViewById(R.id.btRfr2);
 
         // Agrega un OnClickListener al botón para abrir la actividad nuevo_partner
         btNuevo.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +55,18 @@ public class partners extends AppCompatActivity {
                 openNuevoPartnerActivity();
             }
         });
+        btRrfs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Actualiza los datos en el ArrayAdapter existente
+                ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+                adapter.clear();
+                adapter.addAll(datosDeXml);
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+
     }
 
     private void copiarXmlDesdeAssets() {
