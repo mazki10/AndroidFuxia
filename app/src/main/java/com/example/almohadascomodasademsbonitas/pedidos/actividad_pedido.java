@@ -264,7 +264,7 @@ public class actividad_pedido extends AppCompatActivity {
         mImagesUrls.add(String.valueOf(R.drawable.bob));
         mNames.add("bob elegido");
         mImagesUrls.add(String.valueOf(R.drawable.cartas));
-        mNames.add("jordi cartas");
+        mNames.add("cartas elegido");
         mImagesUrls.add(String.valueOf(R.drawable.hello));
         mNames.add("hello elegido");
         mImagesUrls.add(String.valueOf(R.drawable.patriota));
