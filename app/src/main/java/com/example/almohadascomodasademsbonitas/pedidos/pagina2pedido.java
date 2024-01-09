@@ -36,7 +36,7 @@ public class pagina2pedido extends AppCompatActivity {
     private String pro_eleguido;
     int producto_eleguido;
     private int contadorIdPedido = 0;  // Contador global para el id_pedido
-    private int contadorNFactura = 1;
+    private int contadorNFactura = 0;
     String fecha;
 
     private int precioPorProducto;
@@ -62,6 +62,8 @@ public class pagina2pedido extends AppCompatActivity {
                 // Elimina el archivo existente si es necesario
                 Button buttonGuardar = findViewById(R.id.button);
 
+                actualizarContadoresDesdeXML();
+
                 // Agregar un OnClickListener al botón
                 buttonGuardar.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -70,30 +72,38 @@ public class pagina2pedido extends AppCompatActivity {
                         guardarEnXML(listaPedidos);
                     }
                 });
+            } else {
+                contadorIdPedido = 0;
+                contadorNFactura = 0;
             }
-
-
         }
-      /*  Button buttonGuardar = findViewById(R.id.button);
-
-        // Agregar un OnClickListener al botón
-        buttonGuardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Llamada al método para guardar la información
-                guardarEnXML(listaPedidos);
-            }
-        });*/
     }
+
+    // Elimina estas líneas de la parte inicial de guardarEnXML
+    /*
+    contadorIdPedido = 0;
+    */
 
     private void borrarDatosXML() {
         File file = new File(getFilesDir(), "pedidos.xml");
         if (file.exists()) {
-            deleteFile("pedidos.xml");
-            Toast.makeText(this, "Datos XML eliminados correctamente.", Toast.LENGTH_SHORT).show();
+            try {
+                if (file.delete()) {
+                    Toast.makeText(this, "Datos XML eliminados correctamente.", Toast.LENGTH_SHORT).show();
 
-            // Vuelve a crear el documento XML
-            guardarEnXML(listaPedidos);
+                    // Restablecer los contadores a 0 después de eliminar el archivo
+                    contadorIdPedido = 0;
+                    contadorNFactura = 0;
+
+                    // Vuelve a crear el documento XML
+                    guardarEnXML(listaPedidos);
+                } else {
+                    Toast.makeText(this, "Error al eliminar datos XML.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (SecurityException e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error de seguridad al eliminar datos XML.", Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, "No hay datos XML para eliminar.", Toast.LENGTH_SHORT).show();
         }
@@ -103,6 +113,39 @@ public class pagina2pedido extends AppCompatActivity {
         File file = new File(getFilesDir(), "pedidos.xml");
         return file.exists();
     }
+
+    // Elimina la línea del contadorIdPedido = 0; al principio del método onCreate.
+
+    private void actualizarContadoresDesdeXML() {
+        String contenidoExistente = leerContenidoXML();
+
+        // Busca la posición de la última etiqueta <n_factura>
+        int lastNFacturaIndex = contenidoExistente.lastIndexOf("<n_factura>");
+
+        if (lastNFacturaIndex != -1) {
+            // Si se encuentra la etiqueta <n_factura>, obtén su valor y actualiza el contador
+            int endTagIndex = contenidoExistente.indexOf("</n_factura>", lastNFacturaIndex);
+            String nFacturaValue = contenidoExistente.substring(lastNFacturaIndex + 11, endTagIndex);
+            contadorNFactura = Integer.parseInt(nFacturaValue) + 1;
+        }
+
+        // Busca la posición de la última etiqueta <id_pedido>
+        int lastIdPedidoIndex = contenidoExistente.lastIndexOf("<id_pedido>");
+
+        if (lastIdPedidoIndex != -1) {
+            // Si se encuentra la etiqueta <id_pedido>, obtén su valor y actualiza el contador
+            int endTagIndex = contenidoExistente.indexOf("</id_pedido>", lastIdPedidoIndex);
+            String idPedidoValue = contenidoExistente.substring(lastIdPedidoIndex + 11, endTagIndex);
+            contadorIdPedido = Integer.parseInt(idPedidoValue);
+        } else {
+            // Si no se encuentra la etiqueta <id_pedido>, establece el contador en 0
+            contadorIdPedido = 0;
+        }
+    }
+
+
+// Asegúrate de que el contadorIdPedido = 0; esté presente solo una vez al principio de la clase.
+
 
     private void mostrarPedidosEnListViews() {
         // Obtén referencias a los ListViews en tu layout
@@ -148,68 +191,69 @@ public class pagina2pedido extends AppCompatActivity {
         textViewTotalPrecioUnitario.setText(String.valueOf(totalPrecioUnitario)+"€");
     }
 
-
     private void guardarEnXML(ArrayList<Pedido> listaPedidos) {
         try {
             // Obtener la fecha actual
             String fechaActual = fecha;
 
             // Nuevo pedido con el campo id_pedido
-            String xmlData = "";
+            String xmlData="";
+
+            // Incrementa el contador solo si hay pedidos en la lista
+            contadorIdPedido++;
 
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
+            // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
             if (!isXmlFileExist()) {
-                xmlData = "<pedidos>\n";
+                xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<pedidos>\n";
             } else {
                 // Si el archivo XML ya existe, lee su contenido existente
                 String contenidoExistente = leerContenidoXML().trim(); // Asegúrate de que no haya espacios en blanco alrededor
 
-                // Busca la posición de la última etiqueta </pedido>
-                int lastPedidoIndex = contenidoExistente.lastIndexOf("</pedido>");
+                // Busca la posición de la última etiqueta </pedidos>
+                int lastPedidosIndex = contenidoExistente.lastIndexOf("</pedidos>");
 
-                if (lastPedidoIndex == 0) {
-                    // Trunca el contenido hasta la última etiqueta </pedido>
-                    xmlData = contenidoExistente.substring(0, lastPedidoIndex);
+                if (lastPedidosIndex == -1) {
+                    // Si no se encuentra la última etiqueta </pedidos>, usa el contenido existente tal como está
+                    xmlData += contenidoExistente;
                 } else {
-                    // Si no se encuentra la última etiqueta </pedido>, usa el contenido existente tal como está
-                    xmlData = contenidoExistente;
+                    // Trunca el contenido hasta la última etiqueta </pedidos>
+                    xmlData += contenidoExistente.substring(0, lastPedidosIndex);
                 }
             }
+
+
             // Continúa con la lógica para agregar nuevos datos...
 
-            // Cierra el pedido anterior si ya existe
-            // Cierra el pedido anterior si ya existe
-            if (contadorIdPedido > 1) {
+            // Inicia un nuevo pedido solo si hay productos en la lista
+            if (!listaPedidos.isEmpty()) {
+                xmlData += "  <pedido>\n";
+                xmlData += "    <id_pedido>" + contadorIdPedido + "</id_pedido>\n";
+                xmlData += "    <id_partner>" + partners + "</id_partner>\n";
+                xmlData += "    <id_comercial>" + comerciales + "</id_comercial>\n";
+
+                int precioTotal = 0;
+
+                for (int i = 0; i < listaPedidos.size(); i++) {
+                    // Agregar información de productos (puedes adaptar esta lógica según tus necesidades)
+                    xmlData += "    <producto>\n";
+                    xmlData += "      <descripcion>" + listaPedidos.get(i).getImagen() + "</descripcion>\n";
+                    xmlData += "      <cantidad>" + listaPedidos.get(i).getCantidad() + "</cantidad>\n";
+                    xmlData += "      <descuento>0</descuento>\n";
+                    xmlData += "      <precio_un>30</precio_un>\n";
+                    xmlData += "    </producto>\n";
+
+                    precioTotal += listaPedidos.get(i).getCantidad() * 30;
+                }
+
+                // Agregar la fecha, precio total y número de factura
+                xmlData += "    <fecha>" + fechaActual + "</fecha>\n";
+                xmlData += "    <precio_total>" + precioTotal + "</precio_total>\n";
+                xmlData += "    <n_factura>" + contadorNFactura + "</n_factura>\n";
+
+                // Cierra el pedido
                 xmlData += "  </pedido>\n";
             }
-
-// Inicia un nuevo pedido
-            xmlData += "  <pedido>\n";
-            xmlData += "    <id_pedido>" + contadorIdPedido + "</id_pedido>\n";
-            xmlData += "    <id_partner>" + partners + "</id_partner>\n";
-            xmlData += "    <id_comercial>" + comerciales + "</id_comercial>\n";
-
-            int precioTotal = 0;
-
-            for (int i = 0; i < listaPedidos.size(); i++) {
-                // Agregar información de productos (puedes adaptar esta lógica según tus necesidades)
-                xmlData += "    <producto>\n";
-                xmlData += "      <descripcion>" + listaPedidos.get(i).getImagen() + "</descripcion>\n";
-                xmlData += "      <cantidad>" + listaPedidos.get(i).getCantidad() + "</cantidad>\n";
-                xmlData += "      <descuento>0</descuento>\n";
-                xmlData += "      <precio_un>30</precio_un>\n";
-                xmlData += "    </producto>\n";
-
-                precioTotal += listaPedidos.get(i).getCantidad() * 30;
-            }
-
-// Agregar la fecha, precio total y número de factura
-            xmlData += "    <fecha>" + fechaActual + "</fecha>\n";
-            xmlData += "    <precio_total>" + precioTotal + "</precio_total>\n";
-            xmlData += "    <n_factura>" + contadorNFactura + "</n_factura>\n";
-
-// Cierra el pedido
-            xmlData += "  </pedido>\n";
 
             // Cierra la etiqueta pedidos
             xmlData += "</pedidos>\n";
@@ -224,10 +268,6 @@ public class pagina2pedido extends AppCompatActivity {
             outputStreamWriter.close();
             fos.close();
 
-            // Incrementa los contadores solo si se ha creado un nuevo pedido
-            contadorNFactura++;
-            contadorIdPedido++;
-
             // Leer y mostrar el contenido del archivo para verificar
             String contenido = leerContenidoXML();
             Toast.makeText(this, "Información añadida a XML correctamente:\n" + contenido, Toast.LENGTH_LONG).show();
@@ -237,7 +277,6 @@ public class pagina2pedido extends AppCompatActivity {
             Toast.makeText(this, "Error al añadir datos al XML: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
 
     private String leerContenidoXML() {
         try {
@@ -263,7 +302,3 @@ public class pagina2pedido extends AppCompatActivity {
         }
     }
 }
-
-
-
-
