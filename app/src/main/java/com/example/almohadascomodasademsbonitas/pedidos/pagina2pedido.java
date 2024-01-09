@@ -197,14 +197,15 @@ public class pagina2pedido extends AppCompatActivity {
             String fechaActual = fecha;
 
             // Nuevo pedido con el campo id_pedido
-            String xmlData;
+            String xmlData="";
 
             // Incrementa el contador solo si hay pedidos en la lista
             contadorIdPedido++;
 
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
+            // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
             if (!isXmlFileExist()) {
-                xmlData = "<pedidos>\n";
+                xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<pedidos>\n";
             } else {
                 // Si el archivo XML ya existe, lee su contenido existente
                 String contenidoExistente = leerContenidoXML().trim(); // Asegúrate de que no haya espacios en blanco alrededor
@@ -214,12 +215,13 @@ public class pagina2pedido extends AppCompatActivity {
 
                 if (lastPedidosIndex == -1) {
                     // Si no se encuentra la última etiqueta </pedidos>, usa el contenido existente tal como está
-                    xmlData = contenidoExistente;
+                    xmlData += contenidoExistente;
                 } else {
                     // Trunca el contenido hasta la última etiqueta </pedidos>
-                    xmlData = contenidoExistente.substring(0, lastPedidosIndex);
+                    xmlData += contenidoExistente.substring(0, lastPedidosIndex);
                 }
             }
+
 
             // Continúa con la lógica para agregar nuevos datos...
 
