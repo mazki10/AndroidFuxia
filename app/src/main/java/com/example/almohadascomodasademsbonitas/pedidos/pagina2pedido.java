@@ -72,7 +72,7 @@ public class pagina2pedido extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // Llamada al método para guardar la información
-                        guardarEnXML(listaPedidos);
+                        borrarDatosXML();
                     }
                 });
             } else {
