@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<pedidos>
+    <pedido>
+        <id_pedido>1</id_pedido>
+        <id_partner>1</id_partner>
+        <id_comercial>1</id_comercial>
+        <producto>
+            <descripcion>jordi</descripcion>
+            <cantidad>3</cantidad>
+            <descuento>0</descuento>
+            <precio_un>30</precio_un>
+        </producto>
+        <producto>
+            <descripcion>bale</descripcion>
+            <cantidad>3</cantidad>
+            <descuento>0</descuento>
+            <precio_un>30</precio_un>
+        </producto>
+        <fecha>6/1/2024</fecha>
+        <precio_total>180</precio_total>
+        <n_factura>1</n_factura>
+    </pedido>
+
+</pedidos>
