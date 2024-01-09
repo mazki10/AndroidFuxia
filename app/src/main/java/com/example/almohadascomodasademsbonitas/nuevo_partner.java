@@ -94,6 +94,42 @@ public class nuevo_partner extends AppCompatActivity {
             FileOutputStream fos = openFileOutput("partners.xml", MODE_APPEND);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 
+            // Si es el primer socio, abre la etiqueta <partners>
+            if (cantidadPartners == 0) {
+                outputStreamWriter.write("<partners>\n");
+            }
+
+            // Elimina la última línea (cierre de </partners>) si ya existe
+            if (cantidadPartners > 0) {
+                // Abrir el archivo existente
+                FileInputStream fis = openFileInput("partners.xml");
+                InputStreamReader inputStreamReader = new InputStreamReader(fis);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                // Leer el archivo hasta la penúltima línea y copiar al nuevo archivo
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (!line.trim().equalsIgnoreCase("</partners>")) {
+                        sb.append(line).append("\n");
+                    }
+                }
+
+                // Cerrar el archivo existente
+                bufferedReader.close();
+                inputStreamReader.close();
+                fis.close();
+
+                // Sobrescribir el archivo con el contenido actualizado
+                FileOutputStream fosUpdate = openFileOutput("partners.xml", MODE_PRIVATE);
+                OutputStreamWriter oswUpdate = new OutputStreamWriter(fosUpdate);
+                oswUpdate.write(sb.toString());
+
+                // Cerrar el archivo actualizado
+                oswUpdate.close();
+                fosUpdate.close();
+            }
+
             // Nuevo partner con el campo id_partner
             outputStreamWriter.write("  <partner>\n");
             outputStreamWriter.write("    <id_partners>" + (cantidadPartners + 1) + "</id_partners>\n");
@@ -105,6 +141,9 @@ public class nuevo_partner extends AppCompatActivity {
             outputStreamWriter.write("    <email>" + partner.get(5) + "</email>\n");
             outputStreamWriter.write("    <zona>" + partner.get(6) + "</zona>\n");
             outputStreamWriter.write("  </partner>\n");
+
+            // Cierra la etiqueta </partners>
+            outputStreamWriter.write("</partners>\n");
 
             // Cierra el archivo
             outputStreamWriter.close();
@@ -119,6 +158,8 @@ public class nuevo_partner extends AppCompatActivity {
             Toast.makeText(this, "Error al añadir datos al XML: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private int contarPartners() {
         int cantidad = 0;
