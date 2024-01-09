@@ -200,8 +200,11 @@ public class actividad_pedido extends AppCompatActivity {
                 // Convierte la cantidad del EditText a un entero
                 int cantidadPedido = Integer.parseInt(cantidadEditText);
 
+                int contadorIdPedido = (listaPedidos.isEmpty()) ? 1 : listaPedidos.get(listaPedidos.size() - 1).getIdPedido() + 1;
+
                 // Crea un objeto Pedido y agrégalo al ArrayList
-                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido);
+                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido);
+
                 listaPedidos.add(nuevoPedido);
 
                 // Imprime información del nuevo pedido (ajústalo según tus necesidades)
