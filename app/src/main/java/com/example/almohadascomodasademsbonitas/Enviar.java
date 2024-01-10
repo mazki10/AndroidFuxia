@@ -3,8 +3,11 @@ package com.example.almohadascomodasademsbonitas;
 import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -48,13 +51,17 @@ public class Enviar extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enviar);
 
+        fEnvio = new File(getFilesDir(), "envio.xml");
+        fPedido = new File(getFilesDir(), "pedidos.xml");
+        fPartner = new File(getFilesDir(), "partners.xml");
+
         bEnviar = findViewById(R.id.bgmail_enviar);
         bGenerar = findViewById(R.id.bgmail_crearXML);
 
         bEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                EnviarXML();
             }
         });
 
@@ -67,7 +74,16 @@ public class Enviar extends AppCompatActivity {
     }
 
     public void EnviarXML(){
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"destinatario@example.com"});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Asunto del correo");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "Cuerpo del correo");
 
+        Uri fileUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", fEnvio);
+        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+
+        startActivity(Intent.createChooser(emailIntent, "Enviar correo electrónico"));
     }
 
     public void GenerarXML() {
@@ -75,10 +91,6 @@ public class Enviar extends AppCompatActivity {
 
         // Obtener el contexto de la aplicación de Android
         Context context = Enviar.this;
-
-        fEnvio = new File(getFilesDir(), "envio.xml");
-        fPedido = new File(getFilesDir(), "pedidos.xml");
-        fPartner = new File(getFilesDir(), "partners.xml");
 
         leerPedidos(fPedido);
         leerPartners(fPartner);
@@ -214,7 +226,7 @@ public class Enviar extends AppCompatActivity {
             document.setXmlVersion("1.0");
 
             // Agregar datos de arrayPedidos
-            if (arrayPedidos[0][0].length() > 0) {
+            if (arrayPedidos != null && arrayPedidos.length > 0 && arrayPedidos[0].length == 9) {
                 for (int i = 0; i < arrayPedidos.length; i++) {
                     Element pedidoElement = document.createElement("pedido");
                     document.getDocumentElement().appendChild(pedidoElement);
