@@ -164,7 +164,7 @@ public class Enviar extends AppCompatActivity {
             Document document = builder.parse(new InputSource(new StringReader(datos)));
 
             NodeList nodeList = document.getElementsByTagName("pedido");
-            arrayPedidos = new String[nodeList.getLength()][9];
+            arrayPedidos = new String[nodeList.getLength()][7];
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
@@ -174,47 +174,44 @@ public class Enviar extends AppCompatActivity {
                     String idPartner = obtenerTextoElemento(pedidoElement, "id_partner");
                     String idComercial = obtenerTextoElemento(pedidoElement, "id_comercial");
 
-                    NodeList productos = pedidoElement.getElementsByTagName("producto");
-                    for (int j = 0; j < productos.getLength(); j++) {
-                        Node productoNode = productos.item(j);
+                    // Leer productos dentro de cada pedido
+                    NodeList productosNodeList = pedidoElement.getElementsByTagName("producto");
+                    StringBuilder productosStringBuilder = new StringBuilder();
+                    for (int j = 0; j < productosNodeList.getLength(); j++) {
+                        Node productoNode = productosNodeList.item(j);
                         if (productoNode.getNodeType() == Node.ELEMENT_NODE) {
                             Element productoElement = (Element) productoNode;
+                            String descripcion = obtenerTextoElemento(productoElement, "descripcion");
                             String cantidad = obtenerTextoElemento(productoElement, "cantidad");
                             String descuento = obtenerTextoElemento(productoElement, "descuento");
-                            String precioUd = obtenerTextoElemento(productoElement, "precio_un");
+                            String precioUn = obtenerTextoElemento(productoElement, "precio_un");
 
-                            // Adjust the indices based on the structure of your array
-                            int index = i * productos.getLength() + j;
-                            arrayPedidos[index][0] = idPedido;
-                            arrayPedidos[index][1] = idPartner;
-                            arrayPedidos[index][2] = idComercial;
-                            arrayPedidos[index][3] = cantidad;
-                            arrayPedidos[index][4] = descuento;
-                            arrayPedidos[index][5] = precioUd;
-                            // You might need to adjust the indices accordingly
-
-                            // Continue with other elements if needed
+                            // Aquí puedes hacer algo con los datos de los productos, como concatenarlos en un StringBuilder
+                            productosStringBuilder.append(descripcion).append(", Cantidad: ").append(cantidad)
+                                    .append(", Descuento: ").append(descuento).append(", Precio Unitario: ").append(precioUn).append("\n");
                         }
                     }
 
                     String fecha = obtenerTextoElemento(pedidoElement, "fecha");
                     String precioTotal = obtenerTextoElemento(pedidoElement, "precio_total");
-                    String idTransporte = obtenerTextoElemento(pedidoElement, "n_factura");
+                    String nFactura = obtenerTextoElemento(pedidoElement, "n_factura");
 
-                    // Adjust the index based on the structure of your array
-                    int lastIndex = (i + 1) * productos.getLength() - 1;
-                    arrayPedidos[lastIndex][6] = precioTotal;
-                    arrayPedidos[lastIndex][7] = idTransporte;
-                    arrayPedidos[lastIndex][8] = fecha;
-                    // Continue with other elements if needed
+                    // Aquí puedes hacer algo con los datos de los pedidos, como almacenarlos en tu array o hacer un log
+                    arrayPedidos[i][0] = idPedido;
+                    arrayPedidos[i][1] = idPartner;
+                    arrayPedidos[i][2] = idComercial;
+                    arrayPedidos[i][3] = productosStringBuilder.toString();  // Productos
+                    arrayPedidos[i][4] = fecha;
+                    arrayPedidos[i][5] = precioTotal;
+                    arrayPedidos[i][6] = nFactura;
                 }
             }
-            Toast.makeText(this, arrayPedidos[0][0], Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
             Log.e("Error", "Error al leer pedidos.xml: " + e.getMessage());
         }
     }
+
 
 
 
@@ -226,7 +223,7 @@ public class Enviar extends AppCompatActivity {
             document.setXmlVersion("1.0");
 
             // Agregar datos de arrayPedidos
-            if (arrayPedidos != null && arrayPedidos.length > 0 && arrayPedidos[0].length == 9) {
+            if (arrayPedidos != null && arrayPedidos.length > 0 && arrayPedidos[0].length == 7) {
                 for (int i = 0; i < arrayPedidos.length; i++) {
                     Element pedidoElement = document.createElement("pedido");
                     document.getDocumentElement().appendChild(pedidoElement);
@@ -235,21 +232,25 @@ public class Enviar extends AppCompatActivity {
                     CrearElemento("id_partner", arrayPedidos[i][1], pedidoElement, document);
                     CrearElemento("id_comercial", arrayPedidos[i][2], pedidoElement, document);
 
-                    // Agregar datos de productos
-                    for (int j = 3; j < 9; j += 3) {
+                    String productos = arrayPedidos[i][3];
+                    String[] productosArray = productos.split("\n");
+
+                    for (String producto : productosArray) {
+                        String[] productoInfo = producto.split(", ");
                         Element productoElement = document.createElement("producto");
                         pedidoElement.appendChild(productoElement);
-                        CrearElemento("descripcion", "producto" + ((j - 3) / 3 + 1), productoElement, document);
-                        CrearElemento("cantidad", arrayPedidos[i][j], productoElement, document);
-                        CrearElemento("precio_un", arrayPedidos[i][j + 1], productoElement, document);
+
+                        CrearElemento("descripcion", productoInfo[0], productoElement, document);
+                        CrearElemento("cantidad", productoInfo[1].substring(productoInfo[1].indexOf(":") + 2), productoElement, document);
+                        CrearElemento("descuento", productoInfo[2].substring(productoInfo[2].indexOf(":") + 2), productoElement, document);
+                        CrearElemento("precio_un", productoInfo[3].substring(productoInfo[3].indexOf(":") + 2), productoElement, document);
                     }
 
-                    CrearElemento("fecha", arrayPedidos[i][8], pedidoElement, document);
-                    CrearElemento("precio_total", arrayPedidos[i][9], pedidoElement, document);
-                    CrearElemento("n_factura", arrayPedidos[i][10], pedidoElement, document);
+                    CrearElemento("fecha", arrayPedidos[i][6], pedidoElement, document);
                 }
-            }else {
-                Toast.makeText(this, "No pedidos", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No hay pedidos", Toast.LENGTH_SHORT).show();
+                return;
             }
 
             // Agregar datos de arrayPartner
@@ -268,32 +269,44 @@ public class Enviar extends AppCompatActivity {
                     CrearElemento("id_zona", arrayPartner[i][7], partnerElement, document);
                 }
             } else {
-                Toast.makeText(this, "No partner", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No hay partners", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            Source source = new DOMSource(document);
-            Result result = new StreamResult(fEnvio);
-            indentarXML(source, result);
+            // Guardar el documento XML en el archivo
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(fEnvio);
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.transform(source, result);
 
             Toast.makeText(this, "Datos guardados en el archivo XML con formato.", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Log.e("Error","Error de todooo: " + e);
+            Log.e("Error", "Error al llenar el archivo XML: " + e.getMessage());
         }
     }
 
-
-    public void indentarXML(Source source, Result result) {
+    public void indentarXML(File xmlFile) {
         try {
-            TransformerFactory tf = TransformerFactory.newInstance();
-            Transformer transformer = tf.newTransformer();
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document document = docBuilder.parse(xmlFile);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(xmlFile);
             transformer.transform(source, result);
-        } catch (Exception e){
-            System.err.println("Error: " + e);
+        } catch (Exception e) {
+            Log.e("Error", "Error al indentar el archivo XML: " + e.getMessage());
         }
     }
+
 
     public void CrearElemento(String datoEmple, String valor, Element raiz, Document document) {
         Element elem = document.createElement(datoEmple);
