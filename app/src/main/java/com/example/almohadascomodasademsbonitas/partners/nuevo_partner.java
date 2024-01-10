@@ -89,12 +89,16 @@ public class nuevo_partner extends AppCompatActivity {
             if (comercial.isEmpty()) {
                 throw new IllegalArgumentException("El campo comercial es obligatorio");
             }
-
-
-
-
-
-            // ... Resto del código
+            if (zona.isEmpty()){
+                throw new IllegalArgumentException("El campo zona es obligatorio");
+            }
+            partner.add(editTextNombre.getText().toString());
+            partner.add(editTextCIF.getText().toString());
+            partner.add(editTextDireccion.getText().toString());
+            partner.add(editTextTelefono.getText().toString());
+            partner.add(editTextComercial.getText().toString());
+            partner.add(editTextEmail.getText().toString());
+            partner.add(editTextZona.getText().toString());
 
             // Si llegamos aquí, la información es válida, puedes guardarla o realizar más acciones
             // En este ejemplo, simplemente mostramos un mensaje
@@ -129,6 +133,9 @@ public class nuevo_partner extends AppCompatActivity {
 
                 case "El campo comercial es obligatorio":
                     editTextComercial.requestFocus();
+                    break;
+                case "El campo zona es obligatorio":
+                    editTextZona.requestFocus();
                     break;
 
                 // Puedes agregar más casos según sea necesario para otros mensajes de error
