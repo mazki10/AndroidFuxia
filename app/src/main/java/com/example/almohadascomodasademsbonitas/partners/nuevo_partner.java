@@ -26,7 +26,6 @@ public class nuevo_partner extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.nuevo_partner);
 
-        // Obtener referencias de los EditText
         editTextNombre = findViewById(R.id.editTextText3);
         editTextCIF = findViewById(R.id.editTextTextPostalAddress2);
         editTextDireccion = findViewById(R.id.editTextTextPostalAddress1);
@@ -34,15 +33,10 @@ public class nuevo_partner extends AppCompatActivity {
         editTextEmail = findViewById(R.id.editTextTextEmailAddress);
         editTextComercial = findViewById(R.id.editTextText5);
         editTextZona = findViewById(R.id.editTextNumber2);
-
-        // Obtener referencia del botón
         Button buttonGuardar = findViewById(R.id.btguardar);
-
-        // Agregar un OnClickListener al botón
         buttonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Llamada al método para guardar la información
                 guardarEnXML(guardarInformacion());
             }
         });
@@ -51,7 +45,6 @@ public class nuevo_partner extends AppCompatActivity {
     private ArrayList<String> guardarInformacion() {
         ArrayList<String> partner = null;
         try {
-            // Obtener los valores ingresados por el usuario
             partner = new ArrayList<>();
             String nombre = editTextNombre.getText().toString();
             String CIF = editTextCIF.getText().toString();
@@ -100,14 +93,10 @@ public class nuevo_partner extends AppCompatActivity {
             partner.add(editTextEmail.getText().toString());
             partner.add(editTextZona.getText().toString());
 
-            // Si llegamos aquí, la información es válida, puedes guardarla o realizar más acciones
-            // En este ejemplo, simplemente mostramos un mensaje
             Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
 
         } catch (IllegalArgumentException e) {
             // Se captura la excepción específica para errores de validación
-
-            // Muestra un mensaje de error
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
 
             // Coloca el foco en el EditText correspondiente
@@ -137,8 +126,6 @@ public class nuevo_partner extends AppCompatActivity {
                 case "El campo zona es obligatorio":
                     editTextZona.requestFocus();
                     break;
-
-                // Puedes agregar más casos según sea necesario para otros mensajes de error
             }
         } catch (Exception e) {
             // Manejar otras excepciones
@@ -147,13 +134,11 @@ public class nuevo_partner extends AppCompatActivity {
         return partner;
     }
     private boolean validarCIF(String cif) {
-        // El CIF debe tener una letra, 7 números y otra letra
         return cif.matches("[A-HJNP-SUW-Za-hjnp-su-wz]\\d{7}[A-HJNP-SUW-Za-hjnp-su-wz]");
     }
 
     private void guardarEnXML(ArrayList<String> partner) {
         try {
-            // Contar la cantidad de partners existentes
             int cantidadPartners = contarPartners();
 
             // Abre un archivo en la memoria interna en modo de apendizaje
@@ -167,7 +152,6 @@ public class nuevo_partner extends AppCompatActivity {
 
             // Elimina la última línea (cierre de </partners>) si ya existe
             if (cantidadPartners > 0) {
-                // Abrir el archivo existente
                 FileInputStream fis = openFileInput("partners.xml");
                 InputStreamReader inputStreamReader = new InputStreamReader(fis);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
