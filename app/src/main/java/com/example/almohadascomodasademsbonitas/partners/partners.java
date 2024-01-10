@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.Enviar;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -31,26 +32,18 @@ public class partners extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.partners);
 
-        // Copiar el archivo XML desde assets a la memoria interna
         copiarXmlDesdeAssets();
 
-        // Obtén una referencia al ListView en tu diseño
         ListView listView = findViewById(R.id.lvPartners);
-
-        // Crea una lista para almacenar los datos del archivo XML en la memoria interna
         ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
-
-        // Asigna el adaptador al ListView
         listView.setAdapter(adapter);
 
-        // Obtén una referencia al botón btNuevo en tu diseño
         Button btNuevo = findViewById(R.id.btNuevo);
         Button btRrfs = findViewById(R.id.btRfr2);
 
-        // Agrega un OnClickListener al botón para abrir la actividad nuevo_partner
         btNuevo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,7 +53,6 @@ public class partners extends AppCompatActivity {
         btRrfs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Actualiza los datos en el ArrayAdapter existente
                 ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
                 adapter.clear();
                 adapter.addAll(datosDeXml);
@@ -98,7 +90,6 @@ public class partners extends AppCompatActivity {
         ArrayList<String> datosDeXml = new ArrayList<>();
 
         try {
-            // Abre el archivo XML desde la memoria interna
             FileInputStream fis = openFileInput("partners.xml");
 
             // Crea un XmlPullParser
@@ -106,7 +97,6 @@ public class partners extends AppCompatActivity {
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(fis, null);
 
-            // Comienza a analizar el XML
             int eventType = parser.getEventType();
 
             while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -143,7 +133,7 @@ public class partners extends AppCompatActivity {
 
     private void openNuevoPartnerActivity() {
         Intent intent = new Intent(this, nuevo_partner.class);
-        startActivityForResult(intent, 1); // Usar startActivityForResult para obtener resultados de la actividad de nuevo_partner
+        this.startActivity(intent);
     }
 
     @Override

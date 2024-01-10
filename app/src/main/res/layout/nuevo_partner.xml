@@ -177,7 +177,6 @@
                 android:layout_width="192dp"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/idzona"
                 android:inputType="number"
                 android:paddingRight="50dp" />
         </LinearLayout>
