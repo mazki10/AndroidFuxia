@@ -253,7 +253,6 @@ public class Enviar extends AppCompatActivity {
                 return;
             }
 
-            // Agregar datos de arrayPartner
             if (arrayPartner != null && arrayPartner.length > 0 && arrayPartner[0].length == 8) {
                 for (int i = 0; i < arrayPartner.length; i++) {
                     Element partnerElement = document.createElement("partner");
