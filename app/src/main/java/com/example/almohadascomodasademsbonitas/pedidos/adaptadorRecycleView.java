@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +19,10 @@ import java.util.ArrayList;
 public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleView.ViewHolder> {
     private OnItemClickListener mListener;
     private ArrayList<String> mImagesUrls = new ArrayList<>();
-    private Context mcontext;
+    private ArrayList<String> mNames = new ArrayList<>();
 
+    private Context mcontext;
+TextView name;
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }
@@ -28,9 +32,10 @@ public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleV
         void onItemClick(int position);
     }
 
-    public adaptadorRecycleView(ArrayList<String> mImagesUrls, Context mcontext) {
+    public adaptadorRecycleView(ArrayList<String> mImagesUrls, Context mcontext,ArrayList<String> mNames) {
         this.mImagesUrls = mImagesUrls;
         this.mcontext = mcontext;
+        this.mNames = mNames;
     }
 
     @NonNull
@@ -57,12 +62,18 @@ public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleV
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onItemClick(position);
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        mListener.onItemClick(adapterPosition);
+                        Toast toast = Toast.makeText(mcontext, mNames.get(adapterPosition), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 }
             }
         });
         // Puedes utilizar imageName como identificador único si es necesario para futuras operaciones.
     }
+
 
     @Override
     public int getItemCount() {
@@ -75,6 +86,7 @@ public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleV
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image1);
+            name = itemView.findViewById(R.id.name);
 
             // Configura el listener para el clic en la imagen
             itemView.setOnClickListener(new View.OnClickListener() {

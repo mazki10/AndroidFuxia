@@ -98,3 +98,4 @@ public class Actividad {
                 Objects.equals(hora, otraActividad.hora);
     }
 }
+

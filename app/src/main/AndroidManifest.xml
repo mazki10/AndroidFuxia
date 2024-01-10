@@ -37,9 +37,9 @@
         <activity
             android:name=".agenda.agenda"
             android:exported="false" />
-        <activity android:name=".partners" />
+        <activity android:name=".partners.partners" />
         <activity
-            android:name=".nuevo_partner"
+            android:name=".partners.nuevo_partner"
             android:label="Nuevo Partner" />
         <activity
             android:name=".pedidos.actividad_pedido"

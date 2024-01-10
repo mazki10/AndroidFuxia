@@ -1,4 +1,4 @@
-package com.example.almohadascomodasademsbonitas;
+package com.example.almohadascomodasademsbonitas.partners;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.almohadascomodasademsbonitas.R;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -50,7 +52,7 @@ public class nuevo_partner extends AppCompatActivity {
         ArrayList<String> partner = null;
         try {
             // Obtener los valores ingresados por el usuario
-            partner = new ArrayList<String>();
+            partner = new ArrayList<>();
             String nombre = editTextNombre.getText().toString();
             String CIF = editTextCIF.getText().toString();
             String direccion = editTextDireccion.getText().toString();
@@ -60,29 +62,86 @@ public class nuevo_partner extends AppCompatActivity {
             String zona = editTextZona.getText().toString();
 
             // Validar que los campos no estén vacíos
-            if (nombre.isEmpty() || direccion.isEmpty() || telefono.isEmpty() || comercial.isEmpty() || email.isEmpty()) {
-                throw new IllegalArgumentException("Todos los campos son obligatorios");
+            if (nombre.isEmpty()) {
+                throw new IllegalArgumentException("El nombre es obligatorio");
+            }
+            if (CIF.isEmpty()) {
+                throw new IllegalArgumentException("El CIF es obligatorio");
+            } else if (!validarCIF(CIF)) {
+                throw new IllegalArgumentException("El CIF no es válido");
             }
 
-            // Aquí puedes realizar más validaciones según tus necesidades
-            partner.add(editTextNombre.getText().toString());
-            partner.add(editTextCIF.getText().toString());
-            partner.add(editTextDireccion.getText().toString());
-            partner.add(editTextTelefono.getText().toString());
-            partner.add(editTextComercial.getText().toString());
-            partner.add(editTextEmail.getText().toString());
-            partner.add(editTextZona.getText().toString());
+            if (direccion.isEmpty()) {
+                throw new IllegalArgumentException("La dirección es obligatoria");
+            }
+
+            if (telefono.isEmpty()) {
+                throw new IllegalArgumentException("El teléfono es obligatorio");
+            } else if (telefono.length() != 9) {
+                throw new IllegalArgumentException("El teléfono debe tener 9 números");
+            }
+            if (email.isEmpty()) {
+                throw new IllegalArgumentException("El correo electrónico es obligatorio");
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                throw new IllegalArgumentException("El correo electrónico no es válido");
+            }
+
+            if (comercial.isEmpty()) {
+                throw new IllegalArgumentException("El campo comercial es obligatorio");
+            }
+
+
+
+
+
+            // ... Resto del código
 
             // Si llegamos aquí, la información es válida, puedes guardarla o realizar más acciones
             // En este ejemplo, simplemente mostramos un mensaje
             Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
 
+        } catch (IllegalArgumentException e) {
+            // Se captura la excepción específica para errores de validación
+
+            // Muestra un mensaje de error
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+            // Coloca el foco en el EditText correspondiente
+            switch (e.getMessage()) {
+                case "El nombre es obligatorio":
+                    editTextNombre.requestFocus();
+                    break;
+                case "El CIF es obligatorio":
+                case "El CIF no es válido":
+                    editTextCIF.requestFocus();
+                    break;
+                case "La dirección es obligatoria":
+                    editTextDireccion.requestFocus();
+                    break;
+                case "El teléfono es obligatorio":
+                case "El teléfono debe tener 9 números":
+                    editTextTelefono.requestFocus();
+                    break;
+                case "El correo electrónico es obligatorio":
+                case "El correo electrónico no es válido":
+                    editTextEmail.requestFocus();
+                    break;
+
+                case "El campo comercial es obligatorio":
+                    editTextComercial.requestFocus();
+                    break;
+
+                // Puedes agregar más casos según sea necesario para otros mensajes de error
+            }
         } catch (Exception e) {
-            // Se captura cualquier excepción que pueda ocurrir durante la validación o el guardado
-            // Puedes personalizar el manejo de la excepción según tus necesidades
+            // Manejar otras excepciones
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
         return partner;
+    }
+    private boolean validarCIF(String cif) {
+        // El CIF debe tener una letra, 7 números y otra letra
+        return cif.matches("[A-HJNP-SUW-Za-hjnp-su-wz]\\d{7}[A-HJNP-SUW-Za-hjnp-su-wz]");
     }
 
     private void guardarEnXML(ArrayList<String> partner) {
