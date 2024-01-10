@@ -1,9 +1,6 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.Xml;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,19 +10,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.almohadascomodasademsbonitas.pedidos.Pedido;
 import com.example.almohadascomodasademsbonitas.R;
-
-import org.xmlpull.v1.XmlSerializer;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
@@ -46,6 +37,8 @@ public class pagina2pedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina2pedidos);
 
+        Button buttonGuardar = findViewById(R.id.button);
+
         // Obtiene los datos del Bundle
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -60,23 +53,23 @@ public class pagina2pedido extends AppCompatActivity {
             // Verifica si el archivo XML ya existe
             if (isXmlFileExist()) {
                 // Elimina el archivo existente si es necesario
-                Button buttonGuardar = findViewById(R.id.button);
 
                 actualizarContadoresDesdeXML();
 
                 // Agregar un OnClickListener al botón
-                buttonGuardar.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Llamada al método para guardar la información
-                        guardarEnXML(listaPedidos);
-                    }
-                });
+
             } else {
                 contadorIdPedido = 0;
                 contadorNFactura = 0;
             }
         }
+        buttonGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Llamada al método para guardar la información
+                guardarEnXML(listaPedidos);
+            }
+        });
     }
 
     // Elimina estas líneas de la parte inicial de guardarEnXML
