@@ -88,6 +88,15 @@ public class actividad_pedido extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     int itemPosition = rvLista.getChildLayoutPosition(rvLista.findChildViewUnder(event.getX(), event.getY()));
+
+                    /*rvLista.findChildViewUnder(event.getX(), event.getY()): Este método encuentra la vista del hijo
+                    en el RecyclerView que está ubicada en las coordenadas especificadas. En otras palabras, determina
+                    qué elemento del RecyclerView fue tocado en la posición (event.getX(), event.getY()).
+
+                    rvLista.getChildLayoutPosition(...): Este método obtiene la posición del adaptador del
+                    elemento en el RecyclerView. El resultado es la posición del elemento que fue tocado en la lista.*/
+
+
                     if (itemPosition != RecyclerView.NO_POSITION) {
                         // Aquí actualizas la variable imagenSeleccionada
                         imagenSeleccionada = itemPosition;
@@ -200,7 +209,11 @@ public class actividad_pedido extends AppCompatActivity {
                 // Convierte la cantidad del EditText a un entero
                 int cantidadPedido = Integer.parseInt(cantidadEditText);
 
+                 /*Si la lista de pedidos está vacía, se asigna el valor 1 a contadorIdPedido.
+                Si la lista no está vacía, se toma el último elemento de la lista (listaPedidos.get(listaPedidos.size() - 1))
+                y se obtiene su ID de pedido (getIdPedido()). Luego, se suma 1 a ese ID y se asigna el resultado a contadorIdPedido.*/
                 int contadorIdPedido = (listaPedidos.isEmpty()) ? 1 : listaPedidos.get(listaPedidos.size() - 1).getIdPedido() + 1;
+
 
                 // Crea un objeto Pedido y agrégalo al ArrayList
                 Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido);

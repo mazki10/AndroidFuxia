@@ -54,6 +54,12 @@ TextView name;
                 .asBitmap()
                 .load(getImageResourceId(imageName))
                 .into(holder.image);
+        /*Glide.with(mcontext): Inicia la construcción de una solicitud de carga de Glide con el contexto proporcionado.
+        .asBitmap(): Indica que la carga debe tratarse como un bitmap (formato de imagen).
+        .load(getImageResourceId(imageName)): Carga la imagen utilizando el
+        método getImageResourceId (que probablemente convierte el nombre de la imagen en un
+        identificador de recurso, como un recurso drawable).
+        .into(holder.image): Indica en qué ImageView (en este caso, holder.image) se debe cargar la imagen.*/
 
         // Logea el nombre de la imagen en lugar del identificador numérico
         Log.d("MainActivity", "Nuevo pedido: Imagen: " + imageName + ", Cantidad: 1");
