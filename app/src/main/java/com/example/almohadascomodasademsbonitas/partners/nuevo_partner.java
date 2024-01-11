@@ -134,7 +134,7 @@ public class nuevo_partner extends AppCompatActivity {
         return partner;
     }
     private boolean validarCIF(String cif) {
-        return cif.matches("[A-HJNP-SUW-Za-hjnp-su-wz]\\d{7}[A-HJNP-SUW-Za-hjnp-su-wz]");
+        return cif.matches("[A-Za-z]\\d{7}[A-z]");
     }
 
     private void guardarEnXML(ArrayList<String> partner) {
@@ -182,7 +182,7 @@ public class nuevo_partner extends AppCompatActivity {
 
             // Nuevo partner con el campo id_partner
             outputStreamWriter.write("  <partner>\n");
-            outputStreamWriter.write("    <id_partners>" + (cantidadPartners + 1) + "</id_partners>\n");
+            outputStreamWriter.write("    <id_partners>" + (cantidadPartners) + "</id_partners>\n");
             outputStreamWriter.write("    <nombre>" + partner.get(0) + "</nombre>\n");
             outputStreamWriter.write("    <cif>" + partner.get(1) + "</cif>\n");
             outputStreamWriter.write("    <direccion>" + partner.get(2) + "</direccion>\n");
