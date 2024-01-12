@@ -80,7 +80,7 @@ public class nuevo_agenda extends AppCompatActivity {
         String fecha = obtenerFechaSeleccionada();
         if (!titulo.isEmpty() && fechaSeleccionada != null && horaSeleccionada != null) {
         try {
-            File directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+            File directory = getFilesDir();
             File file = new File(directory, FILE_NAME);
             FileOutputStream fileos = new FileOutputStream(file, true); // 'true' para añadir al archivo existente
 

@@ -163,7 +163,7 @@ public class agenda extends AppCompatActivity {
 
         // Eliminar la actividad del archivo XML
         try {
-            File directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+            File directory = getFilesDir();
             File file = new File(directory, "actividades.xml");
             FileInputStream fis = new FileInputStream(file);
 
@@ -286,7 +286,7 @@ public class agenda extends AppCompatActivity {
         actividades.clear(); // Limpia la lista actual de actividades
 
         try {
-            File directory = getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+            File directory = getFilesDir();
             File file = new File(directory, "actividades.xml");
             FileInputStream fis = new FileInputStream(file);
 
