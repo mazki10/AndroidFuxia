@@ -26,7 +26,7 @@
     <string name="comercialTexto">COMERCIAL</string>
     <string name="tlf">TLF</string>
     <string name="conf">COFIRMAR</string>
-    <string name="np">NºPRODUCTOS ELEGUIDOS</string>
+    <string name="np">NºPRODUCTOS ELEGIDOS</string>
     <string name="n">0</string>
     <string name="bor">BORRAR</string>
     <string name="precio">PRECIO: 30€</string>
@@ -37,7 +37,15 @@
     <string name="productos">PRODUCTOS</string>
     <string name="precioUn">PRECIO UNITARIO</string>
     <string name="cantidadSinPuntos">CANTIDAD</string>
-    <string name="eleguir">Para eleguir una almohada clica en la almohada</string>
+    <string name="eleguir">Para elegir una almohada clica en la almohada</string>
+    <string name="stock">100/100</string>
+    <string name="titulo_pedidos">PEDIDOS</string>
+    <string name="alta">ALTA</string>
+    <string name="baja">BAJA</string>
+    <string name="modificacion">MODIFICACION</string>
+    <string name="volver">VOLVER</string>
+
+
     //AGENDA
     <string name="MES">mes actual</string>
     <string name="siguiente"><![CDATA[>]]></string>

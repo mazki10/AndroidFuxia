@@ -27,7 +27,7 @@ public class pagina2pedido extends AppCompatActivity {
     private String pro_eleguido;
     int producto_eleguido;
     private int contadorIdPedido = 0;  // Contador global para el id_pedido
-    private int contadorNFactura = 0;
+   // private int contadorNFactura = 0;
     String fecha;
 
     private int precioPorProducto;
@@ -60,7 +60,7 @@ public class pagina2pedido extends AppCompatActivity {
 
             } else {
                 contadorIdPedido = 0;
-                contadorNFactura = 0;
+          //      contadorNFactura = 0;
             }
         }
         buttonGuardar.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +86,7 @@ public class pagina2pedido extends AppCompatActivity {
 
                     // Restablecer los contadores a 0 después de eliminar el archivo
                     contadorIdPedido = 0;
-                    contadorNFactura = 0;
+                  //  contadorNFactura = 0;
 
                     // Vuelve a crear el documento XML
                     guardarEnXML(listaPedidos);
@@ -119,7 +119,7 @@ public class pagina2pedido extends AppCompatActivity {
             // Si se encuentra la etiqueta <n_factura>, obtén su valor y actualiza el contador
             int endTagIndex = contenidoExistente.indexOf("</n_factura>", lastNFacturaIndex);
             String nFacturaValue = contenidoExistente.substring(lastNFacturaIndex + 11, endTagIndex);
-            contadorNFactura = Integer.parseInt(nFacturaValue) + 1;
+         //   contadorNFactura = Integer.parseInt(nFacturaValue) + 1;
         }
 
         // Busca la posición de la última etiqueta <id_pedido>
@@ -242,7 +242,7 @@ public class pagina2pedido extends AppCompatActivity {
                 // Agregar la fecha, precio total y número de factura
                 xmlData += "    <fecha>" + fechaActual + "</fecha>\n";
                 xmlData += "    <precio_total>" + precioTotal + "</precio_total>\n";
-                xmlData += "    <n_factura>" + contadorNFactura + "</n_factura>\n";
+             //   xmlData += "    <n_factura>" + contadorNFactura + "</n_factura>\n";
 
                 // Cierra el pedido
                 xmlData += "  </pedido>\n";

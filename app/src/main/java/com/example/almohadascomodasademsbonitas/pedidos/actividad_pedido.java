@@ -58,7 +58,16 @@ public class actividad_pedido extends AppCompatActivity {
     //Estas dos linea son una prueba
     int comercialEleguido=0;
     int partnerEleguido=0;
-
+int [] arrayImagenes = new int[] {
+        R.drawable.jordi,
+        R.drawable.bale,
+        R.drawable.bob,
+        R.drawable.cartas,
+        R.drawable.hello,
+        R.drawable.patriota,
+        R.drawable.pistola,
+        R.drawable.verde
+};
     Button buttonComprar;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -200,7 +209,7 @@ public class actividad_pedido extends AppCompatActivity {
 
             // Obtén el nombre del producto seleccionado según la imagen
             String nombreProducto = obtenerNombreProductoDesdeImagen(imagenSeleccionada);
-
+            int precioProducto = obtenerprecioArticulo(nombreProducto);
             // Obtén la cantidad del EditText
             String cantidadEditText = editText.getText().toString();
 
@@ -216,7 +225,7 @@ public class actividad_pedido extends AppCompatActivity {
 
 
                 // Crea un objeto Pedido y agrégalo al ArrayList
-                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido);
+                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto);
 
                 listaPedidos.add(nuevoPedido);
 
@@ -257,7 +266,28 @@ public class actividad_pedido extends AppCompatActivity {
         }
     }
 
-
+    private int obtenerprecioArticulo(String nombre) {
+        switch (nombre) {
+            case "jordi":
+                return 30;
+            case "bale":
+                return 30;
+            case "bob":
+                return 30;
+            case "cartas":
+                return 30;
+            case "hello":
+                return 30;
+            case "patriota":
+                return 30;
+            case "pistola":
+                return 30;
+            case "verde":
+                return 30;
+            default:
+                return 0;
+        }
+    }
 
 
 
@@ -268,6 +298,11 @@ public class actividad_pedido extends AppCompatActivity {
         anio = fecha.get(Calendar.YEAR);
         tvfecha.setText(dia+"/"+mes+"/"+anio);
     }
+
+
+
+
+
 
     private void getImages(){
         mImagesUrls.add(String.valueOf(R.drawable.jordi));
@@ -314,7 +349,7 @@ public class actividad_pedido extends AppCompatActivity {
         rvLista = findViewById(R.id.lista);
         rvLista.setLayoutManager(linearLayoutManager);
 
-        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(mImagesUrls, this,mNames);
+        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(arrayImagenes, this,mNames);
 
         // Agrega un listener para manejar los clics en las imágenes
         adaptadorRecycleView.setOnItemClickListener(new adaptadorRecycleView.OnItemClickListener() {
