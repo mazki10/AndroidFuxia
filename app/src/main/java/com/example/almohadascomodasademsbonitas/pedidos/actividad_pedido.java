@@ -58,16 +58,7 @@ public class actividad_pedido extends AppCompatActivity {
     //Estas dos linea son una prueba
     int comercialEleguido=0;
     int partnerEleguido=0;
-int [] arrayImagenes = new int[] {
-        R.drawable.jordi,
-        R.drawable.bale,
-        R.drawable.bob,
-        R.drawable.cartas,
-        R.drawable.hello,
-        R.drawable.patriota,
-        R.drawable.pistola,
-        R.drawable.verde
-};
+
     Button buttonComprar;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -85,7 +76,31 @@ int [] arrayImagenes = new int[] {
         beginXMLparsingComerciales();
         beginXMLparsingPartners();
 
-        getImages();
+
+        // Obtén los recursos de la carpeta drawable
+        String nomb = "jordi";
+
+        int[] arrayDrawableResources = new int[]{
+                R.drawable.jordi,
+                R.drawable.bale,
+                R.drawable.bob,
+                R.drawable.cartas,
+                R.drawable.hello,
+                R.drawable.patriota,
+                R.drawable.pistola,
+                R.drawable.verde
+        };
+
+        // Rellena mImagesUrls y mNames con los recursos de la carpeta drawable
+        for (int drawableResource : arrayDrawableResources) {
+            mImagesUrls.add(String.valueOf(drawableResource));
+
+            // Puedes obtener el nombre del recurso también (sin la extensión)
+            String resourceName = getResources().getResourceEntryName(drawableResource);
+            mNames.add(resourceName);
+        }
+
+        getRecycleView();
 
 
         muestrafecha();
@@ -349,7 +364,7 @@ int [] arrayImagenes = new int[] {
         rvLista = findViewById(R.id.lista);
         rvLista.setLayoutManager(linearLayoutManager);
 
-        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(arrayImagenes, this,mNames);
+        adaptadorRecycleView adaptadorRecycleView = new adaptadorRecycleView(mImagesUrls, this,mNames);
 
         // Agrega un listener para manejar los clics en las imágenes
         adaptadorRecycleView.setOnItemClickListener(new adaptadorRecycleView.OnItemClickListener() {

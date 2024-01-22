@@ -18,7 +18,7 @@ import com.example.almohadascomodasademsbonitas.R;
 import java.util.ArrayList;
 public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleView.ViewHolder> {
     private OnItemClickListener mListener;
-    private int[] mImagesUrls;
+    private ArrayList<String> mImagesUrls;
     private ArrayList<String> mNames = new ArrayList<>();
 
     private Context mcontext;
@@ -32,7 +32,7 @@ TextView name;
         void onItemClick(int position);
     }
 
-    public adaptadorRecycleView(int[] mImagesUrls, Context mcontext,ArrayList<String> mNames) {
+    public adaptadorRecycleView(ArrayList<String> mImagesUrls, Context mcontext,ArrayList<String> mNames) {
         this.mImagesUrls = mImagesUrls;
         this.mcontext = mcontext;
         this.mNames = mNames;
@@ -47,8 +47,7 @@ TextView name;
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String imageName = mNames.get(position);
-
+        String imageName = mImagesUrls.get(position);
 
         // Utiliza Glide para cargar la imagen directamente desde el nombre (sin necesidad de identificador numérico)
         Glide.with(mcontext)
@@ -84,7 +83,7 @@ TextView name;
 
     @Override
     public int getItemCount() {
-        return mImagesUrls.length;
+        return mImagesUrls.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
