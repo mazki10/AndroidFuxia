@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ public class actividad_pedido extends AppCompatActivity {
     private ArrayList<String>mImagesUrls = new ArrayList<>();
     private ArrayList<String>mNames = new ArrayList<>();
     String nombrePartnerelegido;
+    LocalDate fecha;
     ArrayList<HashMap<String, String>> comerciales;
     ArrayList<HashMap<String, String>> partners;
 
@@ -240,7 +242,7 @@ public class actividad_pedido extends AppCompatActivity {
 
 
                 // Crea un objeto Pedido y agrégalo al ArrayList
-                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto);
+                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto,partnerEleguido,comercialEleguido,"", 0,0, fecha,0);//SE NECESITA BBDD PARA SEGUIR CON ESTO
 
                 listaPedidos.add(nuevoPedido);
 
@@ -307,11 +309,13 @@ public class actividad_pedido extends AppCompatActivity {
 
 
     private void muestrafecha() {
-        Calendar fecha = Calendar.getInstance();
-        dia = fecha.get(Calendar.DAY_OF_MONTH);
-        mes = fecha.get(Calendar.MONTH)+1;
-        anio = fecha.get(Calendar.YEAR);
+        Calendar fecha1 = Calendar.getInstance();
+        dia = fecha1.get(Calendar.DAY_OF_MONTH);
+        mes = fecha1.get(Calendar.MONTH)+1;
+        anio = fecha1.get(Calendar.YEAR);
         tvfecha.setText(dia+"/"+mes+"/"+anio);
+
+        fecha = LocalDate.of(anio,mes,dia);
     }
 
 
