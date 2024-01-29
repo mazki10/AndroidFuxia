@@ -15,11 +15,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class nuevo_partner extends AppCompatActivity {
 
     private EditText editTextNombre, editTextDireccion, editTextTelefono, editTextComercial, editTextEmail, editTextCIF, editTextZona;
+    private Partner nuevoPartner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,18 +38,21 @@ public class nuevo_partner extends AppCompatActivity {
         editTextComercial = findViewById(R.id.editTextText5);
         editTextZona = findViewById(R.id.editTextNumber2);
         Button buttonGuardar = findViewById(R.id.btguardar);
+        nuevoPartner = new Partner();
         buttonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                guardarEnXML(guardarInformacion());
+                guardarInformacion();
+                guardarEnXML();
+
             }
         });
+
     }
 
-    private ArrayList<String> guardarInformacion() {
-        ArrayList<String> partner = null;
+    private void guardarInformacion() {
         try {
-            partner = new ArrayList<>();
+
             String nombre = editTextNombre.getText().toString();
             String CIF = editTextCIF.getText().toString();
             String direccion = editTextDireccion.getText().toString();
@@ -85,13 +92,24 @@ public class nuevo_partner extends AppCompatActivity {
             if (zona.isEmpty()){
                 throw new IllegalArgumentException("El campo zona es obligatorio");
             }
-            partner.add(editTextNombre.getText().toString());
-            partner.add(editTextCIF.getText().toString());
-            partner.add(editTextDireccion.getText().toString());
-            partner.add(editTextTelefono.getText().toString());
-            partner.add(editTextComercial.getText().toString());
-            partner.add(editTextEmail.getText().toString());
-            partner.add(editTextZona.getText().toString());
+
+            // Obtener la fecha actual
+            Date fechaActual = new Date();
+
+            // Formatear la fecha a día, mes y año
+            String formatoFecha = "dd/MM/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(formatoFecha, Locale.getDefault());
+            String fechaFormateada = sdf.format(fechaActual);
+            nuevoPartner.set_nombre(nombre);
+            nuevoPartner.set_cif(CIF);
+
+            nuevoPartner.set_direccion(direccion);
+            nuevoPartner.set_telefono(Integer.valueOf(telefono));
+            nuevoPartner.set_email(email);
+            nuevoPartner.set_comercial(Integer.valueOf(comercial));
+            nuevoPartner.set_zona(Integer.valueOf(zona));
+            nuevoPartner.set_fecha(fechaFormateada);
+
 
             Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
 
@@ -131,14 +149,14 @@ public class nuevo_partner extends AppCompatActivity {
             // Manejar otras excepciones
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        return partner;
     }
     private boolean validarCIF(String cif) {
         return cif.matches("[A-Za-z]\\d{7}[A-z]");
     }
 
-    private void guardarEnXML(ArrayList<String> partner) {
+    private void guardarEnXML() {
         try {
+
             int cantidadPartners = contarPartners();
 
             // Abre un archivo en la memoria interna en modo de apendizaje
@@ -183,13 +201,14 @@ public class nuevo_partner extends AppCompatActivity {
             // Nuevo partner con el campo id_partner
             outputStreamWriter.write("  <partner>\n");
             outputStreamWriter.write("    <id_partners>" + (cantidadPartners) + "</id_partners>\n");
-            outputStreamWriter.write("    <nombre>" + partner.get(0) + "</nombre>\n");
-            outputStreamWriter.write("    <cif>" + partner.get(1) + "</cif>\n");
-            outputStreamWriter.write("    <direccion>" + partner.get(2) + "</direccion>\n");
-            outputStreamWriter.write("    <telefono>" + partner.get(3) + "</telefono>\n");
-            outputStreamWriter.write("    <comercial>" + partner.get(4) + "</comercial>\n");
-            outputStreamWriter.write("    <email>" + partner.get(5) + "</email>\n");
-            outputStreamWriter.write("    <zona>" + partner.get(6) + "</zona>\n");
+            outputStreamWriter.write("    <nombre>" + nuevoPartner.get_nombre() + "</nombre>\n");
+            outputStreamWriter.write("    <cif>" + nuevoPartner.get_cif() + "</cif>\n");
+            outputStreamWriter.write("    <direccion>" + nuevoPartner.get_direccion() + "</direccion>\n");
+            outputStreamWriter.write("    <telefono>" + nuevoPartner.get_telefono() + "</telefono>\n");
+            outputStreamWriter.write("    <comercial>" + nuevoPartner.get_comercial() + "</comercial>\n");
+            outputStreamWriter.write("    <email>" + nuevoPartner.get_email() + "</email>\n");
+            outputStreamWriter.write("    <zona>" + nuevoPartner.get_zona() + "</zona>\n");
+            outputStreamWriter.write("    <fecha>" + nuevoPartner.get_fecha() + "</fecha>\n");
             outputStreamWriter.write("  </partner>\n");
 
             // Cierra la etiqueta </partners>
