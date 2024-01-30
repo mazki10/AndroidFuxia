@@ -19,7 +19,6 @@
         </producto>
         <fecha>6/1/2024</fecha>
         <precio_total>180</precio_total>
-        <n_factura>1</n_factura>
     </pedido>
 
 </pedidos>

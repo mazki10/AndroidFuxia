@@ -1,0 +1,28 @@
+<!-- pedido_item.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textIdPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID Pedido:" />
+
+    <TextView
+        android:id="@+id/textIdPartner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID Partner:" />
+
+    <TextView
+        android:id="@+id/textIdComercial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID Comercial:" />
+
+    <!-- Puedes agregar más elementos según tus campos de Pedido -->
+
+</LinearLayout>

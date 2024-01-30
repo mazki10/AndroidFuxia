@@ -42,6 +42,14 @@ public class menu_Pedido extends AppCompatActivity {
             }
         });
 
+        botonBaja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(menu_Pedido.this, baja_pedidos.class);
+                menu_Pedido.this.startActivity(intent);
+            }
+        });
+
     }
 
 

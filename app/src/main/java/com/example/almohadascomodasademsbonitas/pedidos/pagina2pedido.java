@@ -1,5 +1,6 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -68,6 +69,9 @@ public class pagina2pedido extends AppCompatActivity {
             public void onClick(View v) {
                 // Llamada al método para guardar la información
                 guardarEnXML(listaPedidos);
+                Intent intent = new Intent(pagina2pedido.this, com.example.almohadascomodasademsbonitas.pedidos.menu_Pedido.class);
+                startActivity(intent);
+
             }
         });
     }

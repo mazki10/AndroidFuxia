@@ -40,10 +40,12 @@
     <string name="eleguir">Para elegir una almohada clica en la almohada</string>
     <string name="stock">100/100</string>
     <string name="titulo_pedidos">PEDIDOS</string>
-    <string name="alta">ALTA</string>
-    <string name="baja">BAJA</string>
-    <string name="modificacion">MODIFICACION</string>
-    <string name="volver">VOLVER</string>
+    <string name="alta">AÑADIR +</string>
+    <string name="baja">ELIMINAR</string>
+    <string name="modificacion">MODIFICAR</string>
+    <string name="volver">SALIR</string>
+    <string name="pe">PEDIDOS</string>
+
 
 
     //AGENDA

@@ -51,7 +51,29 @@ public class DBconexion extends SQLiteOpenHelper {
         cab_pedidos.add(new Cab_Pedido(8,1,"verde", LocalDate.of(2022,3,1), LocalDate.of(2022,3,4),true));
 
 
-        lin_pedidos.add(new Lin_Pedido());
+        lin_pedidos.add(new Lin_Pedido(1,1,1,0,30,30));
+        lin_pedidos.add(new Lin_Pedido(2,2,2,0,30,60));
+        lin_pedidos.add(new Lin_Pedido(3,3,1,0,30,30));
+        lin_pedidos.add(new Lin_Pedido(4,4,2,0,30,60));
+        lin_pedidos.add(new Lin_Pedido(5,5,9,0,30,270));
+        lin_pedidos.add(new Lin_Pedido(6,6,5,0,30,150));
+        lin_pedidos.add(new Lin_Pedido(7,7,4,0,30,120));
+        lin_pedidos.add(new Lin_Pedido(8,8,3,0,30,90));
+
+        for(int i=0; i<cab_pedidos.size();i++){
+                String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+                        "VALUES (" + cab_pedidos.get(i).getId_pedido() + ", " + cab_pedidos.get(i).getId_partner() + ", '" + cab_pedidos.get(i).getDescripcion() + "', '" +
+                        cab_pedidos.get(i).getFecha_pedido() + "', '" + cab_pedidos.get(i).getFecha_envio() + "', " + cab_pedidos.get(i).isEstado_pedido()  + ")";
+                db.execSQL(insertQuery);
+        }
+
+        for(int i=0; i<lin_pedidos.size();i++){
+            String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+                    "VALUES (" + lin_pedidos.get(i).getId_pedido() + ", " + lin_pedidos.get(i).getId_linea() + ", '" + lin_pedidos.get(i).getCantidad() + "', '" +
+                    lin_pedidos.get(i).getDescuento() + "', '" + lin_pedidos.get(i).getPrecio_un() + "', " + lin_pedidos.get(i).getPrecio_total() + ")";
+            db.execSQL(insertQuery);
+        }
+
     }
 
     @Override

@@ -48,6 +48,12 @@
             android:name=".pedidos.pagina2pedido"
             android:exported="false" />
         <activity
+            android:name=".pedidos.menu_Pedido"
+            android:exported="false" />
+        <activity
+            android:name=".pedidos.baja_pedidos"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
