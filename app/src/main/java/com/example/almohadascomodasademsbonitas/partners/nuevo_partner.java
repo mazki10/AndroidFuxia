@@ -42,8 +42,13 @@ public class nuevo_partner extends AppCompatActivity {
         buttonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                guardarInformacion();
-                guardarEnXML();
+                try {
+                    // Validar la información antes de guardar
+                    guardarInformacion();
+                } catch (IllegalArgumentException e) {
+                    // Capturar excepciones de validación
+                    Toast.makeText(nuevo_partner.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -52,7 +57,6 @@ public class nuevo_partner extends AppCompatActivity {
 
     private void guardarInformacion() {
         try {
-
             String nombre = editTextNombre.getText().toString();
             String CIF = editTextCIF.getText().toString();
             String direccion = editTextDireccion.getText().toString();
@@ -80,6 +84,7 @@ public class nuevo_partner extends AppCompatActivity {
             } else if (telefono.length() != 9) {
                 throw new IllegalArgumentException("El teléfono debe tener 9 números");
             }
+
             if (email.isEmpty()) {
                 throw new IllegalArgumentException("El correo electrónico es obligatorio");
             } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -89,7 +94,8 @@ public class nuevo_partner extends AppCompatActivity {
             if (comercial.isEmpty()) {
                 throw new IllegalArgumentException("El campo comercial es obligatorio");
             }
-            if (zona.isEmpty()){
+
+            if (zona.isEmpty()) {
                 throw new IllegalArgumentException("El campo zona es obligatorio");
             }
 
@@ -100,9 +106,11 @@ public class nuevo_partner extends AppCompatActivity {
             String formatoFecha = "dd/MM/yyyy";
             SimpleDateFormat sdf = new SimpleDateFormat(formatoFecha, Locale.getDefault());
             String fechaFormateada = sdf.format(fechaActual);
+
+            // Configurar el objeto nuevoPartner solo si la validación es exitosa
+            nuevoPartner = new Partner();
             nuevoPartner.set_nombre(nombre);
             nuevoPartner.set_cif(CIF);
-
             nuevoPartner.set_direccion(direccion);
             nuevoPartner.set_telefono(Integer.valueOf(telefono));
             nuevoPartner.set_email(email);
@@ -110,9 +118,9 @@ public class nuevo_partner extends AppCompatActivity {
             nuevoPartner.set_zona(Integer.valueOf(zona));
             nuevoPartner.set_fecha(fechaFormateada);
 
-
             Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
-
+            guardarEnXML();
+            finish();
         } catch (IllegalArgumentException e) {
             // Se captura la excepción específica para errores de validación
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -137,7 +145,6 @@ public class nuevo_partner extends AppCompatActivity {
                 case "El correo electrónico no es válido":
                     editTextEmail.requestFocus();
                     break;
-
                 case "El campo comercial es obligatorio":
                     editTextComercial.requestFocus();
                     break;
@@ -150,6 +157,7 @@ public class nuevo_partner extends AppCompatActivity {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
     private boolean validarCIF(String cif) {
         return cif.matches("[A-Za-z]\\d{7}[A-z]");
     }

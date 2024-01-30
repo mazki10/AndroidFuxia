@@ -7,17 +7,6 @@
     android:paddingLeft="15dp">
 
     <Button
-        android:id="@+id/btRfr2"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:textSize="34sp"
-        app:icon="@drawable/actualizar"
-        app:layout_constraintBottom_toTopOf="@+id/lvPartners"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvPartners"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/btNuevo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,8 +20,8 @@
 
     <ListView
         android:id="@+id/lvPartners"
-        android:layout_width="409dp"
-        android:layout_height="560dp"
+        android:layout_width="413dp"
+        android:layout_height="593dp"
         app:layout_constraintBottom_toTopOf="@+id/btNuevo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

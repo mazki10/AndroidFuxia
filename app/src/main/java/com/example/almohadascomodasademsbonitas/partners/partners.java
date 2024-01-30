@@ -27,6 +27,7 @@ public class partners extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,6 @@ public class partners extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         Button btNuevo = findViewById(R.id.btNuevo);
-        Button btRrfs = findViewById(R.id.btRfr2);
 
         btNuevo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,17 +50,17 @@ public class partners extends AppCompatActivity {
                 openNuevoPartnerActivity();
             }
         });
-        btRrfs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
-                adapter.clear();
-                adapter.addAll(datosDeXml);
-                adapter.notifyDataSetChanged();
-            }
-        });
 
 
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+        adapter.clear();
+        adapter.addAll(datosDeXml);
+        adapter.notifyDataSetChanged();
+        // Realizar acciones cuando la actividad recupera el foco
     }
 
     private void copiarXmlDesdeAssets() {
