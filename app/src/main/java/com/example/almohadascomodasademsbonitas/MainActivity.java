@@ -1,11 +1,15 @@
 package com.example.almohadascomodasademsbonitas;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import android.os.Environment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,48 +18,40 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Crear las tablas al iniciar la MainActivity
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        // Asegúrate de cerrar la base de datos después de su uso
-        db.close();
+        // Archivos que se deben verificar y copiar
+        String[] archivosARevisar = {"comerciales.xml", "pedidos.xml", "partners.xml"};
+
+        for (String nombreArchivo : archivosARevisar) {
+            // Ruta del archivo en el directorio de Descargas
+            File archivoDescargas = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), nombreArchivo);
+
+            if (archivoDescargas.exists()) {
+                // Si el archivo existe en Descargas, copiarlo a la memoria interna en la carpeta "files"
+                try {
+                    copiarArchivo(archivoDescargas, new File(getFilesDir(), nombreArchivo));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
-    public class DatabaseHelper extends SQLiteOpenHelper {
+    private void copiarArchivo(File sourceFile, File destFile) throws IOException {
+        FileChannel sourceChannel = null;
+        FileChannel destChannel = null;
 
-        // Nombre de la base de datos
-        private static final String DATABASE_NAME = "ACAB.db";
-        // Versión de la base de datos
-        private static final int DATABASE_VERSION = 1;
-
-        // Sentencias CREATE TABLE para tus tablas
-        String sqlCreateLINPED = "CREATE TABLE LIN_PEDIDOS (ID_PEDIDO INTEGER, ID_LINEA INTEGER, CANTIDAD INTEGER, DESCUENTO DOUBLE, PRECIO_UN DOUBLE, PRECIO_TOTAL DOUBLE)";
-        String sqlCreateCAPPED = "CREATE TABLE CAB_PEDIDOS (ID_PEDIDO INTEGER, ID_PARTNER INTEGER, DESCRIPCION TEXT, FECHA_PEDIDO DATE, FECHA_ENVIO DATE,ENTREGADO BOOLEAN)";
-        String sqlCreatePAR = "CREATE TABLE PARTNERS (ID_PARTNERS INTEGER, NOMBRE TEXT, CIF TEXT, DIRECCION TEXT, TELEFONO INTEGER, COMERCIAL INTEGER, EMAIL TEXT, ZONA INTEGER)";
-        String sqlCreateAGE = "CREATE TABLE AGENDA (ACTIVIDAD INTEGER, TITULO TEXT, DESCRIPCION TEXT, FECHA DATE, HORA DATE)";
-        String sqlCreateCOM = "CREATE TABLE COMERCIALES (NOMBRE TEXT, APELLIDO1 TEXT, APELLIDO2 TEXT, DNI TEXT, DIRECCION TEXT, EMAIL TEXT, ZONA1 INTEGER, ZONA2 INTEGER)";
-
-        // Constructor
-        public DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        // Este método se llama cuando se crea la base de datos por primera vez
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(sqlCreateLINPED);
-            db.execSQL(sqlCreateCAPPED);
-            db.execSQL(sqlCreatePAR);
-            db.execSQL(sqlCreateAGE);
-            db.execSQL(sqlCreateCOM);
-            // Agrega aquí las sentencias CREATE TABLE para las demás tablas si las tienes
-        }
-
-        // Este método se llama cuando se actualiza la base de datos
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // Aquí puedes realizar operaciones de actualización si es necesario
-            // Puedes dejarlo vacío si no necesitas realizar acciones específicas al actualizar
+        try {
+            sourceChannel = new FileInputStream(sourceFile).getChannel();
+            destChannel = new FileOutputStream(destFile).getChannel();
+            destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+        } finally {
+            if (sourceChannel != null) {
+                sourceChannel.close();
+            }
+            if (destChannel != null) {
+                destChannel.close();
+            }
         }
     }
 }
+
