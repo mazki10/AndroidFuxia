@@ -71,6 +71,9 @@
     <string name="direccionInfo">Berio Pasealekua, 50, 20018 Donostia, Gipuzkoa</string>
     <string name="llamar">Llamar</string>
     <string name="tlf1">TELEFONO:</string>
+    <string name="modPartner">Modificar</string>
+    <string name="modPartnerTitulo">"Partner: "</string>
+    <string name="Partnerborrar">BORRAR</string>
 
 
     <string-array name="nombremeses">

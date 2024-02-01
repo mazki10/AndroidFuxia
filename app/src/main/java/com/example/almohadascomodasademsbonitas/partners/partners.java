@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,10 +35,34 @@ public class partners extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.partners);
 
-        copiarXmlDesdeAssets();
+        crearXmlEnMemoriaInterna();
 
         ListView listView = findViewById(R.id.lvPartners);
         ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+
+        // Agrega un listener al ListView
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Obtiene el valor del elemento en la posición seleccionada
+                String selectedItem = (String) parent.getItemAtPosition(position);
+
+                // Extraer la primera fila y el primer número
+                String[] lines = selectedItem.split("\n");
+                if (lines.length > 0) {
+                    // Obtener la primera fila
+                    String primeraFila = lines[0];
+
+                    // Extraer el primer número
+                    String[] parts = primeraFila.split(" ");
+                    if (parts.length > 0) {
+                        String primerNumero = parts[0];
+                        Toast.makeText(getApplicationContext(), "Primer número: " + primerNumero, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
 
         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
@@ -63,28 +89,27 @@ public class partners extends AppCompatActivity {
         // Realizar acciones cuando la actividad recupera el foco
     }
 
-    private void copiarXmlDesdeAssets() {
+    private void crearXmlEnMemoriaInterna() {
         try {
             // Verificar si el archivo ya existe en la memoria interna
             File file = new File(getFilesDir(), "partners.xml");
+
             if (!file.exists()) {
-                // Copiar el archivo desde assets a la memoria interna
-                InputStream is = getAssets().open("partners.xml");
-                FileOutputStream os = new FileOutputStream(file);
+                // Crear un nuevo archivo XML en la memoria interna
+                FileOutputStream os = openFileOutput("partners.xml", MODE_PRIVATE);
 
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = is.read(buffer)) > 0) {
-                    os.write(buffer, 0, length);
-                }
+                // Escribir la primera línea y la etiqueta <partners>
+                String inicioXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<partners>\n";
+                os.write(inicioXml.getBytes());
 
-                is.close();
+                // Cerrar el archivo
                 os.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private ArrayList<String> leerDatosDesdeXmlEnMemoriaInterna() {
         ArrayList<String> datosDeXml = new ArrayList<>();
