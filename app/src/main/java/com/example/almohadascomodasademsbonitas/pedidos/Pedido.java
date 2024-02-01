@@ -3,6 +3,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Pedido implements Serializable {
     private String imagen;
@@ -17,7 +18,9 @@ public class Pedido implements Serializable {
     private double precio_total;
 
 private int precioarticulo;
-    private ArrayList<Pedido> productos;
+    private ArrayList<Producto> productos;
+
+
 
     public Pedido(String imagen, int cantidad, int idPedido, int precioarticulo, int id_partner, int id_comercial, String descripcion, double descuento,double precio_un, LocalDate fecha, double precio_total) {
         this.imagen = imagen;
@@ -31,6 +34,14 @@ private int precioarticulo;
         this.precio_un = precio_un;
         this.fecha = fecha;
         this.precio_total = precio_total;
+    }
+    public Pedido(int idPedido, int idPartner, int idComercial, LocalDate fecha, double precioTotal, ArrayList<Producto> productos) {
+        this.idPedido = idPedido;
+        this.id_partner = idPartner;
+        this.id_comercial = idComercial;
+        this.fecha = fecha;
+        this.precio_total = precioTotal;
+        this.productos = productos;
     }
 
     public Pedido() {
@@ -51,7 +62,7 @@ private int precioarticulo;
     public int getId_partner() {
         return id_partner;
     }
-    public ArrayList<Pedido> getProductos() {
+    public ArrayList<Producto> getProductos() {
         return productos;
     }
     public void setId_partner(int id_partner) {
@@ -133,7 +144,7 @@ private int precioarticulo;
         this.idPedido = idPedido;
     }
 
-    public void setProductos(ArrayList<Pedido> productos) {
+    public void setProductos(ArrayList<Producto> productos) {
         this.productos = productos;
     }
 

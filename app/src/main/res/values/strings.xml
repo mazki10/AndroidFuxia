@@ -29,7 +29,7 @@
     <string name="np">NºPRODUCTOS ELEGIDOS</string>
     <string name="n">0</string>
     <string name="bor">BORRAR</string>
-    <string name="precio">PRECIO: 30€</string>
+    <string name="precio">PRECIO:</string>
     <string name="pefinal">EL PEDIDO</string>
     <string name="prefinal">PRECIO TOTAL:</string>
     <string name="hpedido">HACER PEDIDO</string>
@@ -38,7 +38,7 @@
     <string name="precioUn">PRECIO UNITARIO</string>
     <string name="cantidadSinPuntos">CANTIDAD</string>
     <string name="eleguir">Para elegir una almohada clica en la almohada</string>
-    <string name="stock">100/100</string>
+    <string name="stock">/</string>
     <string name="titulo_pedidos">PEDIDOS</string>
     <string name="alta">AÑADIR +</string>
     <string name="baja">ELIMINAR</string>

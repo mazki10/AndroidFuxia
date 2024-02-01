@@ -1,107 +1,182 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
 import android.os.Bundle;
-
+import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.util.Xml;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.cardview.widget.CardView;
 
 import com.example.almohadascomodasademsbonitas.R;
-import com.example.almohadascomodasademsbonitas.pedidos.Pedido;
-import com.example.almohadascomodasademsbonitas.pedidos.PedidoAdapter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
-import java.io.InputStream;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlSerializer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-// ...
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class baja_pedidos extends AppCompatActivity {
 
-    RecyclerView listaPedidos;
-    private ArrayList<Pedido> pedidos;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bajas_pedido);
 
-        listaPedidos = findViewById(R.id.recyclerView);
-        pedidos = new ArrayList<>();  // Inicializa la lista aquí
-        cargarDatosDesdeXML();
+        //copiarXmlDesdeAssets();
 
-        // Configurar el RecyclerView con el adaptador
-        PedidoAdapter pedidoAdapter = new PedidoAdapter(pedidos);
-        listaPedidos.setAdapter(pedidoAdapter);
-        listaPedidos.setLayoutManager(new LinearLayoutManager(this));
-    }
+        ListView listView = findViewById(R.id.lvPartners);
+        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
+        // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
+        listView.setAdapter(adapter);
 
+        Button btnBorrar = findViewById(R.id.btNuevo);
+        //Button btRrfs = findViewById(R.id.btRfr2);
 
+        btnBorrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SparseBooleanArray checkedItemPositions = listView.getCheckedItemPositions();
 
-    private void cargarDatosDesdeXML() {
-        try {
-            // Obtener la referencia al archivo XML en el directorio 'data'
-            InputStream inputStream = getAssets().open("data/data/pedidos.xml");
+                // Iterar sobre las posiciones seleccionadas
+                for (int i = 0; i < checkedItemPositions.size(); i++) {
+                    int position = checkedItemPositions.keyAt(i);
 
-            // Crear un constructor de documentos
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
-            // Parsear el archivo XML
-            Document doc = dBuilder.parse(inputStream);
-            doc.getDocumentElement().normalize();
-
-            // Obtener la lista de nodos 'pedido'
-            NodeList pedidoNodes = doc.getElementsByTagName("pedido");
-
-            // Inicializar la lista de pedidos
-            pedidos = new ArrayList<>();
-
-            // Iterar sobre los nodos 'pedido'
-            for (int i = 0; i < pedidoNodes.getLength(); i++) {
-                Element pedidoElement = (Element) pedidoNodes.item(i);
-
-                // Obtener datos del pedido
-                int idPedido = Integer.parseInt(pedidoElement.getElementsByTagName("id_pedido").item(0).getTextContent());
-                int idPartner = Integer.parseInt(pedidoElement.getElementsByTagName("id_partner").item(0).getTextContent());
-                String idComercial = pedidoElement.getElementsByTagName("id_comercial").item(0).getTextContent();
-                LocalDate fecha = LocalDate.parse(pedidoElement.getElementsByTagName("fecha").item(0).getTextContent());  // Ajusta según el formato de fecha
-                double precioTotal = Double.parseDouble(pedidoElement.getElementsByTagName("precio_total").item(0).getTextContent());
-
-                // Obtener detalles de los productos dentro del pedido
-                NodeList productoNodes = pedidoElement.getElementsByTagName("producto");
-                ArrayList<Pedido> productos = new ArrayList<>();
-
-                for (int j = 0; j < productoNodes.getLength(); j++) {
-                    Element productoElement = (Element) productoNodes.item(j);
-                    String descripcion = productoElement.getElementsByTagName("descripcion").item(0).getTextContent();
-                    int cantidad = Integer.parseInt(productoElement.getElementsByTagName("cantidad").item(0).getTextContent());
-                    double descuento = Double.parseDouble(productoElement.getElementsByTagName("descuento").item(0).getTextContent());
-                    double precioUn = Double.parseDouble(productoElement.getElementsByTagName("precio_un").item(0).getTextContent());
-
-                    // Crear un objeto Pedido y agregarlo a la lista de productos dentro del pedido
-                    Pedido producto = new Pedido("", cantidad, 0, 0, 0, 0, descripcion, descuento, precioUn, LocalDate.now(), 0);
-                    productos.add(producto);
+                    // Verificar si el elemento en esta posición está seleccionado
+                    if (checkedItemPositions.valueAt(i)) {
+                        // Eliminar el elemento de la lista
+                        datosDeXml.remove(position);
+                    }
                 }
 
-                // Crear un objeto Pedido y agregarlo a la lista
-                Pedido pedido = new Pedido("", 0, idPedido, 0, idPartner, Integer.parseInt(idComercial), "", 0, 0, fecha, precioTotal);
-                pedido.setProductos(productos);
-                pedidos.add(pedido);
+                // Notificar al adaptador sobre los cambios
+                adapter.notifyDataSetChanged();
+
+                // Opcionalmente, guardar los cambios en el archivo XML
+                guardarDatosEnXmlEnMemoriaInterna(datosDeXml);
             }
+        });
+
+     /*   btRrfs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+                adapter.clear();
+                adapter.addAll(datosDeXml);
+                adapter.notifyDataSetChanged();
+            }
+        });*/
+    }
+    private void guardarDatosEnXmlEnMemoriaInterna(ArrayList<String> datosDeXml) {
+        try {
+            FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
+            XmlSerializer serializer = Xml.newSerializer();
+            serializer.setOutput(fos, "UTF-8");
+            serializer.startDocument(null, Boolean.TRUE);
+            serializer.startTag(null, "pedidos");
+
+            for (String pedido : datosDeXml) {
+                serializer.startTag(null, "pedido");
+                serializer.text(pedido);
+                serializer.endTag(null, "pedido");
+            }
+
+            serializer.endTag(null, "pedidos");
+            serializer.endDocument();
+            serializer.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para leer datos desde el archivo XML
+
+
+    private void copiarXmlDesdeAssets() {
+        try {
+            // Verificar si el archivo ya existe en la memoria interna
+            File file = new File(getFilesDir(), "pedidos.xml");
+            if (!file.exists()) {
+                // Copiar el archivo desde assets a la memoria interna
+                InputStream is = getAssets().open("pedidos.xml");
+                FileOutputStream os = new FileOutputStream(file);
+
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
+                }
+
+                is.close();
+                os.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+   private ArrayList<String> leerDatosDesdeXmlEnMemoriaInterna() {
+        ArrayList<String> datosDeXml = new ArrayList<>();
+
+        try {
+            FileInputStream fis = openFileInput("pedidos.xml");
+
+            // Crea un XmlPullParser
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(fis, null);
+
+            int eventType = parser.getEventType();
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && "pedido".equals(parser.getName())) {
+                    // Comienza un nuevo elemento pedido
+                    StringBuilder currentData = new StringBuilder();
+
+                    while (!(eventType == XmlPullParser.END_TAG && "pedido".equals(parser.getName()))) {
+                        // Lee el contenido del pedido
+                        if (eventType == XmlPullParser.TEXT) {
+                            String text = parser.getText();
+
+                            // Agrega el contenido del texto al StringBuilder
+                            currentData.append(text).append("\n");
+                        }
+                        eventType = parser.next();
+                    }
+
+                    // Fin del elemento pedido, agrega la cadena con el contenido del pedido
+                    datosDeXml.add(currentData.toString().trim());
+                }
+
+                eventType = parser.next();
+            }
+
+            fis.close();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return datosDeXml;
     }
 
 

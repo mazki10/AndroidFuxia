@@ -1,5 +1,7 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
@@ -60,7 +63,7 @@ public class actividad_pedido extends AppCompatActivity {
     //Estas dos linea son una prueba
     int comercialEleguido=0;
     int partnerEleguido=0;
-
+    Button btnDes;
     Button buttonComprar;
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -75,9 +78,33 @@ public class actividad_pedido extends AppCompatActivity {
 
         TextConf = findViewById(R.id.textView6);
 
+        btnDes = findViewById(R.id.btnDescuento);
+
         beginXMLparsingComerciales();
         beginXMLparsingPartners();
 
+        btnDes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alerta = new AlertDialog.Builder(actividad_pedido.this);
+
+                alerta.setMessage(" 1. pedido con una cantidad de 1 - 2 almohadas no tiene descuento \n \n" +
+                        " 2. pedidos con una cantidad de 3 - 7 almohadas tienen 15% de descuento \n \n" +
+                        " 3. pedidos con una cantida de 7 - 20 almohadas tienen 25% de descuento \n \n" +
+                        " 4. pedidos superiores a 20 almohadas tienen 50% de descuento")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+
+                AlertDialog titulo = alerta.create();
+                titulo.setTitle("Descuentos");
+                titulo.show();
+            }
+        });
 
         // Obtén los recursos de la carpeta drawable
         String nomb = "jordi";

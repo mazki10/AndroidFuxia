@@ -1,5 +1,6 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,55 +11,56 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.almohadascomodasademsbonitas.R;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class PedidoAdapter extends RecyclerView.Adapter<PedidoAdapter.PedidoViewHolder> {
 
-    private ArrayList<Pedido> pedidos;
+    private List<Pedido> listaDePedidos;
+    private Context context;
 
-    public PedidoAdapter(ArrayList<Pedido> pedidos) {
-        this.pedidos = pedidos;
+    public PedidoAdapter(List<Pedido> listaDePedidos) {
+        this.listaDePedidos = listaDePedidos;
     }
 
     @NonNull
     @Override
     public PedidoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pedido_item, parent, false);
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(R.layout.item_pedido, parent, false);
         return new PedidoViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull PedidoViewHolder holder, int position) {
-        Pedido pedido = pedidos.get(position);
+        Pedido pedido = listaDePedidos.get(position);
 
-        // Configurar los elementos de la vista según los datos del pedido
-        holder.textViewIdPedido.setText(String.valueOf(pedido.getIdPedido()));
-        holder.textViewIdPartner.setText(String.valueOf(pedido.getId_partner()));
-        holder.textViewIdComercial.setText(String.valueOf(pedido.getId_comercial()));
-        // ... Ajustar según tus campos de Pedido
-
-        // Puedes agregar más elementos de la vista aquí
+        holder.textViewIdPedido.setText("ID Pedido: " + pedido.getIdPedido());
+        holder.textViewIdPartner.setText("ID Partner: " + pedido.getId_partner());
+        holder.textViewIdComercial.setText("ID Comercial: " + pedido.getId_comercial());
+        holder.textViewFecha.setText("Fecha: " + pedido.getFecha().toString());
+        holder.textViewPrecioTotal.setText("Precio Total: " + pedido.getPrecio_total());
     }
 
     @Override
     public int getItemCount() {
-        return pedidos.size();
+        return listaDePedidos.size();
     }
 
-    // Clase interna para representar la vista de cada elemento del RecyclerView
-    public static class PedidoViewHolder extends RecyclerView.ViewHolder {
+    public class PedidoViewHolder extends RecyclerView.ViewHolder {
         TextView textViewIdPedido;
         TextView textViewIdPartner;
         TextView textViewIdComercial;
-        // ... Otros elementos de la vista según tus campos de Pedido
+        TextView textViewFecha;
+        TextView textViewPrecioTotal;
 
         public PedidoViewHolder(@NonNull View itemView) {
             super(itemView);
-
-            textViewIdPedido = itemView.findViewById(R.id.textIdPedido);
-            textViewIdPartner = itemView.findViewById(R.id.textIdPartner);
-            textViewIdComercial = itemView.findViewById(R.id.textIdComercial);
-            // ... Otros elementos de la vista según tus campos de Pedido
+            textViewIdPedido = itemView.findViewById(R.id.text_view_id_pedido);
+            textViewIdPartner = itemView.findViewById(R.id.text_view_id_partner);
+            textViewIdComercial = itemView.findViewById(R.id.text_view_id_comercial);
+            textViewFecha = itemView.findViewById(R.id.text_view_fecha);
+            textViewPrecioTotal = itemView.findViewById(R.id.text_view_precio_total);
         }
     }
 }
+
