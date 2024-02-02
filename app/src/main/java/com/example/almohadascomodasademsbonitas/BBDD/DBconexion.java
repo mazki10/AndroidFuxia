@@ -15,16 +15,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DBconexion extends SQLiteOpenHelper {
-
+    private  Context  ourContext;
     String sqlCreateLINPED = "CREATE TABLE LIN_PEDIDOS (ID_PEDIDO INTEGER, ID_LINEA INTEGER, CANTIDAD INTEGER, DESCUENTO DOUBLE, PRECIO_UN DOUBLE, PRECIO_TOTAL DOUBLE)";
     String sqlCreateCAPPED = "CREATE TABLE CAB_PEDIDOS (ID_PEDIDO INTEGER, ID_PARTNER INTEGER, DESCRIPCION TEXT, FECHA_PEDIDO DATE, FECHA_ENVIO DATE,ENTREGADO BOOLEAN)";
     String sqlCreatePAR = "CREATE TABLE PARTNERS (ID_PARTNERS INTEGER, NOMBRE TEXT, CIF TEXT, DIRECCION TEXT, TELEFONO INTEGER, COMERCIAL INTEGER, EMAIL TEXT, ZONA INTEGER)";
     String sqlCreateAGE = "CREATE TABLE AGENDA (ACTIVIDAD INTEGER, TITULO TEXT, DESCRIPCION TEXT, FECHA DATE, HORA DATE)";
     String sqlCreateCOM = "CREATE TABLE COMERCIALES (NOMBRE TEXT, APELLIDO1 TEXT, APELLIDO2 TEXT, DNI TEXT, DIRECCION TEXT, EMAIL TEXT, ZONA1 INTEGER, ZONA2 INTEGER)";
+    String sqlCreateArt = "CREATE TABLE COMERCIALES (ID_ARTICULO INTEGER, ID_PROVEEDOR INTEGER, DESCRIPCION STRING, PRECIO_VENTA DOUBLE, PRECIO_COSTE DOUBLE, EXISTENCIAS INTEGER, STOCK_MAX INTEGER, STOCK_MIN INTEGER, FEC_ULT_ENT DATE, FEC_ULT_SAL DATE )";
+
 
     public DBconexion(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -33,6 +36,7 @@ public class DBconexion extends SQLiteOpenHelper {
         db.execSQL(sqlCreatePAR);
         db.execSQL(sqlCreateAGE);
         db.execSQL(sqlCreateCOM);
+        db.execSQL(sqlCreateArt);
 
 
         ArrayList<Cab_Pedido> cab_pedidos =  new ArrayList<>();
