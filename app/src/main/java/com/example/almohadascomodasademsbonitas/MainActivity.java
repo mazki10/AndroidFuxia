@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import android.os.Environment;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,11 +27,12 @@ public class MainActivity extends AppCompatActivity {
             File archivoDescargas = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), nombreArchivo);
 
             if (archivoDescargas.exists()) {
-                // Si el archivo existe en Descargas, copiarlo a la memoria interna en la carpeta "files"
+                Log.d("MainActivity", "Copiando " + nombreArchivo);
                 try {
                     copiarArchivo(archivoDescargas, new File(getFilesDir(), nombreArchivo));
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Log.e("MainActivity", "Error al copiar " + nombreArchivo + ": " + e.getMessage());
                 }
             }
         }

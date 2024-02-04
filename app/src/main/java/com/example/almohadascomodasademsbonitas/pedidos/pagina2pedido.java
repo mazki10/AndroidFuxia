@@ -234,7 +234,7 @@ public class pagina2pedido extends AppCompatActivity {
                 for (int i = 0; i < listaPedidos.size(); i++) {
                     // Agregar información de productos (puedes adaptar esta lógica según tus necesidades)
                     xmlData += "    <producto>\n";
-                    xmlData += "      <descripcion>" + listaPedidos.get(i).getImagen() + "</descripcion>\n";
+                    xmlData += "      <id_articulo>" + listaPedidos.get(i).getImagen() + "</id_articulo>\n";
                     xmlData += "      <cantidad>" + listaPedidos.get(i).getCantidad() + "</cantidad>\n";
                     xmlData += "      <descuento>0</descuento>\n";
                     xmlData += "      <precio_un>30</precio_un>\n";

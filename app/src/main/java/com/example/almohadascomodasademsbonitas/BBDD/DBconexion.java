@@ -16,12 +16,12 @@ import java.util.ArrayList;
 
 public class DBconexion extends SQLiteOpenHelper {
     private  Context  ourContext;
-    String sqlCreateLINPED = "CREATE TABLE LIN_PEDIDOS (ID_PEDIDO INTEGER, ID_LINEA INTEGER, CANTIDAD INTEGER, DESCUENTO DOUBLE, PRECIO_UN DOUBLE, PRECIO_TOTAL DOUBLE)";
-    String sqlCreateCAPPED = "CREATE TABLE CAB_PEDIDOS (ID_PEDIDO INTEGER, ID_PARTNER INTEGER, DESCRIPCION TEXT, FECHA_PEDIDO DATE, FECHA_ENVIO DATE,ENTREGADO BOOLEAN)";
-    String sqlCreatePAR = "CREATE TABLE PARTNERS (ID_PARTNERS INTEGER, NOMBRE TEXT, CIF TEXT, DIRECCION TEXT, TELEFONO INTEGER, COMERCIAL INTEGER, EMAIL TEXT, ZONA INTEGER)";
+    String sqlCreateLINPED = "CREATE TABLE LIN_PEDIDOS (ID_PEDIDO INTEGER, ID_LINEA INTEGER, CANTIDAD INTEGER, DESCUENTO DOUBLE, PRECIO_UN DOUBLE, PRECIO_TOTAL DOUBLE, FOREIGN KEY (ID_PEDIDO) REFERENCES CAB_PEDIDOS(ID_PEDIDO))";
+    String sqlCreateCAPPED = "CREATE TABLE CAB_PEDIDOS (ID_PEDIDO INTEGER, ID_PARTNER INTEGER, DESCRIPCION TEXT, FECHA_PEDIDO DATE, FECHA_ENVIO DATE,ENTREGADO BOOLEAN, FOREIGN KEY (ID_COMERCIAL) REFERENCES COMERCIALES(DNI),FOREIGN KEY (ID_PARTNER) REFERENCES PARTNERS(ID_PARTNER))";
+    String sqlCreatePAR = "CREATE TABLE PARTNERS (ID_PARTNER INTEGER, NOMBRE TEXT, CIF TEXT, DIRECCION TEXT, TELEFONO INTEGER, COMERCIAL INTEGER, EMAIL TEXT, ZONA INTEGER)";
     String sqlCreateAGE = "CREATE TABLE AGENDA (ACTIVIDAD INTEGER, TITULO TEXT, DESCRIPCION TEXT, FECHA DATE, HORA DATE)";
-    String sqlCreateCOM = "CREATE TABLE COMERCIALES (NOMBRE TEXT, APELLIDO1 TEXT, APELLIDO2 TEXT, DNI TEXT, DIRECCION TEXT, EMAIL TEXT, ZONA1 INTEGER, ZONA2 INTEGER)";
-    String sqlCreateArt = "CREATE TABLE COMERCIALES (ID_ARTICULO INTEGER, ID_PROVEEDOR INTEGER, DESCRIPCION STRING, PRECIO_VENTA DOUBLE, PRECIO_COSTE DOUBLE, EXISTENCIAS INTEGER, STOCK_MAX INTEGER, STOCK_MIN INTEGER, FEC_ULT_ENT DATE, FEC_ULT_SAL DATE )";
+    String sqlCreateCOM = "CREATE TABLE COMERCIALES (NOMBRE TEXT, APELLIDO1 TEXT, APELLIDO2 TEXT, DNI TEXT, DIRECCION TEXT, EMAIL TEXT, ZONA1 INTEGER, ZONA2 INTEGER, USER TEXT, PASSWORD TEXT)";
+    String sqlCreateArt = "CREATE TABLE ARTICULOS (ID_ARTICULO INTEGER, ID_PROVEEDOR INTEGER, DESCRIPCION TEXT, PRECIO_VENTA DOUBLE, PRECIO_COSTE DOUBLE, EXISTENCIAS INTEGER, STOCK_MAX INTEGER, STOCK_MIN INTEGER, FEC_ULT_ENT DATE, FEC_ULT_SAL DATE )";
 
 
     public DBconexion(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
@@ -45,7 +45,7 @@ public class DBconexion extends SQLiteOpenHelper {
         ArrayList<Actividad> agendas = new ArrayList<>();
 
 
-        cab_pedidos.add(new Cab_Pedido(1,1,"jordi", LocalDate.of(2024,2,1),LocalDate.of(2024,2,3),true));
+      /*  cab_pedidos.add(new Cab_Pedido(1,1,"jordi", LocalDate.of(2024,2,1),LocalDate.of(2024,2,3),true));
         cab_pedidos.add(new Cab_Pedido(2,2,"bale", LocalDate.of(2023,12,1), LocalDate.of(2023,12,4),true));
         cab_pedidos.add(new Cab_Pedido(3,1,"bob", LocalDate.of(2023,11,3), LocalDate.of(2023,11,5),true));
         cab_pedidos.add(new Cab_Pedido(4,3,"cartas", LocalDate.of(2024,1,6), LocalDate.of(2024,1,11),true));
@@ -62,7 +62,7 @@ public class DBconexion extends SQLiteOpenHelper {
         lin_pedidos.add(new Lin_Pedido(5,5,9,0,30,270));
         lin_pedidos.add(new Lin_Pedido(6,6,5,0,30,150));
         lin_pedidos.add(new Lin_Pedido(7,7,4,0,30,120));
-        lin_pedidos.add(new Lin_Pedido(8,8,3,0,30,90));
+        lin_pedidos.add(new Lin_Pedido(8,8,3,0,30,90));*/
 
         for(int i=0; i<cab_pedidos.size();i++){
                 String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
@@ -72,7 +72,7 @@ public class DBconexion extends SQLiteOpenHelper {
         }
 
         for(int i=0; i<lin_pedidos.size();i++){
-            String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+            String insertQuery = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
                     "VALUES (" + lin_pedidos.get(i).getId_pedido() + ", " + lin_pedidos.get(i).getId_linea() + ", '" + lin_pedidos.get(i).getCantidad() + "', '" +
                     lin_pedidos.get(i).getDescuento() + "', '" + lin_pedidos.get(i).getPrecio_un() + "', " + lin_pedidos.get(i).getPrecio_total() + ")";
             db.execSQL(insertQuery);

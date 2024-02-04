@@ -44,6 +44,14 @@
         <activity
             android:name=".pedidos.actividad_pedido"
             android:exported="false" />
+
+        <activity
+            android:name=".pedidos.ModificarDatosActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".pedidos.modificar_pedido"
+            android:exported="false" />
         <activity
             android:name=".pedidos.pagina2pedido"
             android:exported="false" />

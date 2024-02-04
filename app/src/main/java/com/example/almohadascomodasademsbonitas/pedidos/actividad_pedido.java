@@ -3,6 +3,8 @@ package com.example.almohadascomodasademsbonitas.pedidos;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,6 +16,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +52,8 @@ import javax.xml.parsers.ParserConfigurationException;
 public class actividad_pedido extends AppCompatActivity {
     private int dia,mes,anio;
     private int imagenSeleccionada = 0;
+    ArrayList<Comercial> datosComercialDDBB = new ArrayList<>();
+    ArrayList<Articulo> datosArticulosDDBB = new ArrayList<>();
     private ArrayList<Pedido> listaPedidos = new ArrayList<>();
     private String nombreComercialElegido;
     EditText editText;
@@ -59,7 +66,9 @@ public class actividad_pedido extends AppCompatActivity {
     LocalDate fecha;
     ArrayList<HashMap<String, String>> comerciales;
     ArrayList<HashMap<String, String>> partners;
-
+TextView textViewPrecio;
+TextView textViewStock_max;
+TextView textViewExistencias;
     //Estas dos linea son una prueba
     int comercialEleguido=0;
     int partnerEleguido=0;
@@ -80,6 +89,11 @@ public class actividad_pedido extends AppCompatActivity {
 
         btnDes = findViewById(R.id.btnDescuento);
 
+        textViewExistencias = findViewById(R.id.textViewexistencias);
+        textViewPrecio = findViewById(R.id.textViewprecio);
+        textViewStock_max = findViewById(R.id.textViewstock_max);
+
+        Consulta();
         beginXMLparsingComerciales();
         beginXMLparsingPartners();
 
@@ -109,16 +123,14 @@ public class actividad_pedido extends AppCompatActivity {
         // Obtén los recursos de la carpeta drawable
         String nomb = "jordi";
 
-        int[] arrayDrawableResources = new int[]{
-                R.drawable.jordi,
-                R.drawable.bale,
-                R.drawable.bob,
-                R.drawable.cartas,
-                R.drawable.hello,
-                R.drawable.patriota,
-                R.drawable.pistola,
-                R.drawable.verde
-        };
+
+        int[] arrayDrawableResources = new int[datosArticulosDDBB.size()];
+
+        for (int i = 0; i < datosArticulosDDBB.size(); i++) {
+            String resourceName = datosArticulosDDBB.get(i).getDescripcion();
+            int resourceId = getResources().getIdentifier(resourceName, "drawable", getPackageName());
+            arrayDrawableResources[i] = resourceId;
+        }
 
         // Rellena mImagesUrls y mNames con los recursos de la carpeta drawable
         for (int drawableResource : arrayDrawableResources) {
@@ -153,6 +165,10 @@ public class actividad_pedido extends AppCompatActivity {
                     if (itemPosition != RecyclerView.NO_POSITION) {
                         // Aquí actualizas la variable imagenSeleccionada
                         imagenSeleccionada = itemPosition;
+                        textViewExistencias.setText(datosArticulosDDBB.get(imagenSeleccionada).getExistencias());
+                        textViewStock_max.setText(datosArticulosDDBB.get(imagenSeleccionada).getStock_max());
+                        textViewPrecio.setText(String.valueOf(datosArticulosDDBB.get(imagenSeleccionada).getPrecio_venta()));
+
                         // No llames al método incrementarNumeroEnTextView() aquí
                     }
                 }
@@ -424,7 +440,8 @@ public class actividad_pedido extends AppCompatActivity {
         try {
             Log.d("XMLFile", "Ubicación del archivo: " + getAssets().open("comerciales.xml"));
 
-            is = getAssets().open("comerciales.xml");
+          is = openFileInput("comerciales.xml");
+
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -520,6 +537,80 @@ public class actividad_pedido extends AppCompatActivity {
     }
 
 
+    public void Consulta(){
+//DATOS DE BBDD ARTICULOS
+         int id_articulo;
+         int id_proveedor;
+         String descripcion;
+         Double precio_venta;
+         Double precio_coste;
+         int  existencias;
+         int stock_max;
+         int stock_min;
+         LocalDate fec_ult_ent;
+         LocalDate fec_ult_sal;
+
+//DATOS DE BBDD COMERCIALES
+         String nombre;
+         String appellido1;
+         String apellido2;
+         String dni;
+         String direccion;
+         String email;
+         int zona1;
+         int zona2;
+         String user;
+         String password;
+
+        DBconexion dbconexion = new DBconexion(this,"ACAB",null,1);
+        SQLiteDatabase database = dbconexion.getWritableDatabase();
+
+        Cursor filaCOM = database.rawQuery
+                ("SELECT * FROM COMERCIALES",null);
+        Cursor filaArt = database.rawQuery
+                ("SELECT * FROM ARTICULOS",null);
+
+        while (filaCOM.moveToNext()) {
+
+            nombre = filaCOM.getString(0);
+            appellido1 = filaCOM.getString(1);
+            apellido2 = filaCOM.getString(2);
+            dni = filaCOM.getString(3);
+            direccion = filaCOM.getString(4);
+            email = filaCOM.getString(5);
+            zona1 = filaCOM.getInt(6);
+            zona2 = filaCOM.getInt(7);
+            user = filaCOM.getString(8);
+            password = filaCOM.getString(9);
+
+            datosComercialDDBB.add(new Comercial(nombre,appellido1,apellido2,dni,direccion,email,zona1,zona2,user,password));
+        }
+
+
+        while (filaArt.moveToNext()) {
+
+            id_articulo = filaArt.getInt(0);
+            id_proveedor  = filaArt.getInt(1);
+            descripcion = filaArt.getString(2);
+            precio_venta  = filaArt.getDouble(3);
+            precio_coste = filaArt.getDouble(4);
+            existencias  = filaArt.getInt(5);
+            stock_max = filaArt.getInt(6);
+            stock_min = filaArt.getInt(7);
+            fec_ult_ent =  LocalDate.parse(filaArt.getString(8));
+            fec_ult_sal =  LocalDate.parse(filaArt.getString(9));
+
+
+            datosArticulosDDBB.add(new Articulo(id_articulo,id_proveedor,descripcion,precio_venta,precio_coste,existencias,stock_max,stock_min,fec_ult_ent,fec_ult_sal));
+        }
+
+        filaArt.close();
+        filaCOM.close();
+        database.close();
+    }
+
+
+
     private void addingValuesToHashMapComerciales(String nombre, String apell1, String apell2, String dni, String direccion, String email, String zona1, String zona2) {
         HashMap<String,String>comercial = new HashMap<>();
         comercial.put("nombre",nombre);
@@ -542,7 +633,7 @@ public class actividad_pedido extends AppCompatActivity {
         try {
             Log.d("XMLFile", "Ubicación del archivo: " + getAssets().open("partners.xml"));
 
-            is = getAssets().open("partners.xml");
+             is = openFileInput("partners.xml");
         }catch (IOException e){
             e.printStackTrace();
         }

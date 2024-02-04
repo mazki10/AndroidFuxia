@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".pedidos.ModificarDatosActivity">
+
+    <!-- Puedes agregar aquí elementos de interfaz de usuario según tus necesidades,
+         por ejemplo, EditText para la modificación de datos. -->
+
+    <!-- Ejemplo con un EditText para modificar el nombre del pedido -->
+
+
+    <!-- Botón para guardar los cambios -->
+
+    <EditText
+        android:id="@+id/editTextNombrePedido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="589dp"
+        android:hint="Nombre del Pedido"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/comercial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="479dp"
+        android:hint="comercial"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/cantidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="363dp"
+        android:hint="cantidad"
+        android:minHeight="48dp" />
+
+    <EditText
+        android:id="@+id/descuento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="220dp"
+        android:hint="descuento"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/btnGuardarCambios"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="537dp"
+        android:text="Guardar Cambios" />
+
+    <!-- Puedes agregar más elementos de interfaz de usuario según sea necesario -->
+
+</RelativeLayout>
