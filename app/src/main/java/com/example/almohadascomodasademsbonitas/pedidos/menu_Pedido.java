@@ -96,7 +96,7 @@ public class menu_Pedido extends AppCompatActivity {
 
 
 
-        comerciales.add(new Comercial("12345678A","Jose","Alfredo","Jose","Dirigeme esta","sisi@gmail.com",2,1,"fuxia","fuxia123"));
+        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1,"fuxia","fuxia123"));
 
 
         articulos.add(new Articulo(1,101,"jordi",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));

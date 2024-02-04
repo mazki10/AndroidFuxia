@@ -36,6 +36,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -438,13 +441,12 @@ TextView textViewExistencias;
     private void beginXMLparsingComerciales() {
         InputStream is = null;
         try {
-            Log.d("XMLFile", "Ubicación del archivo: " + getAssets().open("comerciales.xml"));
-
-          is = openFileInput("comerciales.xml");
-
-        }catch (IOException e){
+            File file = new File(getFilesDir(), "comerciales.xml");
+            is = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = null;
@@ -631,10 +633,9 @@ TextView textViewExistencias;
     private void beginXMLparsingPartners() {
         InputStream is = null;
         try {
-            Log.d("XMLFile", "Ubicación del archivo: " + getAssets().open("partners.xml"));
-
-             is = openFileInput("partners.xml");
-        }catch (IOException e){
+            File file = new File(getFilesDir(), "partners.xml");
+            is = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
