@@ -47,18 +47,11 @@ public class partners extends AppCompatActivity {
                 // Obtiene el valor del elemento en la posición seleccionada
                 String selectedItem = (String) parent.getItemAtPosition(position);
 
-                // Extraer la primera fila y el primer número
+                // Extraer la ID del socio
                 String[] lines = selectedItem.split("\n");
                 if (lines.length > 0) {
-                    // Obtener la primera fila
-                    String primeraFila = lines[0];
-
-                    // Extraer el primer número
-                    String[] parts = primeraFila.split(" ");
-                    if (parts.length > 0) {
-                        String idPartner = parts[0];
-                        openModificarPartnerActivity(idPartner  );
-                    }
+                    String idPartner = lines[0];
+                    openModificarPartnerActivity(idPartner);
                 }
             }
         });
@@ -129,19 +122,29 @@ public class partners extends AppCompatActivity {
                     // Comienza un nuevo elemento partner
                     StringBuilder currentData = new StringBuilder();
 
-                    while (!(eventType == XmlPullParser.END_TAG && "partner".equals(parser.getName()))) {
-                        // Lee el contenido del socio
-                        if (eventType == XmlPullParser.TEXT) {
-                            String text = parser.getText();
+                    String idPartner = ""; // Almacena la ID del socio
 
-                            // Agrega el contenido del texto al StringBuilder
-                            currentData.append(text).append("\n");
+                    while (!(eventType == XmlPullParser.END_TAG && "partner".equals(parser.getName()))) {
+                        if (eventType == XmlPullParser.START_TAG && !parser.getName().equals("partner")) {
+                            // Lee el nombre del tag
+                            String tagName = parser.getName();
+
+                            // Lee el contenido del tag
+                            String text = parser.nextText();
+
+                            // Almacena la ID del socio si es el tag id_partners
+                            if ("id_partners".equals(tagName)) {
+                                idPartner = text;
+                            }
+
+                            currentData.append(tagName.toUpperCase()).append(":   ").append(text).append("\n");
+
                         }
                         eventType = parser.next();
                     }
 
-                    // Fin del elemento partner, agrega la cadena con el contenido del socio
-                    datosDeXml.add(currentData.toString().trim());
+                    // Agrega la ID del socio a la cadena con el contenido del socio y un salto de línea
+                    datosDeXml.add(idPartner + "\n" + currentData.toString().trim() + "\n");
                 }
 
                 eventType = parser.next();
@@ -155,6 +158,9 @@ public class partners extends AppCompatActivity {
 
         return datosDeXml;
     }
+
+
+
 
     private void openNuevoPartnerActivity() {
         Intent intent = new Intent(this, nuevo_partner.class);

@@ -1,6 +1,7 @@
 package com.example.almohadascomodasademsbonitas.partners;
 
 import android.os.Bundle;
+import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,6 +10,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.almohadascomodasademsbonitas.R;
+
+import org.xmlpull.v1.XmlPullParser;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -164,7 +167,7 @@ public class nuevo_partner extends AppCompatActivity {
     private void guardarEnXML() {
         try {
 
-            int cantidadPartners = contarPartners();
+            int cantidadPartners = obtenerNuevoIdPartner();
 
             // Abre un archivo en la memoria interna en modo de apendizaje
             FileOutputStream fos = openFileOutput("partners.xml", MODE_APPEND);
@@ -237,29 +240,53 @@ public class nuevo_partner extends AppCompatActivity {
 
 
 
-    private int contarPartners() {
-        int cantidad = 0;
+    private int obtenerNuevoIdPartner() {
+        int nuevoId = 1;  // Valor predeterminado si no hay ningún socio aún
+
         try {
             FileInputStream fis = openFileInput("partners.xml");
-            InputStreamReader inputStreamReader = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String line;
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(fis, null);
 
-            // Contar líneas que comienzan con "<partner"
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.trim().startsWith("<partner")) {
-                    cantidad++;
+            int eventType = parser.getEventType();
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && "partner".equals(parser.getName())) {
+                    // Comienza un nuevo elemento partner
+                    String currentId = "";
+                    while (!(eventType == XmlPullParser.END_TAG && "partner".equals(parser.getName()))) {
+                        if (eventType == XmlPullParser.START_TAG) {
+                            String tagName = parser.getName();
+                            eventType = parser.next();
+
+                            // Leer el contenido del socio
+                            if (eventType == XmlPullParser.TEXT && "id_partners".equals(tagName)) {
+                                currentId = parser.getText();
+                            }
+                        }
+                        eventType = parser.next();
+                    }
+
+                    // Actualizar el nuevoId si el id_partners actual es mayor
+                    int idInt = Integer.parseInt(currentId);
+                    if (idInt >= nuevoId) {
+                        nuevoId = idInt + 1;
+                    }
                 }
+                eventType = parser.next();
             }
 
-            bufferedReader.close();
-            inputStreamReader.close();
             fis.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return cantidad;
+
+        return nuevoId;
     }
+
+
 
 
     private String leerContenidoXML() {

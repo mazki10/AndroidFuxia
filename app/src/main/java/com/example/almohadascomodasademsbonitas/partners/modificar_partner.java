@@ -354,7 +354,7 @@ public class modificar_partner extends AppCompatActivity {
 
             // Renombrar el nuevo archivo XML temporal al archivo original
             tempFile.renameTo(new File(getFilesDir(), "partners.xml"));
-
+            finish();
         } catch (Exception e) {
             e.printStackTrace();
         }
