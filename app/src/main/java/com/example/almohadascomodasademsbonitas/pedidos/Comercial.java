@@ -97,7 +97,7 @@ public class Comercial{
         this.password = password;
     }
 
-    public Comercial(String nombre, String appellido1, String apellido2, String dni, String direccion, String email, int zona1, int zona2, String user, String password) {
+    public Comercial(String nombre, String appellido1, String apellido2, String dni, String direccion, String email, int zona1, int zona2) {
         this.nombre = nombre;
         this.appellido1 = appellido1;
         this.apellido2 = apellido2;
@@ -106,8 +106,7 @@ public class Comercial{
         this.email = email;
         this.zona1 = zona1;
         this.zona2 = zona2;
-        this.user = user;
-        this.password = password;
+
     }
 
     public Comercial() {

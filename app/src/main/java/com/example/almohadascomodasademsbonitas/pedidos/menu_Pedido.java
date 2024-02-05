@@ -48,7 +48,7 @@ public class menu_Pedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
 
-        dbHelper = new DBconexion(this, "ACAB.db", null, 1);
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
         botonAlta = findViewById(R.id.buttonAlta);
         botonBaja = findViewById(R.id.buttonBaja);
@@ -96,7 +96,7 @@ public class menu_Pedido extends AppCompatActivity {
 
 
 
-        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1,"fuxia","fuxia123"));
+        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1));
 
 
         articulos.add(new Articulo(1,101,"jordi",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
@@ -109,26 +109,27 @@ public class menu_Pedido extends AppCompatActivity {
         articulos.add(new Articulo(8,102,"verde",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
 
 
-       /* for(int i=0; i<articulos.size();i++){
-            String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
-                    "VALUES (" + cab_pedidos.get(i).getId_pedido() + ", " + cab_pedidos.get(i).getId_partner() + ", '" + cab_pedidos.get(i).getDescripcion() + "', " +
-                    cab_pedidos.get(i).getFecha_pedido() + ", " + cab_pedidos.get(i).getFecha_envio() + ", " + cab_pedidos.get(i).isEstado_pedido()  + ")";
-            db.execSQL(insertQuery);
-        }*/
 
-      /*  for(int i=0; i<cab_pedidos.size();i++){
-            String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
-                    "VALUES (" + cab_pedidos.get(i).getId_pedido() + ", " + cab_pedidos.get(i).getId_partner() + ", '" + cab_pedidos.get(i).getDescripcion() + "', " +
-                    cab_pedidos.get(i).getFecha_pedido() + ", " + cab_pedidos.get(i).getFecha_envio() + ", " + cab_pedidos.get(i).isEstado_pedido()  + ")";
-            db.execSQL(insertQuery);
-        }*/
 
-        for(int i=0; i<lin_pedidos.size();i++){
-            String insertQuery = "INSERT INTO ARTICULOS (ID_ARTICULO INTEGER, ID_PROVEEDOR INTEGER, DESCRIPCION TEXT, PRECIO_VENTA DOUBLE, PRECIO_COSTE DOUBLE, EXISTENCIAS INTEGER, STOCK_MAX INTEGER, STOCK_MIN INTEGER, FEC_ULT_ENT DATE, FEC_ULT_SAL DATE )" +
-                    "VALUES (" + articulos.get(i).getId_articulo() + ", " + articulos.get(i).getId_proveedor() + ", '" + articulos.get(i).getDescripcion() + "', " +
-                    articulos.get(i).getPrecio_venta() + ", " + articulos.get(i).getPrecio_coste() + ", " + articulos.get(i).getExistencias()+ ","+articulos.get(i).getStock_max()+","+articulos.get(i).getStock_min()+","+articulos.get(i).getFec_ult_ent()+","+articulos.get(i).getFec_ult_sal()+")";
+
+        for(int i=0; i<comerciales.size();i++){
+            String insertQuery = "INSERT INTO COMERCIALES (NOMBRE, APELLIDO1, APELLIDO2, DNI, DIRECCION, EMAIL, ZONA1, ZONA2) " +
+                    "VALUES ('" + comerciales.get(i).getNombre() + "', '" + comerciales.get(i).getAppellido1() + "', '" + comerciales.get(i).getApellido2() + "', '" +
+                    comerciales.get(i).getDni() + "', '" + comerciales.get(i).getDireccion() + "', '" + comerciales.get(i).getEmail()+ "'," +
+                    comerciales.get(i).getZona1() + "," + comerciales.get(i).getZona2() + ")";
             db.execSQL(insertQuery);
         }
+
+        for (int i = 0; i < articulos.size(); i++) {
+            String insertQuery = "INSERT INTO ARTICULOS (ID_ARTICULO, ID_PROVEEDOR, DESCRIPCION, PRECIO_VENTA, PRECIO_COSTE, EXISTENCIAS, STOCK_MAX, STOCK_MIN, FEC_ULT_ENT, FEC_ULT_SAL) " +
+                    "VALUES (" + articulos.get(i).getId_articulo() + ", " + articulos.get(i).getId_proveedor() + ", '" + articulos.get(i).getDescripcion() + "', " +
+                    articulos.get(i).getPrecio_venta() + ", " + articulos.get(i).getPrecio_coste() + ", " + articulos.get(i).getExistencias() + "," +
+                    articulos.get(i).getStock_max() + "," + articulos.get(i).getStock_min() + ",'" + articulos.get(i).getFec_ult_ent() + "','" + articulos.get(i).getFec_ult_sal() + "')";
+            Log.d("Insertion", "Inserting articulo: " + articulos.get(i).getDescripcion());
+            db.execSQL(insertQuery);
+        }
+
+
 
     }
 
@@ -221,6 +222,8 @@ public class menu_Pedido extends AppCompatActivity {
                 contenidoInicial.append("        <email>").append(comercial.getEmail()).append("</email>\n");
                 contenidoInicial.append("        <zona1>").append(comercial.getZona1()).append("</zona1>\n");
                 contenidoInicial.append("        <zona2>").append(comercial.getZona2()).append("</zona2>\n");
+                contenidoInicial.append("        <user>").append(comercial.getUser()).append("</user>\n");
+                contenidoInicial.append("        <password>").append(comercial.getPassword()).append("</password>\n");
                 contenidoInicial.append("    </comercial>\n");
             }
 

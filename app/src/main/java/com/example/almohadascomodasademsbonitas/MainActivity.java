@@ -1,16 +1,20 @@
 package com.example.almohadascomodasademsbonitas;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
+import android.os.Environment;
+import android.util.Log;
+
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
+import com.example.almohadascomodasademsbonitas.R;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import android.os.Environment;
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
+        // Crea la base de datos ACAB
+        crearBaseDatosACAB();
     }
 
     private void copiarArchivo(File sourceFile, File destFile) throws IOException {
@@ -55,5 +62,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-}
 
+    private void crearBaseDatosACAB() {
+        try {
+            // Ruta donde deseas almacenar la base de datos
+            String dbPath = getFilesDir().getParent() + File.separator + "BBDD" + File.separator + "ACAB2";
+
+            // Crea la base de datos ACAB utilizando la clase DBConexion
+            DBconexion dbConexion = new DBconexion(this, dbPath);
+            SQLiteDatabase db = dbConexion.getWritableDatabase();
+            // Cierra la conexión a la base de datos
+            db.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e("MainActivity", "Error al crear la base de datos: " + e.getMessage());
+        }
+    }
+
+}

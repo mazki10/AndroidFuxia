@@ -96,7 +96,18 @@ TextView textViewExistencias;
         textViewPrecio = findViewById(R.id.textViewprecio);
         textViewStock_max = findViewById(R.id.textViewstock_max);
 
+
+
+
         Consulta();
+
+        if (!datosArticulosDDBB.isEmpty()) {
+            textViewExistencias.setText(String.valueOf(datosArticulosDDBB.get(0).getExistencias()));
+            textViewStock_max.setText(String.valueOf(datosArticulosDDBB.get(0).getStock_max()));
+            textViewPrecio.setText(String.valueOf(datosArticulosDDBB.get(0).getPrecio_venta()));
+        } else {
+            Log.d("BBDD", "TABLA ARTICULOS ESTA VACIO");
+        }
         beginXMLparsingComerciales();
         beginXMLparsingPartners();
 
@@ -183,6 +194,7 @@ TextView textViewExistencias;
         buttonConfirmarImagen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
                 // Verifica si el valor del EditText es 0
                 if (editText.getText().toString().equals("0")) {
                     // Muestra un Toast indicando que no se ha elegido ningún producto
@@ -193,6 +205,11 @@ TextView textViewExistencias;
 
                     // Cambia el valor del EditText a 0
                     editText.setText("0");
+                }
+                } catch (NumberFormatException e) {
+                    // Manejar la excepción, por ejemplo, mostrando un mensaje de error o asignando un valor predeterminado.
+                    e.printStackTrace();
+                    TextConf.setText("0");
                 }
             }
         });
@@ -561,10 +578,9 @@ TextView textViewExistencias;
          String email;
          int zona1;
          int zona2;
-         String user;
-         String password;
 
-        DBconexion dbconexion = new DBconexion(this,"ACAB",null,1);
+
+        DBconexion dbconexion = new  DBconexion(this,"ACAB2",null,1);
         SQLiteDatabase database = dbconexion.getWritableDatabase();
 
         Cursor filaCOM = database.rawQuery
@@ -582,10 +598,10 @@ TextView textViewExistencias;
             email = filaCOM.getString(5);
             zona1 = filaCOM.getInt(6);
             zona2 = filaCOM.getInt(7);
-            user = filaCOM.getString(8);
-            password = filaCOM.getString(9);
 
-            datosComercialDDBB.add(new Comercial(nombre,appellido1,apellido2,dni,direccion,email,zona1,zona2,user,password));
+            Log.d("Consulta", "Comercial: Nombre=" + nombre + ", Apellido1=" + appellido1 + ", DNI=" + dni + ", ...");
+
+            datosComercialDDBB.add(new Comercial(nombre,appellido1,apellido2,dni,direccion,email,zona1,zona2));
         }
 
 
@@ -602,6 +618,7 @@ TextView textViewExistencias;
             fec_ult_ent =  LocalDate.parse(filaArt.getString(8));
             fec_ult_sal =  LocalDate.parse(filaArt.getString(9));
 
+            Log.d("Consulta", "Articulo: Descripcion=" + descripcion + ", PrecioVenta=" + precio_venta + ", Existencias=" + existencias + ", ...");
 
             datosArticulosDDBB.add(new Articulo(id_articulo,id_proveedor,descripcion,precio_venta,precio_coste,existencias,stock_max,stock_min,fec_ult_ent,fec_ult_sal));
         }
