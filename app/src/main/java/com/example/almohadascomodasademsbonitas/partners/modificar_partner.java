@@ -15,20 +15,26 @@ import com.example.almohadascomodasademsbonitas.R;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlSerializer;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class modificar_partner extends AppCompatActivity {
 
     private EditText editTextNombre, editTextCif, editTextDireccion, editTextTelefono,
             editTextEmail, editTextComercial, editTextZona;
-
+    private Partner nuevoPartner;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +59,25 @@ public class modificar_partner extends AppCompatActivity {
             Toast.makeText(this, "Error: ID del socio no proporcionado", Toast.LENGTH_SHORT).show();
             finish(); // Cerrar la actividad si no se proporciona el ID del socio
         }
+
+        // Configurar el evento de clic para el botón de borrado
+        Button btGuardar = findViewById(R.id.btguardar);
+        btGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Obtener el ID del socio de la actividad anterior
+                Bundle extras = getIntent().getExtras();
+                if (extras != null && extras.containsKey("_partner")) {
+                    String idSocio = extras.getString("_partner");
+                    // Borrar el socio con el ID proporcionado
+                    guardarInformacion(idSocio);
+                    // Añadir aquí cualquier acción adicional después de borrar el socio
+                } else {
+                    Toast.makeText(modificar_partner.this, "Error: ID del socio no proporcionado", Toast.LENGTH_SHORT).show();
+                    finish(); // Cerrar la actividad si no se proporciona el ID del socio
+                }
+            }
+        });
 
         // Configurar el evento de clic para el botón de borrado
         Button btBorrar = findViewById(R.id.btguardar1);
@@ -144,7 +169,113 @@ public class modificar_partner extends AppCompatActivity {
         editTextEmail.setText(data.get(6));
         editTextZona.setText(data.get(7));
     }
+    private void guardarInformacion(String idSocio) {
+        try {
+            String partner = idSocio;
+            String nombre = editTextNombre.getText().toString();
+            String CIF = editTextCif.getText().toString();
+            String direccion = editTextDireccion.getText().toString();
+            String telefono = editTextTelefono.getText().toString();
+            String comercial = editTextComercial.getText().toString();
+            String email = editTextEmail.getText().toString();
+            String zona = editTextZona.getText().toString();
 
+            // Validar que los campos no estén vacíos
+            if (nombre.isEmpty()) {
+                throw new IllegalArgumentException("El nombre es obligatorio");
+            }
+            if (CIF.isEmpty()) {
+                throw new IllegalArgumentException("El CIF es obligatorio");
+            } else if (!validarCIF(CIF)) {
+                throw new IllegalArgumentException("El CIF no es válido");
+            }
+
+            if (direccion.isEmpty()) {
+                throw new IllegalArgumentException("La dirección es obligatoria");
+            }
+
+            if (telefono.isEmpty()) {
+                throw new IllegalArgumentException("El teléfono es obligatorio");
+            } else if (telefono.length() != 9) {
+                throw new IllegalArgumentException("El teléfono debe tener 9 números");
+            }
+
+            if (email.isEmpty()) {
+                throw new IllegalArgumentException("El correo electrónico es obligatorio");
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                throw new IllegalArgumentException("El correo electrónico no es válido");
+            }
+
+            if (comercial.isEmpty()) {
+                throw new IllegalArgumentException("El campo comercial es obligatorio");
+            }
+
+            if (zona.isEmpty()) {
+                throw new IllegalArgumentException("El campo zona es obligatorio");
+            }
+
+            // Obtener la fecha actual
+            Date fechaActual = new Date();
+
+            // Formatear la fecha a día, mes y año
+            String formatoFecha = "dd/MM/yyyy";
+            SimpleDateFormat sdf = new SimpleDateFormat(formatoFecha, Locale.getDefault());
+            String fechaFormateada = sdf.format(fechaActual);
+
+            // Configurar el objeto nuevoPartner solo si la validación es exitosa
+            nuevoPartner = new Partner();
+            nuevoPartner.set_nombre(nombre);
+            nuevoPartner.set_cif(CIF);
+            nuevoPartner.set_direccion(direccion);
+            nuevoPartner.set_telefono(Integer.valueOf(telefono));
+            nuevoPartner.set_email(email);
+            nuevoPartner.set_comercial(Integer.valueOf(comercial));
+            nuevoPartner.set_zona(Integer.valueOf(zona));
+            nuevoPartner.set_fecha(fechaFormateada);
+
+            Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
+            borrarSocio(partner);
+            guardarEnXML(partner);
+            finish();
+        } catch (IllegalArgumentException e) {
+            // Se captura la excepción específica para errores de validación
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+            // Coloca el foco en el EditText correspondiente
+            switch (e.getMessage()) {
+                case "El nombre es obligatorio":
+                    editTextNombre.requestFocus();
+                    break;
+                case "El CIF es obligatorio":
+                case "El CIF no es válido":
+                    editTextCif.requestFocus();
+                    break;
+                case "La dirección es obligatoria":
+                    editTextDireccion.requestFocus();
+                    break;
+                case "El teléfono es obligatorio":
+                case "El teléfono debe tener 9 números":
+                    editTextTelefono.requestFocus();
+                    break;
+                case "El correo electrónico es obligatorio":
+                case "El correo electrónico no es válido":
+                    editTextEmail.requestFocus();
+                    break;
+                case "El campo comercial es obligatorio":
+                    editTextComercial.requestFocus();
+                    break;
+                case "El campo zona es obligatorio":
+                    editTextZona.requestFocus();
+                    break;
+            }
+        } catch (Exception e) {
+            // Manejar otras excepciones
+            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    private boolean validarCIF(String cif) {
+        return cif.matches("[A-Za-z]\\d{7}[A-z]");
+    }
     private void borrarSocio(String idSocio) {
         try {
             FileInputStream fis = openFileInput("partners.xml");
@@ -226,6 +357,75 @@ public class modificar_partner extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private void guardarEnXML(String idSocio) {
+        try {
+
+            Integer cantidadPartners = Integer.parseInt(idSocio);
+
+            // Abre un archivo en la memoria interna en modo de apendizaje
+            FileOutputStream fos = openFileOutput("partners.xml", MODE_APPEND);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
+
+            // Si es el primer socio, abre la etiqueta <partners>
+            if (cantidadPartners == 0) {
+                outputStreamWriter.write("<partners>\n");
+            }
+
+            // Elimina la última línea (cierre de </partners>) si ya existe
+            if (cantidadPartners > 0) {
+                FileInputStream fis = openFileInput("partners.xml");
+                InputStreamReader inputStreamReader = new InputStreamReader(fis);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                // Leer el archivo hasta la penúltima línea y copiar al nuevo archivo
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    if (!line.trim().equalsIgnoreCase("</partners>")) {
+                        sb.append(line).append("\n");
+                    }
+                }
+
+                // Cerrar el archivo existente
+                bufferedReader.close();
+                inputStreamReader.close();
+                fis.close();
+
+                // Sobrescribir el archivo con el contenido actualizado
+                FileOutputStream fosUpdate = openFileOutput("partners.xml", MODE_PRIVATE);
+                OutputStreamWriter oswUpdate = new OutputStreamWriter(fosUpdate);
+                oswUpdate.write(sb.toString());
+
+                // Cerrar el archivo actualizado
+                oswUpdate.close();
+                fosUpdate.close();
+            }
+
+            // Nuevo partner con el campo id_partner
+            outputStreamWriter.write("  <partner>\n");
+            outputStreamWriter.write("    <id_partners>" + (cantidadPartners) + "</id_partners>\n");
+            outputStreamWriter.write("    <nombre>" + nuevoPartner.get_nombre() + "</nombre>\n");
+            outputStreamWriter.write("    <cif>" + nuevoPartner.get_cif() + "</cif>\n");
+            outputStreamWriter.write("    <direccion>" + nuevoPartner.get_direccion() + "</direccion>\n");
+            outputStreamWriter.write("    <telefono>" + nuevoPartner.get_telefono() + "</telefono>\n");
+            outputStreamWriter.write("    <comercial>" + nuevoPartner.get_comercial() + "</comercial>\n");
+            outputStreamWriter.write("    <email>" + nuevoPartner.get_email() + "</email>\n");
+            outputStreamWriter.write("    <zona>" + nuevoPartner.get_zona() + "</zona>\n");
+            outputStreamWriter.write("    <fecha>" + nuevoPartner.get_fecha() + "</fecha>\n");
+            outputStreamWriter.write("  </partner>\n");
+
+            // Cierra la etiqueta </partners>
+            outputStreamWriter.write("</partners>\n");
+
+            // Cierra el archivo
+            outputStreamWriter.close();
+            fos.close();
+
+        } catch (Exception e) {
+            // Manejar excepciones
+            Toast.makeText(this, "Error al añadir datos al XML: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
