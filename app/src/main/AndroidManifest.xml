@@ -38,6 +38,7 @@
             android:name=".agenda.agenda"
             android:exported="false" />
         <activity android:name=".partners.partners" />
+        <activity android:name=".partners.modificar_partner" />
         <activity
             android:name=".partners.nuevo_partner"
             android:label="Nuevo Partner" />

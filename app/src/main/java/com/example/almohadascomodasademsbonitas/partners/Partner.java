@@ -13,10 +13,7 @@ public class Partner {
     public Partner(){
         //Constructor vacío
         }
-    public void set_id(Integer id){ this.id = id;}
-    public Integer get_id(){
-        return this.id;
-    }
+
     public void set_nombre(String nombre){ this.nombre = nombre;}
     public String get_nombre(){
             return this.nombre;

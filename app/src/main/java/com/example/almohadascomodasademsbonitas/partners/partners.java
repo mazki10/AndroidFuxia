@@ -56,8 +56,8 @@ public class partners extends AppCompatActivity {
                     // Extraer el primer número
                     String[] parts = primeraFila.split(" ");
                     if (parts.length > 0) {
-                        String primerNumero = parts[0];
-                        Toast.makeText(getApplicationContext(), "Primer número: " + primerNumero, Toast.LENGTH_SHORT).show();
+                        String idPartner = parts[0];
+                        openModificarPartnerActivity(idPartner  );
                     }
                 }
             }
@@ -99,7 +99,7 @@ public class partners extends AppCompatActivity {
                 FileOutputStream os = openFileOutput("partners.xml", MODE_PRIVATE);
 
                 // Escribir la primera línea y la etiqueta <partners>
-                String inicioXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<partners>\n";
+                String inicioXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<partners>\n</partners>";
                 os.write(inicioXml.getBytes());
 
                 // Cerrar el archivo
@@ -159,6 +159,14 @@ public class partners extends AppCompatActivity {
     private void openNuevoPartnerActivity() {
         Intent intent = new Intent(this, nuevo_partner.class);
         this.startActivity(intent);
+    }
+    private void openModificarPartnerActivity(String idPartner) {
+        Intent intent = new Intent(this, modificar_partner.class);
+
+        // Envía el ID del socio a la actividad modificar_partner
+        intent.putExtra("_partner", idPartner);
+
+        startActivity(intent);
     }
 
     @Override
