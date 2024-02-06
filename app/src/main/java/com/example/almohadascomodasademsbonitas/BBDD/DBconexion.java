@@ -24,6 +24,7 @@ public class DBconexion extends SQLiteOpenHelper {
     String sqlCreateAGE = "CREATE TABLE AGENDA (ACTIVIDAD INTEGER, TITULO TEXT, DESCRIPCION TEXT, FECHA DATE, HORA DATE)";
     String sqlCreateCOM = "CREATE TABLE COMERCIALES (NOMBRE TEXT, APELLIDO1 TEXT, APELLIDO2 TEXT, DNI TEXT, DIRECCION TEXT, EMAIL TEXT, ZONA1 INTEGER, ZONA2 INTEGER)";
     String sqlCreateArt = "CREATE TABLE ARTICULOS (ID_ARTICULO INTEGER, ID_PROVEEDOR INTEGER, DESCRIPCION TEXT, PRECIO_VENTA DOUBLE, PRECIO_COSTE DOUBLE, EXISTENCIAS INTEGER, STOCK_MAX INTEGER, STOCK_MIN INTEGER, FEC_ULT_ENT DATE, FEC_ULT_SAL DATE )";
+    String sqlCreateLOG = "CREATE TABLE LOGIN (USER TEXT, PASSWORD TEXT, ID_COMERCIAL TEXT, SESION BOOLEAN,FOREIGN KEY(ID_COMERCIAL) REFERENCES COMERCIALES(DNI))";
 
 
     public DBconexion(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
@@ -41,6 +42,7 @@ public class DBconexion extends SQLiteOpenHelper {
         db.execSQL(sqlCreatePAR);
         db.execSQL(sqlCreateAGE);
         db.execSQL(sqlCreateCOM);
+        db.execSQL(sqlCreateLOG);
 
 
 
