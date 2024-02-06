@@ -161,7 +161,7 @@ public class nuevo_partner extends AppCompatActivity {
     }
 
     private boolean validarCIF(String cif) {
-        return cif.matches("[A-Za-z]\\d{7}[A-z]");
+        return cif.matches("[A-z]\\d{7}[A-z]");
     }
 
     private void guardarEnXML() {
