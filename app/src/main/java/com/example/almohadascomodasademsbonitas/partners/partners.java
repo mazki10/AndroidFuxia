@@ -3,6 +3,8 @@ package com.example.almohadascomodasademsbonitas.partners;
 
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.Enviar;
 import com.example.almohadascomodasademsbonitas.R;
 
@@ -28,18 +31,21 @@ import java.util.ArrayList;
 public class partners extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.partners);
-
         crearXmlEnMemoriaInterna();
-
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
         ListView listView = findViewById(R.id.lvPartners);
-        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
-
+        ArrayList<String> datosDeXmlSinFormato = leerDatosDesdeXmlEnMemoriaInterna();
+        ArrayList<String> datosDeXml = generarFormatoListView(datosDeXmlSinFormato); // Obtener datos sin formato
+        ArrayList<Partner> partners = new ArrayList<>();
+        insertarDesdeXML(datosDeXmlSinFormato, partners);
         // Agrega un listener al ListView
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -56,10 +62,9 @@ public class partners extends AppCompatActivity {
             }
         });
 
-
         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
-        listView.setAdapter(adapter);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml); // Inicializa el adaptador
+        listView.setAdapter(adapter); // Configura el adaptador en el ListView
 
         Button btNuevo = findViewById(R.id.btNuevo);
 
@@ -69,16 +74,43 @@ public class partners extends AppCompatActivity {
                 openNuevoPartnerActivity();
             }
         });
+    }
+    private void insertarDesdeXML(ArrayList<String> datosDeXmlSinFormato, ArrayList<Partner> partners){
+
+        for (int i = 0; i < datosDeXmlSinFormato.size(); i+=9){
+            if(!existeIdPartnerEnBaseDeDatos(datosDeXmlSinFormato.get(i))){
+                partners.add(new Partner(Integer.parseInt(datosDeXmlSinFormato.get(i)) ,
+                        datosDeXmlSinFormato.get(i+1),datosDeXmlSinFormato.get(i+2),datosDeXmlSinFormato.get(i+3),
+                        Integer.parseInt(datosDeXmlSinFormato.get(i+4)),Integer.parseInt(datosDeXmlSinFormato.get(i+5)),
+                        datosDeXmlSinFormato.get(i+6),Integer.parseInt(datosDeXmlSinFormato.get(i+7)) ,
+                        datosDeXmlSinFormato.get(i+8)));
+            }
+        }
+        for (int i = 0; i < partners.size();i++){
+            String insertQuery = "INSERT INTO PARTNERS (ID_PARTNER, NOMBRE, CIF, DIRECCION, TELEFONO, COMERCIAL, EMAIL, ZONA, FECHA) " +
+                    "VALUES (" + partners.get(i).get_id() + ", '" + partners.get(i).get_nombre() + "', '" +
+                    partners.get(i).get_cif() + "', '" + partners.get(i).get_direccion() + "', " +
+                    partners.get(i).get_telefono() + ", " + partners.get(i).get_comercial() + ", '" +
+                    partners.get(i).get_email() + "', " + partners.get(i).get_zona() + ", '" +
+                    partners.get(i).get_fecha() + "')";
 
 
+            db.execSQL(insertQuery);
+        }
     }
     @Override
     protected void onResume() {
         super.onResume();
-        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
-        adapter.clear();
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
+        ArrayList<String> datosDeXmlSinFormato = leerDatosDesdeXmlEnMemoriaInterna();
+        ArrayList<String> datosDeXml = generarFormatoListView(datosDeXmlSinFormato);
+        ArrayList<Partner> partners = new ArrayList<>();
+        insertarDesdeXML(datosDeXmlSinFormato, partners);
+        adapter.clear(); // Aquí es donde se está generando la excepción NullPointerException, asegúrate de que adapter se haya inicializado correctamente en onCreate()
         adapter.addAll(datosDeXml);
         adapter.notifyDataSetChanged();
+
         // Realizar acciones cuando la actividad recupera el foco
     }
 
@@ -120,31 +152,17 @@ public class partners extends AppCompatActivity {
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 if (eventType == XmlPullParser.START_TAG && "partner".equals(parser.getName())) {
                     // Comienza un nuevo elemento partner
-                    StringBuilder currentData = new StringBuilder();
-
-                    String idPartner = ""; // Almacena la ID del socio
 
                     while (!(eventType == XmlPullParser.END_TAG && "partner".equals(parser.getName()))) {
                         if (eventType == XmlPullParser.START_TAG && !parser.getName().equals("partner")) {
-                            // Lee el nombre del tag
-                            String tagName = parser.getName();
-
                             // Lee el contenido del tag
-                            String text = parser.nextText();
+                            String text = parser.nextText().trim();
 
-                            // Almacena la ID del socio si es el tag id_partners
-                            if ("id_partners".equals(tagName)) {
-                                idPartner = text;
-                            }
-
-                            currentData.append(tagName.toUpperCase()).append(":   ").append(text).append("\n");
-
+                            // Agrega el contenido del tag al ArrayList
+                            datosDeXml.add(text);
                         }
                         eventType = parser.next();
                     }
-
-                    // Agrega la ID del socio a la cadena con el contenido del socio y un salto de línea
-                    datosDeXml.add(idPartner + "\n" + currentData.toString().trim() + "\n");
                 }
 
                 eventType = parser.next();
@@ -158,6 +176,47 @@ public class partners extends AppCompatActivity {
 
         return datosDeXml;
     }
+    private ArrayList<String> generarFormatoListView(ArrayList<String> datos) {
+        ArrayList<String> formatoListView = new ArrayList<>();
+
+        // Procesar los datos en bloques de 9 elementos
+        int dataSize = datos.size();
+        for (int i = 0; i + 8 < dataSize; i += 9) {
+            StringBuilder blockData = new StringBuilder();
+            blockData.append(datos.get(i)).append("\n")
+                    .append("Nombre: ").append(datos.get(i + 1)).append("\n")
+                    .append("Apellido: ").append(datos.get(i + 2)).append("\n")
+                    .append("Edad: ").append(datos.get(i + 3)).append("\n")
+                    .append("Dirección: ").append(datos.get(i + 4)).append("\n")
+                    .append("Ciudad: ").append(datos.get(i + 5)).append("\n")
+                    .append("Teléfono: ").append(datos.get(i + 6)).append("\n")
+                    .append("Email: ").append(datos.get(i + 7)).append("\n")
+                    .append("Fecha de Registro: ").append(datos.get(i + 8)).append("\n");
+
+            formatoListView.add(blockData.toString());
+        }
+
+        return formatoListView;
+    }
+    private boolean existeIdPartnerEnBaseDeDatos(String idPartner) {
+        db = dbHelper.getWritableDatabase();
+        String query = "SELECT COUNT(*) FROM PARTNERS WHERE ID_PARTNER = ?";
+        String[] selectionArgs = {idPartner};
+        try {
+            // Ejecutar la consulta y obtener el resultado
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+            if (cursor.moveToFirst()) {
+                int count = cursor.getInt(0);
+                cursor.close();
+                return count > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false; // Si hay algún error o no se encuentra el id_partner, retornar falso
+    }
+
+
 
 
 

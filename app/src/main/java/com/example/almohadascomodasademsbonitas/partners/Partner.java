@@ -13,6 +13,17 @@ public class Partner {
     public Partner(){
         //Constructor vacío
         }
+    public Partner(Integer id, String nombre, String cif, String direccion, Integer telefono, Integer comercial, String email, Integer zona, String fecha) {
+        this.id = id;
+        this.nombre = nombre;
+        this.cif = cif;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.comercial = comercial;
+        this.email = email;
+        this.zona = zona;
+        this.fecha = fecha;
+    }
     public void set_id(String id){ this.id = Integer.parseInt(id);}
     public Integer get_id(){ return this.id;}
     public void set_nombre(String nombre){ this.nombre = nombre;}
