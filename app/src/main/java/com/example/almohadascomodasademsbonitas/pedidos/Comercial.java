@@ -14,8 +14,6 @@ public class Comercial{
   private String email;
   private int zona1;
   private int zona2;
-  private String user;
-  private String password;
 
     public String getNombre() {
         return nombre;
@@ -81,21 +79,6 @@ public class Comercial{
         this.zona2 = zona2;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public Comercial(String nombre, String appellido1, String apellido2, String dni, String direccion, String email, int zona1, int zona2) {
         this.nombre = nombre;
@@ -118,7 +101,5 @@ public class Comercial{
         this.email="";
         this.zona1=0;
         this.zona2=0;
-        this.user="";
-        this.password="";
     }
 }

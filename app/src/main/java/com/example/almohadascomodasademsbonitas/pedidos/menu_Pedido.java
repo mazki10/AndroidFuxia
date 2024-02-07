@@ -1,8 +1,11 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.content.Context;
@@ -18,17 +21,22 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.almohadascomodasademsbonitas.CircularLayout;
 import com.example.almohadascomodasademsbonitas.R;
@@ -43,6 +51,8 @@ public class menu_Pedido extends AppCompatActivity {
     boolean permitirAcceso = true;
     private DBconexion dbHelper;
     private SQLiteDatabase db;
+    private static final int REQUEST_PERMISSION_CODE = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,10 +75,15 @@ public class menu_Pedido extends AppCompatActivity {
         botonAlta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verificarArchivosXML();
-                if (permitirAcceso) {
-                    Intent intent = new Intent(menu_Pedido.this, actividad_pedido.class);
-                    menu_Pedido.this.startActivity(intent);
+                if (ContextCompat.checkSelfPermission(menu_Pedido.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // Si no tienes permisos, solicitarlos al usuario
+                    ActivityCompat.requestPermissions(menu_Pedido.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
+                } else {
+                    verificarArchivosXML();
+                    if (permitirAcceso) {
+                        Intent intent = new Intent(menu_Pedido.this, actividad_pedido.class);
+                        menu_Pedido.this.startActivity(intent);
+                    }
                 }
             }
         });
@@ -96,8 +111,8 @@ public class menu_Pedido extends AppCompatActivity {
 
 
 
-        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1));
 
+        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1));
 
         articulos.add(new Articulo(1,101,"jordi",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
         articulos.add(new Articulo(2,102,"bale",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
@@ -154,58 +169,162 @@ public class menu_Pedido extends AppCompatActivity {
                 permitirAcceso = true;
             }
         }*/
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Verificar si el código de solicitud es el mismo que el que utilizamos al solicitar permisos
+        if (requestCode == REQUEST_PERMISSION_CODE) {
+            // Verificar si el usuario concedió el permiso
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido, continuar con la lógica para acceder al archivo
+                verificarArchivosXML();
+            } else {
+                // Permiso denegado, puedes mostrar un mensaje al usuario o realizar otra acción
+                Toast.makeText(this, "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     private void verificarArchivosXML() {
         permitirAcceso = true; // Restablecer el valor por defecto
 
-        File comercialesFile = new File(getFilesDir(), "comerciales.xml");
-        File partnersFile = new File(getFilesDir(), "partners.xml");
+        File descargasFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        File comercialesFile = new File(descargasFolder, "comerciales.xml");
+        File partnersFile = new File(descargasFolder, "partners.xml");
 
-        // Verifica la existencia de los archivos
+        // Verifica la existencia de los archivos en la carpeta Descargas
         if (!comercialesFile.exists()) {
-            try {
-                comercialesFile.createNewFile();
-                // Escribe el contenido inicial en el archivo
-                escribirContenidoInicialComerciales(comercialesFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-                mostrarAlertDialog("Error", "Error al crear el archivo comerciales.xml.");
-                permitirAcceso = false;
-                return;
-            }
+            mostrarAlertDialog("Error", "El archivo comerciales.xml no se encontró en la carpeta Descargas.");
+            permitirAcceso = false;
+            return;
         }
 
         if (!partnersFile.exists()) {
-            try {
-                partnersFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                mostrarAlertDialog("Error", "Error al crear el archivo partners.xml.");
-                permitirAcceso = false;
-                return;
-            }
+            mostrarAlertDialog("Error", "El archivo partners.xml no se encontró en la carpeta Descargas.");
+            permitirAcceso = false;
+            return;
         }
 
-        // Verifica si los archivos están vacíos
+        // Leer datos de los archivos en la carpeta de descargas
+        String comercialesData;
         try {
-            FileInputStream comercialesStream = new FileInputStream(comercialesFile);
-            FileInputStream partnersStream = new FileInputStream(partnersFile);
-
-            if (comercialesStream.available() == 0 || partnersStream.available() == 0) {
-                mostrarAlertDialog("Archivos vacíos", "Los archivos comerciales.xml y/o partners.xml están vacíos.");
-                permitirAcceso = false;
-            }
-
-            comercialesStream.close();
-            partnersStream.close();
+            comercialesData = leerDatosArchivo(comercialesFile);
         } catch (IOException e) {
             e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al leer los archivos XML.");
+            mostrarAlertDialog("Error", "Error al leer los datos del archivo comerciales.xml.");
+            permitirAcceso = false;
+            return;
+        }
+
+        String partnersData;
+        try {
+            partnersData = leerDatosArchivo(partnersFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlertDialog("Error", "Error al leer los datos del archivo partners.xml.");
+            permitirAcceso = false;
+            return;
+        }
+
+        // Escribir los datos en los archivos correspondientes en la carpeta interna
+        File filesFolder = getFilesDir();
+        File comercialesInternal = new File(filesFolder, "comerciales.xml");
+        File partnersInternal = new File(filesFolder, "partners.xml");
+
+        try {
+            if (!filesFolder.exists()) {
+                filesFolder.mkdirs(); // Crea la carpeta interna si no existe
+            }
+
+            escribirDatosEnArchivo(comercialesData, comercialesInternal);
+            escribirDatosEnArchivo(partnersData, partnersInternal);
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlertDialog("Error", "Error al crear los nuevos archivos en la carpeta interna.");
             permitirAcceso = false;
         }
     }
 
-    private void escribirContenidoInicialComerciales(File comercialesFile) {
+    private String leerDatosArchivo(File file) throws IOException {
+        Log.d("Archivo", "Leyendo archivo desde: " + file.getAbsolutePath());
+
+        FileInputStream inputStream = new FileInputStream(file);
+        StringBuilder stringBuilder = new StringBuilder();
+        int character;
+        while ((character = inputStream.read()) != -1) {
+            stringBuilder.append((char) character);
+        }
+        inputStream.close();
+
+        String contenidoArchivo = stringBuilder.toString();
+        Log.d("Archivo", "Contenido del archivo leído: " + contenidoArchivo);
+
+        return contenidoArchivo;
+    }
+
+
+
+    private void escribirDatosEnArchivo(String data, File file) throws IOException {
+        FileOutputStream outputStream = new FileOutputStream(file);
+        outputStream.write(data.getBytes());
+        outputStream.close();
+    }
+
+
+    private void escribirContenidoNuevoArchivo(File sourceFile, File destinationFile) throws IOException {
+        FileInputStream inputStream = new FileInputStream(sourceFile);
+        FileOutputStream outputStream = new FileOutputStream(destinationFile);
+
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = inputStream.read(buffer)) > 0) {
+            outputStream.write(buffer, 0, length);
+        }
+
+        inputStream.close();
+        outputStream.close();
+    }
+
+
+    private void escribirContenidoInicialPartners(File partnersFile) {
+        try {
+            FileWriter writer = new FileWriter(partnersFile);
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            writer.write("<partners>\n");
+
+            writer.write("</partners>\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlertDialog("Error", "Error al escribir el contenido inicial en el archivo partners.xml.");
+            permitirAcceso = false;
+        }
+    }
+
+
+
+    private void copyFile(File source, File destination) {
+        try {
+            FileInputStream inputStream = new FileInputStream(source);
+            FileOutputStream outputStream = new FileOutputStream(destination);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+
+            inputStream.close();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlertDialog("Error de copia", "Error al copiar el archivo: " + e.getMessage());
+            permitirAcceso = false;
+        }
+    }
+
+    /*private void escribirContenidoInicialComerciales(File comercialesFile) {
         try {
             FileOutputStream outputStream = new FileOutputStream(comercialesFile);
             StringBuilder contenidoInicial = new StringBuilder();
@@ -235,7 +354,7 @@ public class menu_Pedido extends AppCompatActivity {
             mostrarAlertDialog("Error", "Error al escribir el contenido inicial en el archivo comerciales.xml.");
             permitirAcceso = false;
         }
-    }
+    }*/
 
 
     private void mostrarAlertDialog(String titulo, String mensaje) {

@@ -38,7 +38,7 @@ public class pagina2pedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina2pedidos);
 
-        Button buttonGuardar = findViewById(R.id.button);
+        Button buttonGuardar = findViewById(R.id.bTiN);
 
         // Obtiene los datos del Bundle
         Bundle extras = getIntent().getExtras();

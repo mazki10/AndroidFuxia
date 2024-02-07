@@ -21,6 +21,12 @@
         android:theme="@style/Theme.AlmohadasComodasAdemásBonitas"
         tools:targetApi="31">
         <activity
+            android:name=".ActividadCicurlarLayout"
+            android:exported="false" />
+        <activity
+            android:name=".LogIn.LogIn"
+            android:exported="false" />
+        <activity
             android:name=".Enviar"
             android:exported="false" />
 
@@ -45,11 +51,9 @@
         <activity
             android:name=".pedidos.actividad_pedido"
             android:exported="false" />
-
         <activity
             android:name=".pedidos.ModificarDatosActivity"
             android:exported="false" />
-
         <activity
             android:name=".pedidos.modificar_pedido"
             android:exported="false" />
@@ -79,7 +83,8 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
     </application>
+
 </manifest>
