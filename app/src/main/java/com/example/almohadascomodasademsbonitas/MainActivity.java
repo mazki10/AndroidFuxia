@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private DBconexion dbHelper;
@@ -40,23 +41,6 @@ public class MainActivity extends AppCompatActivity {
 
         dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
-        // Archivos que se deben verificar y copiar
-        String[] archivosARevisar = {"pedidos.xml", "partners.xml"};
-
-        for (String nombreArchivo : archivosARevisar) {
-            // Ruta del archivo en el directorio de Descargas
-            File archivoDescargas = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), nombreArchivo);
-
-            if (archivoDescargas.exists()) {
-                Log.d("MainActivity", "Copiando " + nombreArchivo);
-                try {
-                    copiarArchivo(archivoDescargas, new File(getFilesDir(), nombreArchivo));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e("MainActivity", "Error al copiar " + nombreArchivo + ": " + e.getMessage());
-                }
-            }
-        }
 
         // Crea la base de datos ACAB
         crearBaseDatosACAB();
@@ -103,23 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void copiarArchivo(File sourceFile, File destFile) throws IOException {
-        FileChannel sourceChannel = null;
-        FileChannel destChannel = null;
-
-        try {
-            sourceChannel = new FileInputStream(sourceFile).getChannel();
-            destChannel = new FileOutputStream(destFile).getChannel();
-            destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-        } finally {
-            if (sourceChannel != null) {
-                sourceChannel.close();
-            }
-            if (destChannel != null) {
-                destChannel.close();
-            }
-        }
-    }
 
     private void crearBaseDatosACAB() {
         try {
@@ -140,5 +107,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this,ActividadCicurlarLayout .class);//declarar la nueva actividad
 
         startActivity(intent);//lanzar la actividad
+    }
+    protected void onRestart(){
+        super.onRestart();
+        finish();
     }
 }
