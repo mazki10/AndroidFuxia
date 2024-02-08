@@ -4,6 +4,7 @@ package com.example.almohadascomodasademsbonitas.pedidos;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -31,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -58,13 +60,14 @@ public class menu_Pedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
 
-        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        dbHelper = new DBconexion(menu_Pedido.this, "ACAB2", null, 1);
         db = dbHelper.getWritableDatabase();
         botonAlta = findViewById(R.id.buttonAlta);
         botonBaja = findViewById(R.id.buttonBaja);
         botonModificacion = findViewById(R.id.buttonModificar);
         botonSalir = findViewById(R.id.buttonSalir);
-
+        crearPartnersXML();
+        crearComercialesXML();
         botonSalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,16 +78,17 @@ public class menu_Pedido extends AppCompatActivity {
         botonAlta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(menu_Pedido.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     // Si no tienes permisos, solicitarlos al usuario
-                    ActivityCompat.requestPermissions(menu_Pedido.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
-                } else {
+
                     verificarArchivosXML();
-                    if (permitirAcceso) {
-                        Intent intent = new Intent(menu_Pedido.this, actividad_pedido.class);
-                        menu_Pedido.this.startActivity(intent);
-                    }
+                if (permitirAcceso) {
+                    Intent intent = new Intent(menu_Pedido.this, actividad_pedido.class);
+                    menu_Pedido.this.startActivity(intent);
+                }else{
+                    //crearComercialesXML();
+                    //crearPartnersXML();
                 }
+
             }
         });
 
@@ -115,12 +119,12 @@ public class menu_Pedido extends AppCompatActivity {
         comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1));
 
         articulos.add(new Articulo(1,101,"jordi",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(2,102,"bale",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(3,103,"bob",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(4,42,"cartas",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(5,1312,"hello",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
+        articulos.add(new Articulo(2,102,"bale",50.0,25.0,70,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
+        articulos.add(new Articulo(3,103,"bob",50.0,25.0,50,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
+        articulos.add(new Articulo(4,42,"cartas",50.0,25.0,80,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
+        articulos.add(new Articulo(5,1312,"hello",50.0,25.0,130,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
         articulos.add(new Articulo(6,101,"patriota",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(7,42,"pistola",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
+        articulos.add(new Articulo(7,42,"pistola",50.0,25.0,140,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
         articulos.add(new Articulo(8,102,"verde",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
 
 
@@ -142,13 +146,14 @@ public class menu_Pedido extends AppCompatActivity {
                     articulos.get(i).getStock_max() + "," + articulos.get(i).getStock_min() + ",'" + articulos.get(i).getFec_ult_ent() + "','" + articulos.get(i).getFec_ult_sal() + "')";
             Log.d("Insertion", "Inserting articulo: " + articulos.get(i).getDescripcion());
             db.execSQL(insertQuery);
+
         }
 
 
 
     }
-
-    /*    private void verificarArchivosXML() {
+/*
+       private void verificarArchivosXML() {
             File comercialesFile = new File(getFilesDir(), "comerciales.xml");
             File partnersFile = new File(getFilesDir(), "partners.xml");
 
@@ -169,7 +174,7 @@ public class menu_Pedido extends AppCompatActivity {
                 permitirAcceso = true;
             }
         }*/
-    @Override
+   /* @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -184,67 +189,109 @@ public class menu_Pedido extends AppCompatActivity {
                 Toast.makeText(this, "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show();
             }
         }
-    }
+    }*/
+private void crearPartnersXML() {
+    try {
+        File file = new File(getFilesDir(), "partners.xml"); // Ruta en el almacenamiento interno
+        FileWriter writer = new FileWriter(file);
+        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        writer.write("<partners>\n");
 
+        // Datos de los partners
+        String[] nombres = {"Jose Antonio", "Manuel Laboa", "Manute Jagger"};
+        String[] cif = {"ABC123456", "XYZ789012", "DEF345678"};
+        String[] direcciones = {"Calle Ejemplo, 123", "Avenida de Prueba, 456", "Plaza de Muestra, 789"};
+        String[] telefonos = {"123456789", "987654321", "555666777"};
+        String[] emails = {"ejemplo@correo.com", "prueba@correo.com", "muestra@correo.com"};
+        String[] personasContacto = {"Juan Pérez", "Maria Gómez", "Pedro Rodríguez"};
+        int[] idZona = {1, 2, 3};
+
+        // Escribir datos de partners
+        for (int i = 0; i < nombres.length; i++) {
+            writer.write("    <partner>\n");
+            writer.write("        <id_partners>" + (i + 1) + "</id_partners>\n");
+            writer.write("        <nombre>" + nombres[i] + "</nombre>\n");
+            writer.write("        <cif>" + cif[i] + "</cif>\n");
+            writer.write("        <direccion>" + direcciones[i] + "</direccion>\n");
+            writer.write("        <telefono>" + telefonos[i] + "</telefono>\n");
+            writer.write("        <email>" + emails[i] + "</email>\n");
+            writer.write("        <persona_de_contacto>" + personasContacto[i] + "</persona_de_contacto>\n");
+            writer.write("        <id_zona>" + idZona[i] + "</id_zona>\n");
+            writer.write("    </partner>\n");
+        }
+
+        writer.write("</partners>\n");
+        writer.close();
+        System.out.println("Archivo partners.xml creado correctamente.");
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+    private  void crearComercialesXML() {
+        try {
+            File file = new File(getFilesDir(), "comerciales.xml"); // Ruta en el almacenamiento interno
+            FileWriter writer = new FileWriter(file);
+            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            writer.write("<comerciales>\n");
+
+            // Datos de los comerciales
+            String[] nombres = {"Juan", "Pedro", "Maria"};
+            String[] apellido1 = {"Gomez", "Martínez", "Lopez"};
+            String[] apellido2 = {"Perez", "Sanchez", "Garcia"};
+            String[] dni = {"12345678X", "56789012Z", "98765432Y"};
+            String[] direcciones = {"Calle Principal 123", "Plaza Principal 789", "98765432Y"};
+            String[] emails = {"juan@example.com", "pedro@example.com", "maria@example.com"};
+            int[] zona1 = {1, 3, 2};
+            int[] zona2 = {2, 1, 3};
+
+            // Escribir datos de comerciales
+            for (int i = 0; i < nombres.length; i++) {
+                writer.write("    <comercial>\n");
+                writer.write("        <nombre>" + nombres[i] + "</nombre>\n");
+                writer.write("        <apellido1>" + apellido1[i] + "</apellido1>\n");
+                writer.write("        <apellido2>" + apellido2[i] + "</apellido2>\n");
+                writer.write("        <dni>" + dni[i] + "</dni>\n");
+                writer.write("        <direccion>" + direcciones[i] + "</direccion>\n");
+                writer.write("        <email>" + emails[i] + "</email>\n");
+                writer.write("        <zona1>" + zona1[i] + "</zona1>\n");
+                writer.write("        <zona2>" + zona2[i] + "</zona2>\n");
+                writer.write("    </comercial>\n");
+            }
+
+            writer.write("</comerciales>\n");
+            writer.close();
+            System.out.println("Archivo comerciales.xml creado correctamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void verificarArchivosXML() {
         permitirAcceso = true; // Restablecer el valor por defecto
 
-        File descargasFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File comercialesFile = new File(descargasFolder, "comerciales.xml");
-        File partnersFile = new File(descargasFolder, "partners.xml");
-
-        // Verifica la existencia de los archivos en la carpeta Descargas
-        if (!comercialesFile.exists()) {
-            mostrarAlertDialog("Error", "El archivo comerciales.xml no se encontró en la carpeta Descargas.");
-            permitirAcceso = false;
-            return;
-        }
-
-        if (!partnersFile.exists()) {
-            mostrarAlertDialog("Error", "El archivo partners.xml no se encontró en la carpeta Descargas.");
-            permitirAcceso = false;
-            return;
-        }
-
-        // Leer datos de los archivos en la carpeta de descargas
-        String comercialesData;
-        try {
-            comercialesData = leerDatosArchivo(comercialesFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al leer los datos del archivo comerciales.xml.");
-            permitirAcceso = false;
-            return;
-        }
-
-        String partnersData;
-        try {
-            partnersData = leerDatosArchivo(partnersFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al leer los datos del archivo partners.xml.");
-            permitirAcceso = false;
-            return;
-        }
-
-        // Escribir los datos en los archivos correspondientes en la carpeta interna
         File filesFolder = getFilesDir();
-        File comercialesInternal = new File(filesFolder, "comerciales.xml");
-        File partnersInternal = new File(filesFolder, "partners.xml");
+        File comercialesFile = new File(filesFolder, "comerciales.xml");
+        File partnersFile = new File(filesFolder, "partners.xml");
 
-        try {
-            if (!filesFolder.exists()) {
-                filesFolder.mkdirs(); // Crea la carpeta interna si no existe
-            }
-
-            escribirDatosEnArchivo(comercialesData, comercialesInternal);
-            escribirDatosEnArchivo(partnersData, partnersInternal);
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al crear los nuevos archivos en la carpeta interna.");
+        // Verifica la existencia de los archivos en la carpeta interna
+        if (!comercialesFile.exists() || !partnersFile.exists()) {
+            mostrarAlertDialog("Error", "Los archivos comerciales.xml y/o partners.xml no se encontraron en la carpeta interna.");
             permitirAcceso = false;
+            return;
+        }
+
+        // Verifica si los archivos están vacíos
+        if (comercialesFile.length() == 0 || partnersFile.length() == 0) {
+            // Si al menos uno de los archivos está vacío, procede a rellenarlos
+            if (comercialesFile.length() == 0) {
+                escribirContenidoInicialComerciales(comercialesFile);
+            }
+            if (partnersFile.length() == 0) {
+                escribirContenidoInicialPartners(partnersFile);
+            }
         }
     }
+
 
     private String leerDatosArchivo(File file) throws IOException {
         Log.d("Archivo", "Leyendo archivo desde: " + file.getAbsolutePath());
@@ -324,7 +371,7 @@ public class menu_Pedido extends AppCompatActivity {
         }
     }
 
-    /*private void escribirContenidoInicialComerciales(File comercialesFile) {
+    private void escribirContenidoInicialComerciales(File comercialesFile) {
         try {
             FileOutputStream outputStream = new FileOutputStream(comercialesFile);
             StringBuilder contenidoInicial = new StringBuilder();
@@ -341,8 +388,6 @@ public class menu_Pedido extends AppCompatActivity {
                 contenidoInicial.append("        <email>").append(comercial.getEmail()).append("</email>\n");
                 contenidoInicial.append("        <zona1>").append(comercial.getZona1()).append("</zona1>\n");
                 contenidoInicial.append("        <zona2>").append(comercial.getZona2()).append("</zona2>\n");
-                contenidoInicial.append("        <user>").append(comercial.getUser()).append("</user>\n");
-                contenidoInicial.append("        <password>").append(comercial.getPassword()).append("</password>\n");
                 contenidoInicial.append("    </comercial>\n");
             }
 
@@ -354,7 +399,7 @@ public class menu_Pedido extends AppCompatActivity {
             mostrarAlertDialog("Error", "Error al escribir el contenido inicial en el archivo comerciales.xml.");
             permitirAcceso = false;
         }
-    }*/
+    }
 
 
     private void mostrarAlertDialog(String titulo, String mensaje) {

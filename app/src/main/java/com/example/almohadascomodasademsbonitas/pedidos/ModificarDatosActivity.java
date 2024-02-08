@@ -23,9 +23,10 @@ public class ModificarDatosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modificar_datos);
+        Bundle extras = getIntent().getExtras();
 
         // Obtén la posición del pedido seleccionado del intent
-        int posicionPedido = getIntent().getIntExtra("POSICION_PEDIDO", -1);
+        int posicionPedido =extras.getInt("POSICION_PEDIDO");
 
         ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
@@ -35,29 +36,35 @@ public class ModificarDatosActivity extends AppCompatActivity {
 
             // Muestra los datos en los campos de edición o realiza las acciones necesarias
             // (puedes agregar EditText u otros elementos de interfaz de usuario según tus necesidades)
-            String[] campos = pedidoSeleccionado.split(";"); // Supongamos que los campos están separados por ";"
-
-            EditText editTextNombrePedido = findViewById(R.id.editTextNombrePedido);
-            editTextNombrePedido.setText(campos[0]); // Suponiendo que el nombre está en el primer campo
+            String[] campos = pedidoSeleccionado.split(";");
+            EditText fecha_envio = findViewById(R.id.fecha_envio);
 
             EditText comercial = findViewById(R.id.comercial);
-            comercial.setText(campos[1]); // Suponiendo que el otro campo 1 está en el segundo campo
+            EditText nombre = findViewById(R.id.descripcion);
+            EditText partner = findViewById(R.id.partner);
+            EditText fecha_pedido = findViewById(R.id.fecha_pedido);
 
-            EditText descuento = findViewById(R.id.descuento);
-            descuento.setText(campos[2]); // Suponiendo que el otro campo 1 está en el segundo campo
 
-            EditText cantidad = findViewById(R.id.cantidad);
-            cantidad.setText(campos[3]); // Suponiendo que el otro campo 2 está en el tercer campo
+            if (campos.length >= 5) { // Verifica si hay al menos 5 campos separados por ";"
+                comercial.setText(campos[0]);
+                partner.setText(campos[1]);
+                nombre.setText(campos[2]);
+                fecha_pedido.setText(campos[3]);
+                fecha_envio.setText(campos[4]);
+            } else {
 
+            }
             // Agrega el listener al botón para guardar cambios
             Button btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
             btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Guarda los cambios en el XML
-                    String nuevoPedido = editTextNombrePedido.getText().toString().trim() + ";" +
-                            descuento.getText().toString().trim() + ";" +
-                            cantidad.getText().toString().trim();
+                    String nuevoPedido = comercial.getText().toString().trim() + ";" +
+                            partner.getText().toString().trim() + ";" +
+                            nombre.getText().toString().trim()+ ";" +
+                            fecha_envio.getText().toString().trim()+";"+
+                            fecha_pedido.getText().toString().trim();
 
                     datosDeXml.set(posicionPedido, nuevoPedido);
                     guardarDatosEnXmlEnMemoriaInterna(datosDeXml);

@@ -22,7 +22,7 @@ public class adaptadorRecycleView extends RecyclerView.Adapter<adaptadorRecycleV
     private ArrayList<String> mNames = new ArrayList<>();
 
     private Context mcontext;
-TextView name;
+    TextView name;
     public void setOnItemClickListener(OnItemClickListener listener) {
         mListener = listener;
     }

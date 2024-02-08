@@ -1,7 +1,11 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import java.io.BufferedReader;
@@ -30,13 +35,24 @@ public class pagina2pedido extends AppCompatActivity {
     private int contadorIdPedido = 0;  // Contador global para el id_pedido
    // private int contadorNFactura = 0;
     String fecha;
-
+    Double descuento;
+    int cantidad_total=0;
     private int precioPorProducto;
-
+    ArrayList<Integer>cantidad=new ArrayList<>();
+    private DBconexion dbconexion;
+ArrayList <String> descripcion=new ArrayList<>();
+String dni_comercial = "iker";
+    double precioTotal = 0;
+    //public pagina2pedido(DBconexion dbHelper) {
+       // this.dbHelper = dbHelper;
+    //}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina2pedidos);
+        dbconexion = new  DBconexion(this,"ACAB2.db",null,1);
+        SQLiteDatabase database = dbconexion.getWritableDatabase();
+
 
         Button buttonGuardar = findViewById(R.id.bTiN);
 
@@ -64,6 +80,20 @@ public class pagina2pedido extends AppCompatActivity {
           //      contadorNFactura = 0;
             }
         }
+
+
+        Cursor cursor = database.rawQuery("SELECT DNI FROM COMERCIALES WHERE NOMBRE = '" + comerciales + "'", null);
+        if (cursor != null && cursor.moveToFirst()) {
+            int dniColumnIndex = cursor.getColumnIndex("DNI");
+            if (dniColumnIndex != -1) {
+                dni_comercial = cursor.getString(dniColumnIndex);
+            } else {
+                // La columna "DNI" no se encontró en el Cursor
+                Log.e("Error", "La columna 'DNI' no se encontró en el Cursor");
+            }
+            cursor.close(); // Es importante cerrar el cursor después de su uso
+        }
+
         buttonGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,10 +101,10 @@ public class pagina2pedido extends AppCompatActivity {
                 guardarEnXML(listaPedidos);
                 Intent intent = new Intent(pagina2pedido.this, com.example.almohadascomodasademsbonitas.pedidos.menu_Pedido.class);
                 startActivity(intent);
-
             }
         });
     }
+
 
     // Elimina estas líneas de la parte inicial de guardarEnXML
     /*
@@ -108,6 +138,8 @@ public class pagina2pedido extends AppCompatActivity {
 
     private boolean isXmlFileExist() {
         File file = new File(getFilesDir(), "pedidos.xml");
+        Toast toast = Toast.makeText(this,String.valueOf(file.exists()),Toast.LENGTH_SHORT);
+        toast.show();
         return file.exists();
     }
 
@@ -198,7 +230,8 @@ public class pagina2pedido extends AppCompatActivity {
 
             // Incrementa el contador solo si hay pedidos en la lista
             contadorIdPedido++;
-
+            Toast toast = Toast.makeText(this,"empieza la parte de xml",Toast.LENGTH_SHORT);
+            toast.show();
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
             if (!isXmlFileExist()) {
@@ -229,19 +262,34 @@ public class pagina2pedido extends AppCompatActivity {
                 xmlData += "    <id_partner>" + partners + "</id_partner>\n";
                 xmlData += "    <id_comercial>" + comerciales + "</id_comercial>\n";
 
-                int precioTotal = 0;
+
+
+
 
                 for (int i = 0; i < listaPedidos.size(); i++) {
+                    cantidad_total+=listaPedidos.get(i).getCantidad();
                     // Agregar información de productos (puedes adaptar esta lógica según tus necesidades)
                     xmlData += "    <producto>\n";
                     xmlData += "      <id_articulo>" + listaPedidos.get(i).getImagen() + "</id_articulo>\n";
                     xmlData += "      <cantidad>" + listaPedidos.get(i).getCantidad() + "</cantidad>\n";
-                    xmlData += "      <descuento>0</descuento>\n";
                     xmlData += "      <precio_un>30</precio_un>\n";
                     xmlData += "    </producto>\n";
-
+                    descripcion.add(listaPedidos.get(i).getImagen());
+                    cantidad.add(listaPedidos.get(i).getCantidad());
                     precioTotal += listaPedidos.get(i).getCantidad() * 30;
                 }
+
+                if (cantidad_total>=1&&cantidad_total<=2){
+                    descuento = 1.0;
+                }else if(cantidad_total>=3&&cantidad_total<=7) {
+                    descuento = 15.0;
+                } else if (cantidad_total>=7&&cantidad_total<=20) {
+                    descuento = 25.0;
+                } else if (cantidad_total>20) {
+                    descuento = 50.0;
+                }
+
+                precioTotal*=descuento/100;
 
                 // Agregar la fecha, precio total y número de factura
                 xmlData += "    <fecha>" + fechaActual + "</fecha>\n";
@@ -259,6 +307,65 @@ public class pagina2pedido extends AppCompatActivity {
             FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
             outputStreamWriter.write(xmlData);
+Toast toast2 = Toast.makeText(this,"empieza la parte de BBDD",Toast.LENGTH_SHORT);
+toast2.show();
+            // Dentro de tu método guardarEnXML después de crear el xmlData
+// Crea o obtén una instancia de la base de datos
+     //       pagina2pedido pagina2pedidoActivity = new pagina2pedido(dbHelper);
+
+            SQLiteDatabase db = getWritableDatabase();
+
+// Inicia una transacción
+            db.beginTransaction();
+            try {
+
+
+                // Insertar datos en la tabla CAB_PEDIDOS
+              //  ContentValues cabValues = new ContentValues();
+              //  cabValues.put("ID_PEDIDO", contadorIdPedido);
+              //  cabValues.put("ID_COMERCIAL", comerciales);
+              //  cabValues.put("ID_PARTNER", partners);
+              //  cabValues.put("DESCRIPCION", "Descripción del pedido"); // Reemplaza con la descripción adecuada
+              //  cabValues.put("FECHA_PEDIDO", fecha);
+              //  cabValues.put("FECHA_ENVIO", fecha); // Cambiar si hay una fecha de envío diferente
+              //  cabValues.put("ENTREGADO", 0); // Cambiar a 1 si el pedido está entregado
+              //  db.insert("CAB_PEDIDOS", null, cabValues);
+
+                // Insertar datos en la tabla LIN_PEDIDOS
+              //  for (Pedido pedido : listaPedidos) {
+              //      ContentValues linValues = new ContentValues();
+              //      linValues.put("ID_PEDIDO", contadorIdPedido);
+              //      linValues.put("ID_LINEA", 0); // Puedes usar un contador para las líneas del pedido si lo necesitas
+              //      linValues.put("CANTIDAD", pedido.getCantidad());
+              //      linValues.put("DESCUENTO", descuento); // Ajusta según sea necesario
+              //      linValues.put("PRECIO_UN", 30); // Precio unitario fijo
+               //     linValues.put("PRECIO_TOTAL", precioTotal); // Precio total calculado
+               //     db.insert("LIN_PEDIDOS", null, linValues);
+             //   }
+
+                for (int i = 0; i < descripcion.size(); i++) {
+                    String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_COMERCIAL, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+                            "VALUES (" + contadorIdPedido + ", '" + dni_comercial + "', " + partners + ", '" +
+                            descripcion.get(i).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
+                    db.execSQL(insertQuery);
+                    Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
+                }
+
+                for (int i = 0; i < cantidad.size(); i++) {
+                    String insertQuery = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
+                            "VALUES (" + contadorIdPedido + ", " + (i + 1) + ", " + cantidad.get(i).toString() + ", " +
+                            descuento + ", " + 30 + ", " + precioTotal + ")";
+                    db.execSQL(insertQuery);
+                    Log.d("Insertion", "Inserting lin_pedido: " + insertQuery);
+                }
+
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al añadir datos a la base de datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            } finally {
+                db.endTransaction();
+            }
 
             // Cerrar y flushear el OutputStreamWriter
             outputStreamWriter.flush();
@@ -274,7 +381,16 @@ public class pagina2pedido extends AppCompatActivity {
             Toast.makeText(this, "Error al añadir datos al XML: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
+    private SQLiteDatabase getWritableDatabase() {
+        // Verificar si dbHelper está inicializado
+        if (dbconexion != null) {
+            // Llamar al método getWritableDatabase() de DBconexion y retornar el resultado
+            return dbconexion.getWritableDatabase();
+        } else {
+            // Si dbHelper no está inicializado, retornar null o manejar el caso según tus necesidades
+            return null;
+        }
+    }
     private String leerContenidoXML() {
         try {
             FileInputStream fis = openFileInput("pedidos.xml");

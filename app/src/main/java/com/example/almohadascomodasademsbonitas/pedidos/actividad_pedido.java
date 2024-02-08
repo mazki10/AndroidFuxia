@@ -99,7 +99,7 @@ TextView textViewExistencias;
 
 
 
-        Consulta();
+      Consulta();
 
         if (!datosArticulosDDBB.isEmpty()) {
             textViewExistencias.setText(String.valueOf(datosArticulosDDBB.get(0).getExistencias()));
@@ -167,7 +167,6 @@ TextView textViewExistencias;
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     int itemPosition = rvLista.getChildLayoutPosition(rvLista.findChildViewUnder(event.getX(), event.getY()));
-
                     /*rvLista.findChildViewUnder(event.getX(), event.getY()): Este método encuentra la vista del hijo
                     en el RecyclerView que está ubicada en las coordenadas especificadas. En otras palabras, determina
                     qué elemento del RecyclerView fue tocado en la posición (event.getX(), event.getY()).
@@ -179,8 +178,10 @@ TextView textViewExistencias;
                     if (itemPosition != RecyclerView.NO_POSITION) {
                         // Aquí actualizas la variable imagenSeleccionada
                         imagenSeleccionada = itemPosition;
-                        textViewExistencias.setText(datosArticulosDDBB.get(imagenSeleccionada).getExistencias());
-                        textViewStock_max.setText(datosArticulosDDBB.get(imagenSeleccionada).getStock_max());
+
+                        // Actualiza los TextViews con la información del artículo seleccionado
+                        textViewExistencias.setText(String.valueOf(datosArticulosDDBB.get(imagenSeleccionada).getExistencias()));
+                        textViewStock_max.setText(String.valueOf(datosArticulosDDBB.get(imagenSeleccionada).getStock_max()));
                         textViewPrecio.setText(String.valueOf(datosArticulosDDBB.get(imagenSeleccionada).getPrecio_venta()));
 
                         // No llames al método incrementarNumeroEnTextView() aquí
@@ -288,29 +289,25 @@ TextView textViewExistencias;
             TextConf.setText(String.valueOf(cantidad));
 
             // Obtén el nombre del producto seleccionado según la imagen
-            String nombreProducto = obtenerNombreProductoDesdeImagen(imagenSeleccionada);
+            String nombreProducto = mNames.get(imagenSeleccionada);
             int precioProducto = obtenerprecioArticulo(nombreProducto);
-            // Obtén la cantidad del EditText
-            String cantidadEditText = editText.getText().toString();
 
-            // Verifica si la cadena del EditText no está vacía
-            if (!cantidadEditText.isEmpty()) {
+// Verifica si la cadena del EditText no está vacía
+            if (!textViewExistencias.equals("")||!textViewExistencias.equals("0")) {
                 // Convierte la cantidad del EditText a un entero
-                int cantidadPedido = Integer.parseInt(cantidadEditText);
+                int cantidadPedido = Integer.parseInt(textViewExistencias.getText().toString());
 
-                 /*Si la lista de pedidos está vacía, se asigna el valor 1 a contadorIdPedido.
-                Si la lista no está vacía, se toma el último elemento de la lista (listaPedidos.get(listaPedidos.size() - 1))
-                y se obtiene su ID de pedido (getIdPedido()). Luego, se suma 1 a ese ID y se asigna el resultado a contadorIdPedido.*/
+     /*Si la lista de pedidos está vacía, se asigna el valor 1 a contadorIdPedido.
+    Si la lista no está vacía, se toma el último elemento de la lista (listaPedidos.get(listaPedidos.size() - 1))
+    y se obtiene su ID de pedido (getIdPedido()). Luego, se suma 1 a ese ID y se asigna el resultado a contadorIdPedido.*/
                 int contadorIdPedido = (listaPedidos.isEmpty()) ? 1 : listaPedidos.get(listaPedidos.size() - 1).getIdPedido() + 1;
-
 
                 // Crea un objeto Pedido y agrégalo al ArrayList
                 Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto,partnerEleguido,comercialEleguido,"", 0,0, fecha,0);//SE NECESITA BBDD PARA SEGUIR CON ESTO
-
                 listaPedidos.add(nuevoPedido);
 
                 // Imprime información del nuevo pedido (ajústalo según tus necesidades)
-                Log.d("actividad_pedido", "Nuevo pedido: Imagen: " + nombreProducto + ", Cantidad: " + nuevoPedido.getCantidad());
+                Log.d("actividad_pedido", "Nuevo pedido: Producto: " + nombreProducto + ", Cantidad: " + nuevoPedido.getCantidad());
             } else {
                 // Manejo de caso cuando el EditText está vacío
                 TextConf.setText("0"); // O cualquier otro valor predeterminado que desees
@@ -386,7 +383,7 @@ TextView textViewExistencias;
 
 
 
-    private void getImages(){
+   /* private void getImages(){
         mImagesUrls.add(String.valueOf(R.drawable.jordi));
         mNames.add("jordi elegido");
         mImagesUrls.add(String.valueOf(R.drawable.bale));
@@ -407,7 +404,7 @@ TextView textViewExistencias;
         getRecycleView();
 
 
-    }
+    }*/
 
    /* private void getRecycleView(){
 
@@ -435,11 +432,14 @@ TextView textViewExistencias;
 
         // Agrega un listener para manejar los clics en las imágenes
         adaptadorRecycleView.setOnItemClickListener(new adaptadorRecycleView.OnItemClickListener() {
-            @Override
+
             public void onItemClick(int position) {
                 Log.d("actividad_pedido", "Clic en la posición: " + position);
                 // Aquí actualizas la variable imagenSeleccionada
                 imagenSeleccionada = position;
+                textViewExistencias.setText(String.valueOf(datosArticulosDDBB.get(position).getExistencias()));
+                textViewStock_max.setText(String.valueOf(datosArticulosDDBB.get(position).getStock_max()));
+                textViewPrecio.setText(String.valueOf(datosArticulosDDBB.get(position).getPrecio_venta()));
                 // Ahora el método incrementarNumeroEnTextView no se llamará automáticamente al hacer clic en el RecyclerView
                 // Puedes dejar este espacio en blanco o realizar otras acciones si es necesario
             }
@@ -456,25 +456,17 @@ TextView textViewExistencias;
 
 
     private void beginXMLparsingComerciales() {
-        InputStream is = null;
         try {
             File file = new File(getFilesDir(), "comerciales.xml");
-            is = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
+            // Verificar si el archivo existe antes de intentar leerlo
+            if (file.exists()) {
+                InputStream is = new FileInputStream(file);
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
-        try{
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        Document doc = null;
+                Document doc = documentBuilder.parse(is);
 
         try{
             doc = documentBuilder.parse(is);
@@ -516,6 +508,18 @@ TextView textViewExistencias;
 
 
         updateSpinnerComerciales();
+            } else {
+                Log.e("XML Parsing", "El archivo XML 'comerciales.xml' no existe");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -580,13 +584,16 @@ TextView textViewExistencias;
          int zona2;
 
 
-        DBconexion dbconexion = new  DBconexion(this,"ACAB2",null,1);
+        DBconexion dbconexion = new  DBconexion(actividad_pedido.this,"ACAB2",null,1);
         SQLiteDatabase database = dbconexion.getWritableDatabase();
 
         Cursor filaCOM = database.rawQuery
                 ("SELECT * FROM COMERCIALES",null);
         Cursor filaArt = database.rawQuery
                 ("SELECT * FROM ARTICULOS",null);
+
+
+
 
         while (filaCOM.moveToNext()) {
 
@@ -648,13 +655,12 @@ TextView textViewExistencias;
 
 
     private void beginXMLparsingPartners() {
-        InputStream is = null;
         try {
             File file = new File(getFilesDir(), "partners.xml");
-            is = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+            // Verificar si el archivo existe antes de intentar leerlo
+            if (file.exists()) {
+                InputStream is = new FileInputStream(file);
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = null;
@@ -706,6 +712,12 @@ TextView textViewExistencias;
 
 
         updateSpinnerPartners();
+            } else {
+                Log.e("XML Parsing", "El archivo XML 'partners.xml' no existe");
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
