@@ -181,8 +181,7 @@ public class ModificarDatosActivity extends AppCompatActivity {
         // Devolver los datos actualizados al pedido seleccionado
         Intent intent = new Intent(ModificarDatosActivity.this,com.example.almohadascomodasademsbonitas.pedidos.modificar_pedido.class);
         intent.putExtra("PEDIDO_ACTUALIZADO", pedidoActualizado);
-        setResult(RESULT_OK, intent);
-
+        startActivity(intent);
         // Cerrar la actividad de modificación
         finish();
     }

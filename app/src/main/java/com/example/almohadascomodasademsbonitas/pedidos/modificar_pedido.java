@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -282,7 +283,7 @@ public class modificar_pedido extends AppCompatActivity {
                      pedidoActualizado = data.getStringExtra("PEDIDO_ACTUALIZADO");
                     // Aquí puedes hacer lo que necesites con el pedido actualizado
                     // Por ejemplo, puedes mostrarlo en un Toast
-                    // Toast.makeText(this, "Pedido Actualizado: " + pedidoActualizado, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Pedido Actualizado: " + pedidoActualizado, Toast.LENGTH_SHORT).show();
                 }
             }
         }
