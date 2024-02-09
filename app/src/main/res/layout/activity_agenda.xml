@@ -16,13 +16,6 @@
         android:gravity="end"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btRfr"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:textSize="34sp"
-            app:icon="@drawable/actualizar" />
-
 
         <TextView
             android:id="@+id/tvCont"

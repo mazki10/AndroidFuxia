@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Xml;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -42,10 +44,11 @@ import java.util.Date;
 
 public class agenda extends AppCompatActivity {
     private TextView tv;
-    private Button btBus, btSig, btAnt, btAn, btRrfs;
+    private Button btBus, btSig, btAnt, btAn;
     private ListView lvAct;
     private String[] nombreMeses;
-
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
     private Calendar cal = Calendar.getInstance();
     private int anio = cal.get(Calendar.YEAR);
     private int mes = cal.get(Calendar.MONTH);
@@ -63,9 +66,11 @@ public class agenda extends AppCompatActivity {
         btBus = findViewById(R.id.btBus);
         btSig = findViewById(R.id.btSigMes);
         btAnt = findViewById(R.id.btAntMes);
-        btRrfs = findViewById(R.id.btRfr);
         btAn = findViewById(R.id.btNue);
         lvAct = findViewById(R.id.lvAg);
+
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
 
         nombreMeses = getResources().getStringArray(R.array.nombremeses);
 
@@ -79,13 +84,6 @@ public class agenda extends AppCompatActivity {
         cargarDatosDesdeXml();
         adapter.notifyDataSetChanged();
 
-        btRrfs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cargarDatosDesdeXml();
-                adapter.notifyDataSetChanged();
-            }
-        });
         btBus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +154,12 @@ public class agenda extends AppCompatActivity {
                         .show();
             }
         });
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        cargarDatosDesdeXml();
+        adapter.notifyDataSetChanged();
     }
 
     private void eliminarActividad(Actividad actividad) {

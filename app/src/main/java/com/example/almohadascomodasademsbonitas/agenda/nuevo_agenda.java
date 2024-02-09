@@ -2,6 +2,7 @@ package com.example.almohadascomodasademsbonitas.agenda;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Xml;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlSerializer;
@@ -29,6 +31,8 @@ public class nuevo_agenda extends AppCompatActivity {
     private EditText edtTit, edtDes;
     private Button btFec, btNue;
     private TextView tvFec;
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
     private String FILE_NAME = "actividades.xml";
 
     private Calendar cal = Calendar.getInstance();
@@ -51,6 +55,8 @@ public class nuevo_agenda extends AppCompatActivity {
         btFec = findViewById(R.id.botFec);
         btNue = findViewById(R.id.botNue);
 
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
         btFec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,45 +84,25 @@ public class nuevo_agenda extends AppCompatActivity {
         String descripcion = edtDes.getText().toString();
         String hora = obtenerHoraSeleccionada();
         String fecha = obtenerFechaSeleccionada();
+
         if (!titulo.isEmpty() && fechaSeleccionada != null && horaSeleccionada != null) {
-        try {
-            File directory = getFilesDir();
-            File file = new File(directory, FILE_NAME);
-            FileOutputStream fileos = new FileOutputStream(file, true); // 'true' para añadir al archivo existente
+            try {
+                String insertQuery = "INSERT INTO AGENDA (TITULO, DESCRIPCION, FECHA, HORA) VALUES (?, ?, ?, ?)";
 
-            XmlSerializer xmlSerializer = Xml.newSerializer();
-            xmlSerializer.setOutput(fileos, "UTF-8");
+                db.execSQL(insertQuery, new Object[]{titulo, descripcion, fecha, hora});
 
-            xmlSerializer.startTag(null, "actividad");
+                db.close();
 
-            xmlSerializer.startTag(null, "titulo");
-            xmlSerializer.text(titulo);
-            xmlSerializer.endTag(null, "titulo");
-
-            xmlSerializer.startTag(null, "descripcion");
-            xmlSerializer.text(descripcion);
-            xmlSerializer.endTag(null, "descripcion");
-
-            xmlSerializer.startTag(null, "fecha");
-            xmlSerializer.text(fecha);
-            xmlSerializer.endTag(null, "fecha");
-
-            xmlSerializer.startTag(null, "hora");
-            xmlSerializer.text(hora);
-            xmlSerializer.endTag(null, "hora");
-
-            xmlSerializer.endTag(null, "actividad");
-            xmlSerializer.endDocument();
-
-            xmlSerializer.flush();
-            fileos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                Toast.makeText(this, "Actividad agregada correctamente", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(this, "Error al agregar actividad", Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, "Por favor, rellena el título, la fecha y la hora", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     public String obtenerFechaSeleccionada() {
         return fechaSeleccionada;

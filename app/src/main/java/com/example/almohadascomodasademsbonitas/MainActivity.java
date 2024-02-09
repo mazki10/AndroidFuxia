@@ -13,9 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
-import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
-import com.example.almohadascomodasademsbonitas.LogIn.LogIn;
-import com.example.almohadascomodasademsbonitas.R;
 
 import java.io.File;
 import java.io.FileInputStream;
