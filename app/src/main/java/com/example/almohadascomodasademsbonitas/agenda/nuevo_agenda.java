@@ -80,6 +80,7 @@ public class nuevo_agenda extends AppCompatActivity {
         }
     }
     private void agregarActividad() {
+
         String titulo = edtTit.getText().toString();
         String descripcion = edtDes.getText().toString();
         String hora = obtenerHoraSeleccionada();
