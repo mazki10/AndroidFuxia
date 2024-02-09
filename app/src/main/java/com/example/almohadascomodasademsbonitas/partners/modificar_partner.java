@@ -96,6 +96,7 @@ public class modificar_partner extends AppCompatActivity {
                     String idSocio = extras.getString("_partner");
                     // Borrar el socio con el ID proporcionado
                     borrarSocio(idSocio);
+                    borrarPartnerBBDD(idSocio);
                     // Añadir aquí cualquier acción adicional después de borrar el socio
                 } else {
                     Toast.makeText(modificar_partner.this, "Error: ID del socio no proporcionado", Toast.LENGTH_SHORT).show();
@@ -387,7 +388,16 @@ public class modificar_partner extends AppCompatActivity {
         db.execSQL(sql);
         db.close();
     }
+    public void borrarPartnerBBDD(String idPartner){
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
+        // Construir la sentencia SQL para la actualización
+        String sql = "DELETE FROM PARTNERS WHERE ID_PARTNER = "+idPartner+"";
 
+        // Ejecutar la sentencia SQL
+        db.execSQL(sql);
+        db.close();
+    }
 
     private void guardarEnXML(String idSocio) {
         try {
