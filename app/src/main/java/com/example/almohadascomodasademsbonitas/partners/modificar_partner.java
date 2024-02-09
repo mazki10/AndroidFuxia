@@ -1,5 +1,7 @@
 package com.example.almohadascomodasademsbonitas.partners;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
@@ -10,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -35,6 +38,9 @@ public class modificar_partner extends AppCompatActivity {
     private EditText editTextNombre, editTextCif, editTextDireccion, editTextTelefono,
             editTextEmail, editTextComercial, editTextZona;
     private Partner nuevoPartner;
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,6 +230,7 @@ public class modificar_partner extends AppCompatActivity {
 
             // Configurar el objeto nuevoPartner solo si la validación es exitosa
             nuevoPartner = new Partner();
+            nuevoPartner.set_id(partner);
             nuevoPartner.set_nombre(nombre);
             nuevoPartner.set_cif(CIF);
             nuevoPartner.set_direccion(direccion);
@@ -236,6 +243,7 @@ public class modificar_partner extends AppCompatActivity {
             Toast.makeText(this, "Información guardada correctamente", Toast.LENGTH_SHORT).show();
             borrarSocio(partner);
             guardarEnXML(partner);
+            actualizarPartner(nuevoPartner);
             finish();
         } catch (IllegalArgumentException e) {
             // Se captura la excepción específica para errores de validación
@@ -359,6 +367,28 @@ public class modificar_partner extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    // Método para actualizar los datos de un socio
+    // Método para actualizar los datos de un socio
+    public void actualizarPartner(Partner partner) {
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
+        // Construir la sentencia SQL para la actualización
+        String sql = "UPDATE PARTNERS SET " +
+                "NOMBRE='" + partner.get_nombre() + "', " +
+                "CIF='" + partner.get_cif() + "', " +
+                "DIRECCION='" + partner.get_direccion() + "', " +
+                "TELEFONO=" + partner.get_telefono() + ", " +
+                "COMERCIAL=" + partner.get_comercial() + ", " +
+                "EMAIL='" + partner.get_email() + "', " +
+                "ZONA=" + partner.get_zona() +
+                " WHERE ID_PARTNER=" + partner.get_id();
+
+        // Ejecutar la sentencia SQL
+        db.execSQL(sql);
+        db.close();
+    }
+
+
     private void guardarEnXML(String idSocio) {
         try {
 
