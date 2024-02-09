@@ -1,5 +1,7 @@
 package com.example.almohadascomodasademsbonitas.partners;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -26,6 +29,8 @@ public class nuevo_partner extends AppCompatActivity {
 
     private EditText editTextNombre, editTextDireccion, editTextTelefono, editTextComercial, editTextEmail, editTextCIF, editTextZona;
     private Partner nuevoPartner;
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,44 +245,30 @@ public class nuevo_partner extends AppCompatActivity {
 
 
 
+
     private int obtenerNuevoIdPartner() {
         int nuevoId = 1;  // Valor predeterminado si no hay ningún socio aún
 
         try {
-            FileInputStream fis = openFileInput("partners.xml");
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(fis, null);
 
-            int eventType = parser.getEventType();
+            dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+            db = dbHelper.getReadableDatabase();
 
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG && "partner".equals(parser.getName())) {
-                    // Comienza un nuevo elemento partner
-                    String currentId = "";
-                    while (!(eventType == XmlPullParser.END_TAG && "partner".equals(parser.getName()))) {
-                        if (eventType == XmlPullParser.START_TAG) {
-                            String tagName = parser.getName();
-                            eventType = parser.next();
+            // Realiza la consulta SQL para obtener el máximo id_partners
+            String query = "SELECT MAX(id_partner) FROM partners";
+            Cursor cursor = db.rawQuery(query, null);
 
-                            // Leer el contenido del socio
-                            if (eventType == XmlPullParser.TEXT && "id_partners".equals(tagName)) {
-                                currentId = parser.getText();
-                            }
-                        }
-                        eventType = parser.next();
-                    }
-
-                    // Actualizar el nuevoId si el id_partners actual es mayor
-                    int idInt = Integer.parseInt(currentId);
-                    if (idInt >= nuevoId) {
-                        nuevoId = idInt + 1;
-                    }
-                }
-                eventType = parser.next();
+            // Mueve el cursor al primer resultado
+            if (cursor.moveToFirst()) {
+                // Obtiene el valor máximo actual
+                int maxId = cursor.getInt(0);
+                // Calcula el nuevo ID agregándole uno al máximo actual
+                nuevoId = maxId + 1;
             }
 
-            fis.close();
+            // Cierra el cursor y la base de datos
+            cursor.close();
+            db.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -285,6 +276,7 @@ public class nuevo_partner extends AppCompatActivity {
 
         return nuevoId;
     }
+
 
 
 

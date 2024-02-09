@@ -44,8 +44,8 @@ public class partners extends AppCompatActivity {
         ListView listView = findViewById(R.id.lvPartners);
         ArrayList<String> datosDeXmlSinFormato = leerDatosDesdeXmlEnMemoriaInterna();
         ArrayList<String> datosDeXml = generarFormatoListView(datosDeXmlSinFormato); // Obtener datos sin formato
-        ArrayList<Partner> partners = new ArrayList<>();
-        insertarDesdeXML(datosDeXmlSinFormato, partners);
+
+        insertarDesdeXML(datosDeXmlSinFormato);
         // Agrega un listener al ListView
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -75,8 +75,8 @@ public class partners extends AppCompatActivity {
             }
         });
     }
-    private void insertarDesdeXML(ArrayList<String> datosDeXmlSinFormato, ArrayList<Partner> partners){
-
+    private void insertarDesdeXML(ArrayList<String> datosDeXmlSinFormato){
+        ArrayList<Partner> partners = new ArrayList<>();
         for (int i = 0; i < datosDeXmlSinFormato.size(); i+=9){
             if(!existeIdPartnerEnBaseDeDatos(datosDeXmlSinFormato.get(i))){
                 partners.add(new Partner(Integer.parseInt(datosDeXmlSinFormato.get(i)) ,
@@ -105,18 +105,14 @@ public class partners extends AppCompatActivity {
         db = dbHelper.getWritableDatabase();
         ArrayList<String> datosDeXmlSinFormato = leerDatosDesdeXmlEnMemoriaInterna();
         ArrayList<String> datosDeXml = generarFormatoListView(datosDeXmlSinFormato);
-        ArrayList<Partner> partners = new ArrayList<>();
-        insertarDesdeXML(datosDeXmlSinFormato, partners);
-        adapter.clear(); // Aquí es donde se está generando la excepción NullPointerException, asegúrate de que adapter se haya inicializado correctamente en onCreate()
+        insertarDesdeXML(datosDeXmlSinFormato);
+        adapter.clear();
         adapter.addAll(datosDeXml);
         adapter.notifyDataSetChanged();
-
-        // Realizar acciones cuando la actividad recupera el foco
     }
 
     private void crearXmlEnMemoriaInterna() {
         try {
-            // Verificar si el archivo ya existe en la memoria interna
             File file = new File(getFilesDir(), "partners.xml");
 
             if (!file.exists()) {
@@ -124,10 +120,10 @@ public class partners extends AppCompatActivity {
                 FileOutputStream os = openFileOutput("partners.xml", MODE_PRIVATE);
 
                 // Escribir la primera línea y la etiqueta <partners>
-                String inicioXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<partners>\n</partners>";
+                String inicioXml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                                    "<partners>\n" +
+                                    "</partners>";
                 os.write(inicioXml.getBytes());
-
-                // Cerrar el archivo
                 os.close();
             }
         } catch (Exception e) {
