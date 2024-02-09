@@ -293,9 +293,9 @@ TextView textViewExistencias;
             int precioProducto = obtenerprecioArticulo(nombreProducto);
 
 // Verifica si la cadena del EditText no está vacía
-            if (!textViewExistencias.equals("")||!textViewExistencias.equals("0")) {
+            if (!editText.equals("")||!editText.equals("0")) {
                 // Convierte la cantidad del EditText a un entero
-                int cantidadPedido = Integer.parseInt(textViewExistencias.getText().toString());
+                int cantidadPedido = Integer.parseInt(editText.getText().toString());
 
      /*Si la lista de pedidos está vacía, se asigna el valor 1 a contadorIdPedido.
     Si la lista no está vacía, se toma el último elemento de la lista (listaPedidos.get(listaPedidos.size() - 1))

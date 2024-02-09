@@ -289,7 +289,7 @@ String dni_comercial = "iker";
                     descuento = 50.0;
                 }
 
-                precioTotal*=descuento/100;
+                precioTotal= precioTotal * (descuento/100);
 
                 // Agregar la fecha, precio total y número de factura
                 xmlData += "    <fecha>" + fechaActual + "</fecha>\n";

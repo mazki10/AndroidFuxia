@@ -20,15 +20,15 @@
 
     <ListView
         android:id="@+id/lvPartners"
-        android:layout_width="409dp"
-        android:layout_height="560dp"
+        android:layout_width="365dp"
+        android:layout_height="512dp"
         android:choiceMode="multipleChoice"
         app:layout_constraintBottom_toTopOf="@+id/btnModificar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.897"
-        />
+        app:layout_constraintVertical_bias="0.703" />
 
     <TextView
         android:id="@+id/tvPartners"

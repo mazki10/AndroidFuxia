@@ -43,6 +43,14 @@ import androidx.core.content.ContextCompat;
 import com.example.almohadascomodasademsbonitas.CircularLayout;
 import com.example.almohadascomodasademsbonitas.R;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 public class menu_Pedido extends AppCompatActivity {
     ArrayList<Cab_Pedido> cab_pedidos =  new ArrayList<>();
     ArrayList<Lin_Pedido> lin_pedidos =  new ArrayList<>();
@@ -66,8 +74,7 @@ public class menu_Pedido extends AppCompatActivity {
         botonBaja = findViewById(R.id.buttonBaja);
         botonModificacion = findViewById(R.id.buttonModificar);
         botonSalir = findViewById(R.id.buttonSalir);
-        crearPartnersXML();
-        crearComercialesXML();
+
         botonSalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,160 +119,74 @@ public class menu_Pedido extends AppCompatActivity {
         });
 
 
-
-
-
-
-        comerciales.add(new Comercial("Jose","Alfredo","Alfredo","12345678A","Dirigeme esta","sisi@gmail.com",2,1));
-
-        articulos.add(new Articulo(1,101,"jordi",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(2,102,"bale",50.0,25.0,70,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(3,103,"bob",50.0,25.0,50,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(4,42,"cartas",50.0,25.0,80,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(5,1312,"hello",50.0,25.0,130,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(6,101,"patriota",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(7,42,"pistola",50.0,25.0,140,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-        articulos.add(new Articulo(8,102,"verde",50.0,25.0,100,200,10,LocalDate.of(2024,1,10),LocalDate.of(2024,1,20)));
-
-
-
-
-
-        for(int i=0; i<comerciales.size();i++){
-            String insertQuery = "INSERT INTO COMERCIALES (NOMBRE, APELLIDO1, APELLIDO2, DNI, DIRECCION, EMAIL, ZONA1, ZONA2) " +
-                    "VALUES ('" + comerciales.get(i).getNombre() + "', '" + comerciales.get(i).getAppellido1() + "', '" + comerciales.get(i).getApellido2() + "', '" +
-                    comerciales.get(i).getDni() + "', '" + comerciales.get(i).getDireccion() + "', '" + comerciales.get(i).getEmail()+ "'," +
-                    comerciales.get(i).getZona1() + "," + comerciales.get(i).getZona2() + ")";
-            db.execSQL(insertQuery);
-        }
-
-        for (int i = 0; i < articulos.size(); i++) {
-            String insertQuery = "INSERT INTO ARTICULOS (ID_ARTICULO, ID_PROVEEDOR, DESCRIPCION, PRECIO_VENTA, PRECIO_COSTE, EXISTENCIAS, STOCK_MAX, STOCK_MIN, FEC_ULT_ENT, FEC_ULT_SAL) " +
-                    "VALUES (" + articulos.get(i).getId_articulo() + ", " + articulos.get(i).getId_proveedor() + ", '" + articulos.get(i).getDescripcion() + "', " +
-                    articulos.get(i).getPrecio_venta() + ", " + articulos.get(i).getPrecio_coste() + ", " + articulos.get(i).getExistencias() + "," +
-                    articulos.get(i).getStock_max() + "," + articulos.get(i).getStock_min() + ",'" + articulos.get(i).getFec_ult_ent() + "','" + articulos.get(i).getFec_ult_sal() + "')";
-            Log.d("Insertion", "Inserting articulo: " + articulos.get(i).getDescripcion());
-            db.execSQL(insertQuery);
-
-        }
-
-
-
     }
-/*
-       private void verificarArchivosXML() {
-            File comercialesFile = new File(getFilesDir(), "comerciales.xml");
-            File partnersFile = new File(getFilesDir(), "partners.xml");
-
-            // Verifica la existencia de los archivos
-            if (!comercialesFile.exists() || !partnersFile.exists()) {
-                mostrarAlertDialog("Faltan archivos", "Los archivos comerciales.xml y/o partners.xml no están presentes.");
-                permitirAcceso = false;
-                return;
-            }else {
-                permitirAcceso = true;
-            }
-
-            // Verifica si los archivos están vacíos
-            if (comercialesFile.length() == 0 || partnersFile.length() == 0) {
-                mostrarAlertDialog("Archivos vacíos", "Los archivos comerciales.xml y/o partners.xml están vacíos.");
-                permitirAcceso = false;
-            }else {
-                permitirAcceso = true;
-            }
-        }*/
-   /* @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Verificar si el código de solicitud es el mismo que el que utilizamos al solicitar permisos
-        if (requestCode == REQUEST_PERMISSION_CODE) {
-            // Verificar si el usuario concedió el permiso
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, continuar con la lógica para acceder al archivo
-                verificarArchivosXML();
-            } else {
-                // Permiso denegado, puedes mostrar un mensaje al usuario o realizar otra acción
-                Toast.makeText(this, "Permiso de almacenamiento denegado", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }*/
-private void crearPartnersXML() {
-    try {
-        File file = new File(getFilesDir(), "partners.xml"); // Ruta en el almacenamiento interno
-        FileWriter writer = new FileWriter(file);
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-        writer.write("<partners>\n");
-
-        // Datos de los partners
-        String[] nombres = {"Jose Antonio", "Manuel Laboa", "Manute Jagger"};
-        String[] cif = {"ABC123456", "XYZ789012", "DEF345678"};
-        String[] direcciones = {"Calle Ejemplo, 123", "Avenida de Prueba, 456", "Plaza de Muestra, 789"};
-        String[] telefonos = {"123456789", "987654321", "555666777"};
-        String[] emails = {"ejemplo@correo.com", "prueba@correo.com", "muestra@correo.com"};
-        String[] personasContacto = {"Juan Pérez", "Maria Gómez", "Pedro Rodríguez"};
-        int[] idZona = {1, 2, 3};
-
-        // Escribir datos de partners
-        for (int i = 0; i < nombres.length; i++) {
-            writer.write("    <partner>\n");
-            writer.write("        <id_partners>" + (i + 1) + "</id_partners>\n");
-            writer.write("        <nombre>" + nombres[i] + "</nombre>\n");
-            writer.write("        <cif>" + cif[i] + "</cif>\n");
-            writer.write("        <direccion>" + direcciones[i] + "</direccion>\n");
-            writer.write("        <telefono>" + telefonos[i] + "</telefono>\n");
-            writer.write("        <email>" + emails[i] + "</email>\n");
-            writer.write("        <persona_de_contacto>" + personasContacto[i] + "</persona_de_contacto>\n");
-            writer.write("        <id_zona>" + idZona[i] + "</id_zona>\n");
-            writer.write("    </partner>\n");
-        }
-
-        writer.write("</partners>\n");
-        writer.close();
-        System.out.println("Archivo partners.xml creado correctamente.");
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-    private  void crearComercialesXML() {
+    private void cargarPartnersDesdeXML(File file) {
         try {
-            File file = new File(getFilesDir(), "comerciales.xml"); // Ruta en el almacenamiento interno
-            FileWriter writer = new FileWriter(file);
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            writer.write("<comerciales>\n");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(file);
 
-            // Datos de los comerciales
-            String[] nombres = {"Juan", "Pedro", "Maria"};
-            String[] apellido1 = {"Gomez", "Martínez", "Lopez"};
-            String[] apellido2 = {"Perez", "Sanchez", "Garcia"};
-            String[] dni = {"12345678X", "56789012Z", "98765432Y"};
-            String[] direcciones = {"Calle Principal 123", "Plaza Principal 789", "98765432Y"};
-            String[] emails = {"juan@example.com", "pedro@example.com", "maria@example.com"};
-            int[] zona1 = {1, 3, 2};
-            int[] zona2 = {2, 1, 3};
+            doc.getDocumentElement().normalize();
 
-            // Escribir datos de comerciales
-            for (int i = 0; i < nombres.length; i++) {
-                writer.write("    <comercial>\n");
-                writer.write("        <nombre>" + nombres[i] + "</nombre>\n");
-                writer.write("        <apellido1>" + apellido1[i] + "</apellido1>\n");
-                writer.write("        <apellido2>" + apellido2[i] + "</apellido2>\n");
-                writer.write("        <dni>" + dni[i] + "</dni>\n");
-                writer.write("        <direccion>" + direcciones[i] + "</direccion>\n");
-                writer.write("        <email>" + emails[i] + "</email>\n");
-                writer.write("        <zona1>" + zona1[i] + "</zona1>\n");
-                writer.write("        <zona2>" + zona2[i] + "</zona2>\n");
-                writer.write("    </comercial>\n");
+            NodeList nodeList = doc.getElementsByTagName("partner");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    int id = Integer.parseInt(element.getElementsByTagName("id_partners").item(0).getTextContent());
+                    String nombre = element.getElementsByTagName("nombre").item(0).getTextContent();
+                    String cif = element.getElementsByTagName("cif").item(0).getTextContent();
+                    String direccion = element.getElementsByTagName("direccion").item(0).getTextContent();
+                    int telefono =  Integer.parseInt(element.getElementsByTagName("telefono").item(0).getTextContent());
+                    int comercial = Integer.parseInt(element.getElementsByTagName("comercial").item(0).getTextContent());
+                    String email = element.getElementsByTagName("email").item(0).getTextContent();
+                    int idZona = Integer.parseInt(element.getElementsByTagName("id_zona").item(0).getTextContent());
+                    String fecha = element.getElementsByTagName("fecha").item(0).getTextContent();
+                    Partner partner = new Partner(id, nombre,cif, direccion, telefono, comercial,email, idZona,fecha);
+                    partners.add(partner);
+
+                    }
             }
-
-            writer.write("</comerciales>\n");
-            writer.close();
-            System.out.println("Archivo comerciales.xml creado correctamente.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void cargarArticulosDesdeXML(File file) {
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(file);
+
+            doc.getDocumentElement().normalize();
+
+            NodeList nodeList = doc.getElementsByTagName("articulo");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    int id = Integer.parseInt(element.getElementsByTagName("id_articulo").item(0).getTextContent());
+                    int idProveedor = Integer.parseInt(element.getElementsByTagName("id_proveedor").item(0).getTextContent());
+                    String descripcion = element.getElementsByTagName("descripcion").item(0).getTextContent();
+                    double precioVenta = Double.parseDouble(element.getElementsByTagName("precio_venta").item(0).getTextContent());
+                    double precioCoste = Double.parseDouble(element.getElementsByTagName("precio_coste").item(0).getTextContent());
+                    int existencias = Integer.parseInt(element.getElementsByTagName("existencias").item(0).getTextContent());
+                    int stockMax = Integer.parseInt(element.getElementsByTagName("stock_max").item(0).getTextContent());
+                    int stockMin = Integer.parseInt(element.getElementsByTagName("stock_min").item(0).getTextContent());
+                    LocalDate fecUltEnt = LocalDate.parse(element.getElementsByTagName("fec_ult_ent").item(0).getTextContent());
+                    LocalDate fecUltSal = LocalDate.parse(element.getElementsByTagName("fec_ult_sal").item(0).getTextContent());
+
+                    Articulo articulo = new Articulo(id, idProveedor, descripcion, precioVenta, precioCoste, existencias, stockMax, stockMin, fecUltEnt, fecUltSal);
+                    articulos.add(articulo);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void verificarArchivosXML() {
         permitirAcceso = true; // Restablecer el valor por defecto
 

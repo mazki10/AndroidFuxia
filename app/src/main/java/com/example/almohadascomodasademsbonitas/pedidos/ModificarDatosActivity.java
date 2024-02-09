@@ -1,13 +1,19 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -19,69 +25,51 @@ import java.util.ArrayList;
 
 public class ModificarDatosActivity extends AppCompatActivity {
 
+    private EditText editTextComercial;
+    private EditText editTextPartner;
+    private EditText editTextDescripcion;
+    private EditText editTextFechaPedido;
+    private EditText editTextFechaEnvio;
+    private Button btnGuardarCambios;
+    private ArrayList<String> datosOriginales; // Guardar los datos originales
+    private int position;
+    String comercial;
+    String partner;
+    String descripcion;
+    String fechaPedido;
+    String fechaEnvio;
+    String fecha;
+    double precioFinal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modificar_datos);
-        Bundle extras = getIntent().getExtras();
 
-        // Obtén la posición del pedido seleccionado del intent
-        int posicionPedido =extras.getInt("POSICION_PEDIDO");
+        // Obtener referencias a los elementos de interfaz de usuario en tu diseño
+        editTextComercial = findViewById(R.id.comercial);
+        editTextPartner = findViewById(R.id.partner);
+        editTextFechaPedido = findViewById(R.id.fecha_pedido);
+        editTextFechaEnvio = findViewById(R.id.fecha_envio);
+        btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
 
-        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+        // Recuperar los datos originales del Intent
+        datosOriginales = getIntent().getStringArrayListExtra("PEDIDO_SELECCIONADO");
+        position = getIntent().getIntExtra("POSICION_PEDIDO", -1);
+         fecha = getIntent().getStringExtra("FECHA_PEDIDO");
+         precioFinal = getIntent().getDoubleExtra("PRECIO_FINAL", 0.0);
 
-        if (posicionPedido != -1 && posicionPedido < datosDeXml.size()) {
-            // Aquí puedes usar los datos del pedido en la posición especificada
-            String pedidoSeleccionado = datosDeXml.get(posicionPedido);
-
-            // Muestra los datos en los campos de edición o realiza las acciones necesarias
-            // (puedes agregar EditText u otros elementos de interfaz de usuario según tus necesidades)
-            String[] campos = pedidoSeleccionado.split(";");
-            EditText fecha_envio = findViewById(R.id.fecha_envio);
-
-            EditText comercial = findViewById(R.id.comercial);
-            EditText nombre = findViewById(R.id.descripcion);
-            EditText partner = findViewById(R.id.partner);
-            EditText fecha_pedido = findViewById(R.id.fecha_pedido);
-
-
-            if (campos.length >= 5) { // Verifica si hay al menos 5 campos separados por ";"
-                comercial.setText(campos[0]);
-                partner.setText(campos[1]);
-                nombre.setText(campos[2]);
-                fecha_pedido.setText(campos[3]);
-                fecha_envio.setText(campos[4]);
-            } else {
-
-            }
-            // Agrega el listener al botón para guardar cambios
-            Button btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
-            btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Guarda los cambios en el XML
-                    String nuevoPedido = comercial.getText().toString().trim() + ";" +
-                            partner.getText().toString().trim() + ";" +
-                            nombre.getText().toString().trim()+ ";" +
-                            fecha_envio.getText().toString().trim()+";"+
-                            fecha_pedido.getText().toString().trim();
-
-                    datosDeXml.set(posicionPedido, nuevoPedido);
-                    guardarDatosEnXmlEnMemoriaInterna(datosDeXml);
-
-                    // Puedes mostrar un mensaje de éxito o realizar otras acciones necesarias
-                    // Toast.makeText(ModificarDatosActivity.this, "Cambios guardados", Toast.LENGTH_SHORT).show();
-
-                    // Cierra la actividad después de guardar los cambios
-                    finish();
-                }
-            });
-        } else {
-            // Manejo de error si la posición del pedido no es válida
-            // Toast.makeText(this, "Error: posición de pedido no válida", Toast.LENGTH_SHORT).show();
-            finish(); // Cierra la actividad si hay un error
+        // Mostrar los datos originales en los EditText
+        if (datosOriginales != null && datosOriginales.size() >= 5) {
+            editTextComercial.setText(datosOriginales.get(0));
+            editTextPartner.setText(datosOriginales.get(1));
+            editTextFechaPedido.setText(fechaPedido);
+            editTextFechaEnvio.setText(Double.toString(precioFinal));
         }
+
+        // Configurar el botón para guardar los cambios
+        btnGuardarCambios.setOnClickListener(v -> guardarCambios());
     }
+
 
     private ArrayList<String> leerDatosDesdeXmlEnMemoriaInterna() {
         ArrayList<String> datosDeXml = new ArrayList<>();
@@ -127,6 +115,7 @@ public class ModificarDatosActivity extends AppCompatActivity {
 
         return datosDeXml;
     }
+
     private void guardarDatosEnXmlEnMemoriaInterna(ArrayList<String> datosDeXml) {
         try {
             FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
@@ -148,5 +137,69 @@ public class ModificarDatosActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void guardarCambios() {
+        // Obtener el ID del pedido seleccionado
+        int idPedido = getIntent().getIntExtra("ID_PEDIDO", -1);
+        if (idPedido == -1) {
+            // Manejar el caso en el que no se pasa el ID del pedido
+            Toast.makeText(this, "Error: ID del pedido no encontrado", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Obtener los datos actualizados del pedido de los EditText
+        comercial = editTextComercial.getText().toString().trim();
+        partner = editTextPartner.getText().toString().trim();
+        fechaPedido = editTextFechaPedido.getText().toString().trim();
+        fechaEnvio = editTextFechaEnvio.getText().toString().trim();
+
+        // Recuperar la lista actual de pedidos del XML
+        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+
+        // Crear el pedido actualizado con los nuevos datos
+        String pedidoActualizado = "Id_Pedido: "+idPedido +"\n" +
+                "Comercial: " + comercial + "\n " +
+                "Partner: " + partner + "\n" +
+                "Fecha:" + fecha + "\n" +
+                "Precio Total:" + precioFinal;
+
+        // Actualizar el pedido en la lista si existe
+        if (position != -1 && position < datosDeXml.size()) {
+            datosDeXml.set(position, pedidoActualizado);
+        }
+
+        // Guardar los cambios en el XML
+        guardarDatosEnXmlEnMemoriaInterna(datosDeXml);
+
+        // Modificar la base de datos
+        modificarBaseDeDatos(idPedido, comercial, partner, descripcion, fechaPedido, fechaEnvio);
+
+        // Mostrar un mensaje de éxito
+        Toast.makeText(this, "Cambios guardados", Toast.LENGTH_SHORT).show();
+
+        // Devolver los datos actualizados al pedido seleccionado
+        Intent intent = new Intent(ModificarDatosActivity.this,com.example.almohadascomodasademsbonitas.pedidos.modificar_pedido.class);
+        intent.putExtra("PEDIDO_ACTUALIZADO", pedidoActualizado);
+        setResult(RESULT_OK, intent);
+
+        // Cerrar la actividad de modificación
+        finish();
+    }
+
+
+    private void modificarBaseDeDatos(int  idPedido,String comercial, String partner, String descripcion, String fechaPedido, String fechaEnvio) {
+        // Abrir la base de datos en modo escritura
+        DBconexion bd = new DBconexion(this,"ACAB2.db",null,1);
+        SQLiteDatabase db = bd.getWritableDatabase();
+
+        // Crear un nuevo mapa de valores, donde los nombres de las columnas son las claves
+        Cursor cursor = db.rawQuery("UPDATE TABLE CAB_PEDIDOS " +
+                "SET ID_COMERCIAL='"+comercial+"', " +
+                "SET ID_PARTNER="+Integer.parseInt(partner)+"" +
+                ", SET FECHA_PEDIDO = TO_DATE('DD/MM/YYYY','"+fechaPedido+"')" +
+                ",SET  FECHA_ENVIO = TO_DATE('DD/MM/YYYY','"+fechaEnvio+"')" +
+                "WHERE ID_PEDIDO= "+idPedido+"",null);
+        cursor.close();
     }
 }

@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -29,12 +31,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 public class modificar_pedido extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-
+    String pedidoActualizado;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +73,9 @@ public class modificar_pedido extends AppCompatActivity {
                         // datosDeXml.remove(position);
                     }
                 }
+
+                guardarDatosEnXmlEnMemoriaInterna(leerDatosDesdeXmlEnMemoriaInterna());
+
             }
         });
 
@@ -87,15 +93,90 @@ public class modificar_pedido extends AppCompatActivity {
     }
 
     private void abrirModificarDatosActivity(int position) {
-        // Crea un Intent para abrir la nueva actividad
+        // Obtener los datos del pedido seleccionado
+        String pedidoSeleccionado = adapter.getItem(position);
+
+        // Obtener la fecha y el precio final del pedido seleccionado
+        String fechaPedido = obtenerFechaPedido(pedidoSeleccionado);
+        double precioFinal = obtenerPrecioFinal(pedidoSeleccionado);
+
+        // Crear un Intent para abrir la nueva actividad
         Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
 
         // Agrega la posición del pedido seleccionado como extra en el intent
         intent.putExtra("POSICION_PEDIDO", position);
+        // Agrega los datos del pedido seleccionado como extra en el intent
+        intent.putExtra("PEDIDO_SELECCIONADO", pedidoSeleccionado);
+        // Agrega la fecha como extra en el intent
+        intent.putExtra("FECHA_PEDIDO", fechaPedido);
+        // Agrega el precio final como extra en el intent
+        intent.putExtra("PRECIO_FINAL", precioFinal);
 
         // Inicia la nueva actividad
         startActivity(intent);
     }
+
+    // Método para obtener la fecha del pedido a partir de su representación como cadena
+    private String obtenerFechaPedido(String pedido) {
+        try {
+            // Crear un XmlPullParser
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(new StringReader(pedido));
+
+            // Variable para almacenar la fecha del pedido
+            String fechaPedido = "";
+
+            // Iterar sobre el XML
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && "fecha".equals(parser.getName())) {
+                    // Se encontró la etiqueta <FECHA_PEDIDO>, leer su valor
+                    parser.next();
+                    fechaPedido = parser.getText();
+                    break;  // Salir del bucle una vez que se haya encontrado la fecha del pedido
+                }
+                eventType = parser.next();
+            }
+
+            return fechaPedido;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ""; // Devolver una cadena vacía en caso de error
+        }
+    }
+
+
+    // Método para obtener el precio final del pedido a partir de su representación como cadena
+    private double obtenerPrecioFinal(String pedido) {
+        try {
+            // Crear un XmlPullParser
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(new StringReader(pedido));
+
+            // Variable para almacenar el precio final del pedido
+            double precioFinal = 0.0;
+
+            // Iterar sobre el XML
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG && "precio_total".equals(parser.getName())) {
+                    // Se encontró la etiqueta <PRECIO_TOT>, leer su valor y convertirlo a double
+                    parser.next();
+                    precioFinal = Double.parseDouble(parser.getText());
+                    break;  // Salir del bucle una vez que se haya encontrado el precio final
+                }
+                eventType = parser.next();
+            }
+
+            return precioFinal;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0.0; // Devolver 0.0 en caso de error
+        }
+    }
+
 
     private void guardarDatosEnXmlEnMemoriaInterna(ArrayList<String> datosDeXml) {
         try {
@@ -191,5 +272,19 @@ public class modificar_pedido extends AppCompatActivity {
         return datosDeXml;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                if (data != null && data.hasExtra("PEDIDO_ACTUALIZADO")) {
+                     pedidoActualizado = data.getStringExtra("PEDIDO_ACTUALIZADO");
+                    // Aquí puedes hacer lo que necesites con el pedido actualizado
+                    // Por ejemplo, puedes mostrarlo en un Toast
+                    // Toast.makeText(this, "Pedido Actualizado: " + pedidoActualizado, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 }
