@@ -10,4 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toBr"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="@drawable/menu"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
 </RelativeLayout>

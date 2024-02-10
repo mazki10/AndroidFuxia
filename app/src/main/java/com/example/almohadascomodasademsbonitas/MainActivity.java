@@ -1,11 +1,12 @@
 package com.example.almohadascomodasademsbonitas;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Environment;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +16,6 @@ import android.widget.Toast;
 import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private DBconexion dbHelper;
@@ -44,29 +40,38 @@ public class MainActivity extends AppCompatActivity {
         Inicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String usuarioText = Usuario.getText().toString();
                 String contrasenaText = Contras.getText().toString();
 
                 // Realizar la consulta SELECT
-                String query = "SELECT * FROM LOGIN WHERE USER = ? AND PASSWORD = ?";
+                String query = "SELECT ID_COMERCIAL, SESION FROM LOGIN WHERE USER = ? AND PASSWORD = ?";
                 Cursor cursor = db.rawQuery(query, new String[]{usuarioText, contrasenaText});
 
                 if (cursor.moveToFirst()) {
-                    int usuarioColumnIndex = cursor.getColumnIndex("USER");
-                    int contrasenaColumnIndex = cursor.getColumnIndex("PASSWORD");
+                    int idComercialColumnIndex = cursor.getColumnIndex("ID_COMERCIAL");
+                    int sesionColumnIndex = cursor.getColumnIndex("SESION");
 
-                    if (usuarioColumnIndex >= 0 && contrasenaColumnIndex >= 0) {
-                        String usuarioEncontrado = cursor.getString(usuarioColumnIndex);
-                        String contrasenaEncontrada = cursor.getString(contrasenaColumnIndex);
+                    if (idComercialColumnIndex >= 0 && sesionColumnIndex >= 0) {
+                        String idComercial = cursor.getString(idComercialColumnIndex);
+                        boolean sesionActual = cursor.getInt(sesionColumnIndex) == 1;
 
-                        if (usuarioText.equals(usuarioEncontrado) && contrasenaText.equals(contrasenaEncontrada)) {
+                        if (!sesionActual) {
                             // Inicio de sesión exitoso
                             Toast.makeText(MainActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+
+                            // Actualizar la columna SESION a TRUE
+                            ContentValues values = new ContentValues();
+                            values.put("SESION", 1);
+
+                            // Actualizar la SESION a TRUE solo para el usuario actual
+                            db.update("LOGIN", values, "USER = ? AND PASSWORD = ?", new String[]{usuarioText, contrasenaText});
+
+                            // Lanzar la nueva actividad
                             lanzarNuevaActividad(v);
                         } else {
-                            // Usuario o contraseña incorrectos
-                            Toast.makeText(MainActivity.this, "Usuario o contraseña incorrectos", Toast.LENGTH_SHORT).show();
+                            // Sesión ya iniciada
+                            Toast.makeText(MainActivity.this, "Sesión ya iniciada", Toast.LENGTH_SHORT).show();
+                            lanzarNuevaActividad(v);
                         }
                     } else {
                         // Alguna de las columnas no existe
@@ -81,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 cursor.close();
             }
         });
+
 
     }
 
@@ -101,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void lanzarNuevaActividad(View v) {
-        Intent intent = new Intent(this,ActividadCicurlarLayout .class);//declarar la nueva actividad
+        Intent intent = new Intent(this, ActividadCicurlarLayout.class);//declarar la nueva actividad
 
         startActivity(intent);//lanzar la actividad
     }

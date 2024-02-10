@@ -6,4 +6,12 @@
     </style>
 
     <style name="Theme.ListViews" parent="Base.Theme.ListViews" />
+    <style name="Theme.AlmohadasComodasAdemásBonitas.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.AlmohadasComodasAdemásBonitas.AppBarOverlay"
+        parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.AlmohadasComodasAdemásBonitas.PopupOverlay"
+        parent="ThemeOverlay.AppCompat.Light" />
 </resources>
