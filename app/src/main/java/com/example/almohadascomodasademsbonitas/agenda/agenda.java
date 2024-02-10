@@ -5,9 +5,9 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +33,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 
 public class agenda extends AppCompatActivity {
@@ -81,7 +78,7 @@ public class agenda extends AppCompatActivity {
         adapter = new ActividadAdapter(this, actividades);
         lvAct.setAdapter(adapter);
 
-        cargarDatosDesdeXml();
+        cargarDatosDesdeBD();
         adapter.notifyDataSetChanged();
 
         btBus.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +107,7 @@ public class agenda extends AppCompatActivity {
                 String fecha = nombreMesActual + " " + anio;
                 tv.setText(fecha);
 
-                cargarDatosDesdeXml();
+                cargarDatosDesdeBD();
                 adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
             }
         });
@@ -128,7 +125,7 @@ public class agenda extends AppCompatActivity {
                 String fecha = nombreMesActual + " " + anio;
                 tv.setText(fecha);
 
-                cargarDatosDesdeXml();
+                cargarDatosDesdeBD();
                 adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
             }
         });
@@ -138,116 +135,21 @@ public class agenda extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final Actividad actividadSeleccionada = actividades.get(position);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(agenda.this);
-                builder.setTitle("Eliminar Actividad")
-                        .setMessage("¿Estás seguro de que quieres eliminar esta actividad?")
-                        .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                eliminarActividad(actividadSeleccionada);
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                // No hacer nada, simplemente cerrar el diálogo
-                            }
-                        })
-                        .show();
+                Intent intent = new Intent(agenda.this, modificar_agenda.class);
+                intent.putExtra("actividad", actividadSeleccionada);
+                intent.putExtra("fecha", actividadSeleccionada.getFecha());
+                intent.putExtra("hora", actividadSeleccionada.getHora());
+                startActivity(intent);
             }
         });
+
     }
     @Override
     protected void onResume(){
         super.onResume();
-        cargarDatosDesdeXml();
+        cargarDatosDesdeBD();
         adapter.notifyDataSetChanged();
     }
-
-    private void eliminarActividad(Actividad actividad) {
-        actividades.remove(actividad); // Remover del ArrayList
-
-        // Eliminar la actividad del archivo XML
-        try {
-            File directory = getFilesDir();
-            File file = new File(directory, "actividades.xml");
-            FileInputStream fis = new FileInputStream(file);
-
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(fis, null);
-
-            // Creamos una nueva lista de actividades sin la actividad a eliminar
-            ArrayList<Actividad> nuevasActividades = new ArrayList<>();
-
-            int eventType = parser.getEventType();
-            Actividad actividadActual = null;
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if ("actividad".equals(parser.getName())) {
-                        actividadActual = new Actividad();
-                    } else if ("titulo".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setTitulo(parser.nextText());
-                    } else if ("descripcion".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setDescripcion(parser.nextText());
-                    } else if ("fecha".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setFecha(parser.nextText());
-                    } else if ("hora".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setHora(parser.nextText());
-                    }
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    if ("actividad".equals(parser.getName()) && actividadActual != null) {
-                        if (!actividadActual.equals(actividad)) {
-                            // Agregar solo si no es la actividad a eliminar
-                            nuevasActividades.add(actividadActual);
-                        }
-                    }
-                }
-                eventType = parser.next();
-            }
-            fis.close();
-
-            // Sobrescribir el archivo XML con la nueva lista de actividades
-            XmlSerializer xmlSerializer = Xml.newSerializer();
-            StringWriter writer = new StringWriter();
-            xmlSerializer.setOutput(writer);
-            xmlSerializer.startDocument("UTF-8", true);
-            xmlSerializer.startTag(null, "actividades");
-
-            for (Actividad act : nuevasActividades) {
-                xmlSerializer.startTag(null, "actividad");
-
-                xmlSerializer.startTag(null, "titulo");
-                xmlSerializer.text(act.getTitulo());
-                xmlSerializer.endTag(null, "titulo");
-
-                xmlSerializer.startTag(null, "descripcion");
-                xmlSerializer.text(act.getDescripcion());
-                xmlSerializer.endTag(null, "descripcion");
-
-                xmlSerializer.startTag(null, "fecha");
-                xmlSerializer.text(act.getFecha());
-                xmlSerializer.endTag(null, "fecha");
-
-                xmlSerializer.startTag(null, "hora");
-                xmlSerializer.text(act.getHora());
-                xmlSerializer.endTag(null, "hora");
-
-                xmlSerializer.endTag(null, "actividad");
-            }
-
-            xmlSerializer.endTag(null, "actividades");
-            xmlSerializer.endDocument();
-
-            FileOutputStream fileos = new FileOutputStream(file);
-            fileos.write(writer.toString().getBytes());
-            fileos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
-    }
-
 
     public void abrirCalendario(View v) {
         DatePickerDialog dpd = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -260,7 +162,7 @@ public class agenda extends AppCompatActivity {
                 String fecha = nombreMesActual + " " + year;
                 tv.setText(fecha);
 
-                cargarDatosDesdeXml();
+                cargarDatosDesdeBD();
                 cargarActividadesDeFechaSeleccionada(dayOfMonth, month, year);
             }
         }, anio, mes, dia);
@@ -284,69 +186,67 @@ public class agenda extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-
-
-    private void cargarDatosDesdeXml() {
+    private void cargarDatosDesdeBD() {
         actividades.clear(); // Limpia la lista actual de actividades
 
         try {
-            File directory = getFilesDir();
-            File file = new File(directory, "actividades.xml");
-            FileInputStream fis = new FileInputStream(file);
+            // Realizar la consulta SELECT
+            String selectQuery = "SELECT ACTIVIDAD, TITULO, DESCRIPCION, FECHA, HORA FROM AGENDA";
+            Cursor cursor = db.rawQuery(selectQuery, null);
 
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(fis, null);
+            // Verificar si hay resultados y procesarlos
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    Actividad actividad = construirActividadDesdeCursor(cursor);
 
-            int eventType = parser.getEventType();
-            Actividad actividadActual = null;
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if ("actividad".equals(parser.getName())) {
-                        actividadActual = new Actividad();
-                    } else if ("titulo".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setTitulo(parser.nextText());
-                    } else if ("descripcion".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setDescripcion(parser.nextText());
-                    } else if ("fecha".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setFecha(parser.nextText());
-                    } else if ("hora".equals(parser.getName()) && actividadActual != null) {
-                        actividadActual.setHora(parser.nextText());
-                    }
-                } else if (eventType == XmlPullParser.END_TAG) {
-                    if ("actividad".equals(parser.getName()) && actividadActual != null) {
-                        // Verifica si la actividad es del mes y año seleccionados antes de agregarla a la lista
-                        if (esActividadDelMesYAnioSeleccionados(actividadActual.getFecha())) {
-                            actividades.add(actividadActual);
-                        }
+                    // Verificar si la actividad es del mes y año seleccionados antes de agregarla a la lista
+                    if (esActividadDelMesYAnioSeleccionados(actividad.getFecha())) {
+                        actividades.add(actividad);
                     }
                 }
-                eventType = parser.next();
+
+                // Cerrar el cursor después de usarlo
+                cursor.close();
             }
-            fis.close();
-            Collections.sort(actividades, new Comparator<Actividad>() {
-                DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-                @Override
-                public int compare(Actividad actividad1, Actividad actividad2) {
-                    try {
-                        Date fechaHora1 = dateFormat.parse(actividad1.getFecha() + " " + actividad1.getHora());
-                        Date fechaHora2 = dateFormat.parse(actividad2.getFecha() + " " + actividad2.getHora());
-                        return fechaHora1.compareTo(fechaHora2);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return 0;
-                    }
-                }
-            });
-
+            adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        adapter.notifyDataSetChanged(); // Notifica al adapter sobre los cambios en los datos
     }
+
+    private Actividad construirActividadDesdeCursor(Cursor cursor) {
+        Actividad actividad = new Actividad();
+
+        // Verificar si la columna existe antes de intentar acceder a sus datos
+        int idIndex = cursor.getColumnIndex("ACTIVIDAD");
+        if (idIndex >= 0) {
+            actividad.setId(cursor.getInt(idIndex));
+        }
+
+        int tituloIndex = cursor.getColumnIndex("TITULO");
+        if (tituloIndex >= 0) {
+            actividad.setTitulo(cursor.getString(tituloIndex));
+        }
+
+        int descripcionIndex = cursor.getColumnIndex("DESCRIPCION");
+        if (descripcionIndex >= 0) {
+            actividad.setDescripcion(cursor.getString(descripcionIndex));
+        }
+
+        int fechaIndex = cursor.getColumnIndex("FECHA");
+        if (fechaIndex >= 0) {
+            actividad.setFecha(cursor.getString(fechaIndex));
+        }
+
+        int horaIndex = cursor.getColumnIndex("HORA");
+        if (horaIndex >= 0) {
+            actividad.setHora(cursor.getString(horaIndex));
+        }
+
+        return actividad;
+    }
+
 
     private boolean esActividadDelMesYAnioSeleccionados(String fechaActividad) {
         // Formato de fecha para comparar
@@ -384,16 +284,17 @@ public class agenda extends AppCompatActivity {
             Actividad actividad = getItem(position);
 
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_actividad, parent, false);
             }
 
-            TextView text1 = convertView.findViewById(android.R.id.text1);
-            TextView text2 = convertView.findViewById(android.R.id.text2);
+            TextView textTitulo = convertView.findViewById(R.id.textTitulo);
+            TextView textFechaHora = convertView.findViewById(R.id.textFechaHora);
+            TextView textDescripcion = convertView.findViewById(R.id.textDescripcion);
 
             if (actividad != null) {
-                String fechaHora = actividad.getFechaActividad();
-                text1.setText(fechaHora + "- " + actividad.getTitulo() + "\n" + actividad.getHora());
-                text2.setText(actividad.getDescripcion());
+                textTitulo.setText(actividad.getTitulo());
+                textFechaHora.setText(actividad.getFechaActividad() + " " + actividad.getHora());
+                textDescripcion.setText(actividad.getDescripcion());
             }
 
             return convertView;

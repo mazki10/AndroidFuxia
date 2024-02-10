@@ -2,6 +2,7 @@ package com.example.almohadascomodasademsbonitas.agenda;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
@@ -79,8 +80,27 @@ public class nuevo_agenda extends AppCompatActivity {
             tvFec.setText(fechaActividad);
         }
     }
-    private void agregarActividad() {
+    private int obtenerMayorId() {
+        int mayorId = 0;
+        try {
+            // Realiza la consulta SELECT para obtener la mayor ID
+            String selectQuery = "SELECT IFNULL(MAX(ACTIVIDAD), 0) FROM AGENDA";
+            Cursor cursor = db.rawQuery(selectQuery, null);
 
+            // Si hay resultados, obtén la mayor ID
+            if (cursor.moveToFirst()) {
+                mayorId = cursor.getInt(0);
+            }
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return mayorId;
+    }
+
+
+
+    private void agregarActividad() {
         String titulo = edtTit.getText().toString();
         String descripcion = edtDes.getText().toString();
         String hora = obtenerHoraSeleccionada();
@@ -88,9 +108,12 @@ public class nuevo_agenda extends AppCompatActivity {
 
         if (!titulo.isEmpty() && fechaSeleccionada != null && horaSeleccionada != null) {
             try {
-                String insertQuery = "INSERT INTO AGENDA (TITULO, DESCRIPCION, FECHA, HORA) VALUES (?, ?, ?, ?)";
+                // Obtén la mayor ID actual y suma 1 para asignar la nueva ID
+                int nuevaId = obtenerMayorId() + 1;
 
-                db.execSQL(insertQuery, new Object[]{titulo, descripcion, fecha, hora});
+                // Realiza la inserción con la nueva ID
+                String insertQuery = "INSERT INTO AGENDA (ACTIVIDAD, TITULO, DESCRIPCION, FECHA, HORA) VALUES (?, ?, ?, ?, ?)";
+                db.execSQL(insertQuery, new Object[]{nuevaId, titulo, descripcion, fecha, hora});
 
                 db.close();
 
@@ -103,6 +126,7 @@ public class nuevo_agenda extends AppCompatActivity {
             Toast.makeText(this, "Por favor, rellena el título, la fecha y la hora", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     public String obtenerFechaSeleccionada() {

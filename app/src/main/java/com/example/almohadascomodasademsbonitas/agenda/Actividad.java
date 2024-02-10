@@ -1,5 +1,6 @@
 package com.example.almohadascomodasademsbonitas.agenda;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -7,7 +8,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-public class Actividad {
+
+public class Actividad implements Serializable {
+    private int id;
     private String titulo;
     private String descripcion;
     private String fecha;
@@ -96,6 +99,14 @@ public class Actividad {
                 Objects.equals(descripcion, otraActividad.descripcion) &&
                 Objects.equals(fecha, otraActividad.fecha) &&
                 Objects.equals(hora, otraActividad.hora);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
 

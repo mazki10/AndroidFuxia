@@ -73,6 +73,8 @@
     <string name="modPartner">Modificar</string>
     <string name="modPartnerTitulo">"Partner: "</string>
     <string name="Partnerborrar">BORRAR</string>
+    <string name="aplicar">APLICAR CAMBIOS</string>
+    <string name="eliminar_actividad">ELIMINAR ACTIVIDAD</string>
 
 
     <string-array name="nombremeses">
