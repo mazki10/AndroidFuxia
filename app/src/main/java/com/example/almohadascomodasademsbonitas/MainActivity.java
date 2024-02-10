@@ -35,8 +35,22 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
 
+
         // Crea la base de datos ACAB
         crearBaseDatosACAB();
+        String query = "SELECT * FROM LOGIN WHERE SESION = 1";
+        Cursor cursor = db.rawQuery(query, null);
+
+        // Si hay algún resultado, significa que existe un comercial con login igual a 1
+        if (cursor.moveToFirst()) {
+            // Si existe, lanzar la nueva actividad
+            lanzarNuevaActividad();
+            // Cerrar el cursor después de usarlo
+            cursor.close();
+            return; // Salir del método onCreate() ya que hemos lanzado la nueva actividad
+        }
+
+
         Inicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,11 +81,11 @@ public class MainActivity extends AppCompatActivity {
                             db.update("LOGIN", values, "USER = ? AND PASSWORD = ?", new String[]{usuarioText, contrasenaText});
 
                             // Lanzar la nueva actividad
-                            lanzarNuevaActividad(v);
+                            lanzarNuevaActividad();
                         } else {
                             // Sesión ya iniciada
                             Toast.makeText(MainActivity.this, "Sesión ya iniciada", Toast.LENGTH_SHORT).show();
-                            lanzarNuevaActividad(v);
+                            lanzarNuevaActividad();
                         }
                     } else {
                         // Alguna de las columnas no existe
@@ -106,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("MainActivity", "Error al crear la base de datos: " + e.getMessage());
         }
     }
-    public void lanzarNuevaActividad(View v) {
+    public void lanzarNuevaActividad() {
         Intent intent = new Intent(this, ActividadCicurlarLayout.class);//declarar la nueva actividad
 
         startActivity(intent);//lanzar la actividad
