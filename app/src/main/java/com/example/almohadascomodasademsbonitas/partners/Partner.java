@@ -6,14 +6,14 @@ public class Partner {
     private String cif;
     private String direccion;
     private  Integer telefono;
-    private Integer comercial;
+    private String comercial;
     private String email;
     private Integer zona;
     private String fecha;
     public Partner(){
         //Constructor vacío
         }
-    public Partner(Integer id, String nombre, String cif, String direccion, Integer telefono, Integer comercial, String email, Integer zona, String fecha) {
+    public Partner(Integer id, String nombre, String cif, String direccion, Integer telefono, String comercial, String email, Integer zona, String fecha) {
         this.id = id;
         this.nombre = nombre;
         this.cif = cif;
@@ -42,8 +42,8 @@ public class Partner {
     public Integer get_telefono(){
         return telefono;
     }
-    public void set_comercial(Integer comercial){this.comercial = comercial;}
-    public Integer get_comercial(){
+    public void set_comercial(String comercial){this.comercial = comercial;}
+    public String get_comercial(){
         return comercial;
     }
     public void set_email(String email){this.email = email;}

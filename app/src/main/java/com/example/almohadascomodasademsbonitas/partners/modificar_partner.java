@@ -1,6 +1,7 @@
 package com.example.almohadascomodasademsbonitas.partners;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Xml;
@@ -36,7 +37,7 @@ import java.util.Locale;
 public class modificar_partner extends AppCompatActivity {
 
     private EditText editTextNombre, editTextCif, editTextDireccion, editTextTelefono,
-            editTextEmail, editTextComercial, editTextZona;
+            editTextEmail, editTextZona;
     private Partner nuevoPartner;
     private DBconexion dbHelper;
     private SQLiteDatabase db;
@@ -52,7 +53,6 @@ public class modificar_partner extends AppCompatActivity {
         editTextDireccion = findViewById(R.id.editTextTextPostalAddress1);
         editTextTelefono = findViewById(R.id.editTextPhone);
         editTextEmail = findViewById(R.id.editTextTextEmailAddress);
-        editTextComercial = findViewById(R.id.editTextText5);
         editTextZona = findViewById(R.id.editTextNumber2);
 
         // Obtener el ID del socio de la actividad anterior
@@ -172,7 +172,6 @@ public class modificar_partner extends AppCompatActivity {
         editTextCif.setText(data.get(2));
         editTextDireccion.setText(data.get(3));
         editTextTelefono.setText(data.get(4));
-        editTextComercial.setText(data.get(5));
         editTextEmail.setText(data.get(6));
         editTextZona.setText(data.get(7));
     }
@@ -183,7 +182,7 @@ public class modificar_partner extends AppCompatActivity {
             String CIF = editTextCif.getText().toString();
             String direccion = editTextDireccion.getText().toString();
             String telefono = editTextTelefono.getText().toString();
-            String comercial = editTextComercial.getText().toString();
+            String comercial = obtenerComercial();
             String email = editTextEmail.getText().toString();
             String zona = editTextZona.getText().toString();
 
@@ -237,7 +236,7 @@ public class modificar_partner extends AppCompatActivity {
             nuevoPartner.set_direccion(direccion);
             nuevoPartner.set_telefono(Integer.valueOf(telefono));
             nuevoPartner.set_email(email);
-            nuevoPartner.set_comercial(Integer.valueOf(comercial));
+            nuevoPartner.set_comercial(comercial);
             nuevoPartner.set_zona(Integer.valueOf(zona));
             nuevoPartner.set_fecha(fechaFormateada);
 
@@ -269,9 +268,6 @@ public class modificar_partner extends AppCompatActivity {
                 case "El correo electrónico es obligatorio":
                 case "El correo electrónico no es válido":
                     editTextEmail.requestFocus();
-                    break;
-                case "El campo comercial es obligatorio":
-                    editTextComercial.requestFocus();
                     break;
                 case "El campo zona es obligatorio":
                     editTextZona.requestFocus();
@@ -379,7 +375,7 @@ public class modificar_partner extends AppCompatActivity {
                 "CIF='" + partner.get_cif() + "', " +
                 "DIRECCION='" + partner.get_direccion() + "', " +
                 "TELEFONO=" + partner.get_telefono() + ", " +
-                "COMERCIAL=" + partner.get_comercial() + ", " +
+                "COMERCIAL='" + partner.get_comercial() + "', " +
                 "EMAIL='" + partner.get_email() + "', " +
                 "ZONA=" + partner.get_zona() +
                 " WHERE ID_PARTNER=" + partner.get_id();
@@ -467,6 +463,24 @@ public class modificar_partner extends AppCompatActivity {
             // Manejar excepciones
             Toast.makeText(this, "Error al añadir datos al XML: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
+    }
+    private String obtenerComercial(){
+        String dniComercial = null;
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT ID_COMERCIAL FROM LOGIN WHERE SESION = 1";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex("ID_COMERCIAL");
+            // Recuperamos el valor del DNI del cursor
+            dniComercial = cursor.getString(columnIndex);
+        }
+
+        cursor.close();
+        return dniComercial;
     }
 
 
