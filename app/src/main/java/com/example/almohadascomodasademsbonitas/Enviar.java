@@ -1,6 +1,5 @@
 package com.example.almohadascomodasademsbonitas;
 
-import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
@@ -21,24 +20,14 @@ import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.InputSource;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -46,12 +35,8 @@ import javax.xml.transform.stream.StreamResult;
 
 public class Enviar extends AppCompatActivity {
     Button bEnviar, bGenerar;
-    static File fEnvio;
-    static File fPedido;
-    static File fPartner;
     static String[][] arrayPartner;
     static String[][] arrayPedidos;
-
     private DBconexion dbHelper;
     private SQLiteDatabase db;
 
@@ -85,10 +70,10 @@ public class Enviar extends AppCompatActivity {
 
     public void EnviarXML() {
         Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.setType("text/plain");
+        emailIntent.setType("text/xml");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"destinatario@example.com"});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Asunto del correo");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "Cuerpo del correo");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Partners/Pedidos");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "");
 
         ArrayList<Uri> archivosAdjuntos = new ArrayList<>();
 
@@ -117,13 +102,13 @@ public class Enviar extends AppCompatActivity {
 
         // Iniciar el intent para enviar el correo electrónico
         startActivity(Intent.createChooser(emailIntent, "Enviar correo electrónico"));
-
-        // Eliminar los archivos después de enviarlos
-        eliminarArchivos(archivoPartners, archivoPedidos);
     }
 
-    private void eliminarArchivos(File archivoPartners, File archivoPedidos) {
+    private void eliminarArchivos() {
         // Verificar si el archivo de partners existe y eliminarlo
+        File archivoPartners = new File(getFilesDir(), "ePartners.xml");
+        File archivoPedidos = new File(getFilesDir(), "ePedidos.xml");
+
         if (archivoPartners.exists()) {
             boolean eliminado = archivoPartners.delete();
             if (!eliminado) {
@@ -141,6 +126,9 @@ public class Enviar extends AppCompatActivity {
     }
 
     public void GenerarXML() {
+        // Eliminar los archivos después de enviarlos
+        eliminarArchivos();
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         // Obtener el contexto de la aplicación de Android
