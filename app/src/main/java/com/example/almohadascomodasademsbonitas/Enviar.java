@@ -1,12 +1,13 @@
 package com.example.almohadascomodasademsbonitas;
 
-import static java.security.AccessController.getContext;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,25 +15,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-import org.xml.sax.InputSource;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -40,23 +35,23 @@ import javax.xml.transform.stream.StreamResult;
 
 public class Enviar extends AppCompatActivity {
     Button bEnviar, bGenerar;
-    static File fEnvio;
-    static File fPedido;
-    static File fPartner;
     static String[][] arrayPartner;
     static String[][] arrayPedidos;
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enviar);
 
-        fEnvio = new File(getFilesDir(), "envio.xml");
-        fPedido = new File(getFilesDir(), "pedidos.xml");
-        fPartner = new File(getFilesDir(), "partners.xml");
+
 
         bEnviar = findViewById(R.id.bgmail_enviar);
         bGenerar = findViewById(R.id.bgmail_crearXML);
+
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getReadableDatabase();
 
         bEnviar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,72 +68,105 @@ public class Enviar extends AppCompatActivity {
         });
     }
 
-    public void EnviarXML(){
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        emailIntent.setType("text/plain");
+    public void EnviarXML() {
+        Intent emailIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        emailIntent.setType("text/xml");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"destinatario@example.com"});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Asunto del correo");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "Cuerpo del correo");
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Partners/Pedidos");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "");
 
-        Uri fileUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", fEnvio);
-        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        ArrayList<Uri> archivosAdjuntos = new ArrayList<>();
 
+        // Verificar si el archivo de partners existe y agregarlo a la lista de archivos adjuntos
+        File archivoPartners = new File(getFilesDir(), "ePartners.xml");
+        if (archivoPartners.exists()) {
+            Uri fileUriPartners = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", archivoPartners);
+            archivosAdjuntos.add(fileUriPartners);
+        }
+
+        // Verificar si el archivo de pedidos existe y agregarlo a la lista de archivos adjuntos
+        File archivoPedidos = new File(getFilesDir(), "ePedidos.xml");
+        if (archivoPedidos.exists()) {
+            Uri fileUriPedidos = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", archivoPedidos);
+            archivosAdjuntos.add(fileUriPedidos);
+        }
+
+        // Verificar si hay archivos adjuntos para enviar
+        if (archivosAdjuntos.isEmpty()) {
+            Toast.makeText(this, "No hay archivos disponibles para enviar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Agregar los archivos adjuntos al intent de correo electrónico
+        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, archivosAdjuntos);
+
+        // Iniciar el intent para enviar el correo electrónico
         startActivity(Intent.createChooser(emailIntent, "Enviar correo electrónico"));
     }
 
+    private void eliminarArchivos() {
+        // Verificar si el archivo de partners existe y eliminarlo
+        File archivoPartners = new File(getFilesDir(), "ePartners.xml");
+        File archivoPedidos = new File(getFilesDir(), "ePedidos.xml");
+
+        if (archivoPartners.exists()) {
+            boolean eliminado = archivoPartners.delete();
+            if (!eliminado) {
+                Log.e("Error", "No se pudo eliminar el archivo ePartners.xml");
+            }
+        }
+
+        // Verificar si el archivo de pedidos existe y eliminarlo
+        if (archivoPedidos.exists()) {
+            boolean eliminado = archivoPedidos.delete();
+            if (!eliminado) {
+                Log.e("Error", "No se pudo eliminar el archivo ePedidos.xml");
+            }
+        }
+    }
+
     public void GenerarXML() {
+        // Eliminar los archivos después de enviarlos
+        eliminarArchivos();
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         // Obtener el contexto de la aplicación de Android
         Context context = Enviar.this;
 
-        leerPedidos(fPedido);
-        leerPartners(fPartner);
+        leerPartners();
+        leerPedidos();
+
+        if (arrayPartner == null && arrayPedidos == null) {
+            Toast.makeText(this, "No hay datos disponibles para generar los archivos XML", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         llenar_fichero(factory);
-
-        mostrarContenidoXML();
     }
 
-    private static String obtenerTextoElemento(Element elemento, String nombreEtiqueta) {
-        Node nodo = elemento.getElementsByTagName(nombreEtiqueta).item(0);
-        if (nodo != null && nodo.getNodeType() == Node.ELEMENT_NODE) {
-            return nodo.getTextContent();
-        }
-        return ""; // O cualquier valor predeterminado que desees devolver en caso de nulo
-    }
+    private void leerPartners() {
+        // Consulta SQL para seleccionar todos los registros de la tabla "partners"
+        String query = "SELECT * FROM PARTNERS";
 
-    private static String obtenerTextoElemento(Element elemento, String nombrePadre, String nombreEtiqueta) {
-        NodeList nodeList = elemento.getElementsByTagName(nombrePadre);
-        if (nodeList.getLength() > 0) {
-            Element elementoPadre = (Element) nodeList.item(0);
-            return obtenerTextoElemento(elementoPadre, nombreEtiqueta);
-        }
-        return "";
-    }
+        Cursor cursor = null;
 
-    private void leerPartners(File xml) {
-        String datos = leerContenidoXML(xml);
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new InputSource(new StringReader(datos)));
+            cursor = db.rawQuery(query, null);
 
-            NodeList nodeList = document.getElementsByTagName("partner");
-            arrayPartner = new String[nodeList.getLength()][8];
+            if (cursor != null && cursor.moveToFirst()) {
+                arrayPartner = new String[cursor.getCount()][8];
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element partnerElement = (Element) node;
-                    String idPartners = obtenerTextoElemento(partnerElement, "id_partners");
-                    String nombre = obtenerTextoElemento(partnerElement, "nombre");
-                    String cif = obtenerTextoElemento(partnerElement, "cif");
-                    String direccion = obtenerTextoElemento(partnerElement, "direccion");
-                    String telefono = obtenerTextoElemento(partnerElement, "telefono");
-                    String email = obtenerTextoElemento(partnerElement, "email");
-                    String personaDeContacto = obtenerTextoElemento(partnerElement, "persona_de_contacto");
-                    String idZona = obtenerTextoElemento(partnerElement, "id_zona");
+                int i = 0;
+                do {
+                    String idPartners = cursor.getString(0);
+                    String nombre = cursor.getString(1);
+                    String cif = cursor.getString(2);
+                    String direccion = cursor.getString(3);
+                    String telefono = cursor.getString(4);
+                    String email = cursor.getString(5); // email
+                    String personaDeContacto = cursor.getString(6);
+                    String idZona = cursor.getString(7);
 
                     arrayPartner[i][0] = idPartners;
                     arrayPartner[i][1] = nombre;
@@ -148,110 +176,89 @@ public class Enviar extends AppCompatActivity {
                     arrayPartner[i][5] = email;
                     arrayPartner[i][6] = personaDeContacto;
                     arrayPartner[i][7] = idZona;
-                }
+
+                    i++;
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("Error", "Error al leer partners.xml: " + e.getMessage());
+            Log.e("Error", "Error al leer datos de la base de datos: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
-    private void leerPedidos(File xml) {
-        String datos = leerContenidoXML(xml);
+    private void leerPedidos() {
+        // Consulta SQL para seleccionar todos los pedidos
+        String query = "SELECT * FROM CAB_PEDIDOS";
+
+        Cursor cursor = null;
+
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new InputSource(new StringReader(datos)));
+            cursor = db.rawQuery(query, null);
 
-            NodeList nodeList = document.getElementsByTagName("pedido");
-            arrayPedidos = new String[nodeList.getLength()][7];
+            if (cursor != null && cursor.moveToFirst()) {
+                arrayPedidos = new String[cursor.getCount()][7];
 
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element pedidoElement = (Element) node;
-                    String idPedido = obtenerTextoElemento(pedidoElement, "id_pedido");
-                    String idPartner = obtenerTextoElemento(pedidoElement, "id_partner");
-                    String idComercial = obtenerTextoElemento(pedidoElement, "id_comercial");
+                int i = 0;
+                do {
+                    // Obtener los valores de cada columna para el pedido actual
+                    String idPedido = cursor.getString(0);
+                    String idPartner = cursor.getString(1);
+                    String idComercial = cursor.getString(2);
+                    String fecha = cursor.getString(4);
 
-                    // Leer productos dentro de cada pedido
-                    NodeList productosNodeList = pedidoElement.getElementsByTagName("producto");
+                    // Obtener los productos asociados al pedido
                     StringBuilder productosStringBuilder = new StringBuilder();
-                    for (int j = 0; j < productosNodeList.getLength(); j++) {
-                        Node productoNode = productosNodeList.item(j);
-                        if (productoNode.getNodeType() == Node.ELEMENT_NODE) {
-                            Element productoElement = (Element) productoNode;
-                            String descripcion = obtenerTextoElemento(productoElement, "descripcion");
-                            String cantidad = obtenerTextoElemento(productoElement, "cantidad");
-                            String descuento = obtenerTextoElemento(productoElement, "descuento");
-                            String precioUn = obtenerTextoElemento(productoElement, "precio_un");
+                    String productosQuery = "SELECT * FROM LIN_PEDIDOS WHERE id_pedido = ?";
+                    Cursor productosCursor = db.rawQuery(productosQuery, new String[]{idPedido});
+                    if (productosCursor != null && productosCursor.moveToFirst()) {
+                        do {
+                            String cantidad = productosCursor.getString(2);
+                            String descuento = productosCursor.getString(3);
+                            String precioUn = productosCursor.getString(4);
 
-                            // Aquí puedes hacer algo con los datos de los productos, como concatenarlos en un StringBuilder
-                            productosStringBuilder.append(descripcion).append(", Cantidad: ").append(cantidad)
+                            // Concatenar los datos del producto al StringBuilder
+                            productosStringBuilder.append("Cantidad: ").append(cantidad)
                                     .append(", Descuento: ").append(descuento).append(", Precio Unitario: ").append(precioUn).append("\n");
-                        }
+                        } while (productosCursor.moveToNext());
+
+                        productosCursor.close();
                     }
 
-                    String fecha = obtenerTextoElemento(pedidoElement, "fecha");
-                    String precioTotal = obtenerTextoElemento(pedidoElement, "precio_total");
-                    String nFactura = obtenerTextoElemento(pedidoElement, "n_factura");
-
-                    // Aquí puedes hacer algo con los datos de los pedidos, como almacenarlos en tu array o hacer un log
+                    // Guardar los valores en el array
                     arrayPedidos[i][0] = idPedido;
                     arrayPedidos[i][1] = idPartner;
                     arrayPedidos[i][2] = idComercial;
                     arrayPedidos[i][3] = productosStringBuilder.toString();  // Productos
                     arrayPedidos[i][4] = fecha;
-                    arrayPedidos[i][5] = precioTotal;
-                    arrayPedidos[i][6] = nFactura;
-                }
+
+                    i++;
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("Error", "Error al leer pedidos.xml: " + e.getMessage());
+            Log.e("Error", "Error al leer datos de la base de datos: " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 
-
-
-
     public void llenar_fichero(DocumentBuilderFactory factory) {
+        crearXMLPedidos(factory);
+        crearXMLPartners(factory);
+    }
+
+    public void crearXMLPartners(DocumentBuilderFactory factory) {
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             DOMImplementation implementation = builder.getDOMImplementation();
-            Document document = implementation.createDocument(null, "Envio", null);
+            Document document = implementation.createDocument(null, "Partners", null);
             document.setXmlVersion("1.0");
-
-            // Agregar datos de arrayPedidos
-            if (arrayPedidos != null && arrayPedidos.length > 0 && arrayPedidos[0].length == 7) {
-                for (int i = 0; i < arrayPedidos.length; i++) {
-                    Element pedidoElement = document.createElement("pedido");
-                    document.getDocumentElement().appendChild(pedidoElement);
-
-                    CrearElemento("id_pedido", arrayPedidos[i][0], pedidoElement, document);
-                    CrearElemento("id_partner", arrayPedidos[i][1], pedidoElement, document);
-                    CrearElemento("id_comercial", arrayPedidos[i][2], pedidoElement, document);
-
-                    String productos = arrayPedidos[i][3];
-                    String[] productosArray = productos.split("\n");
-
-                    for (String producto : productosArray) {
-                        String[] productoInfo = producto.split(", ");
-                        Element productoElement = document.createElement("producto");
-                        pedidoElement.appendChild(productoElement);
-
-                        CrearElemento("descripcion", productoInfo[0], productoElement, document);
-                        CrearElemento("cantidad", productoInfo[1].substring(productoInfo[1].indexOf(":") + 2), productoElement, document);
-                        CrearElemento("descuento", productoInfo[2].substring(productoInfo[2].indexOf(":") + 2), productoElement, document);
-                        CrearElemento("precio_un", productoInfo[3].substring(productoInfo[3].indexOf(":") + 2), productoElement, document);
-                    }
-
-                    CrearElemento("fecha", arrayPedidos[i][6], pedidoElement, document);
-                }
-            } else {
-                Toast.makeText(this, "No hay pedidos", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             if (arrayPartner != null && arrayPartner.length > 0 && arrayPartner[0].length == 8) {
                 for (int i = 0; i < arrayPartner.length; i++) {
@@ -276,72 +283,74 @@ public class Enviar extends AppCompatActivity {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(fEnvio);
+            StreamResult result = new StreamResult(new File(getFilesDir(), "ePartners.xml"));
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             transformer.transform(source, result);
 
-            Toast.makeText(this, "Datos guardados en el archivo XML con formato.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Datos de partners guardados en el archivo XML ePartners.xml", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Log.e("Error", "Error al llenar el archivo XML: " + e.getMessage());
+            Log.e("Error", "Error al crear el archivo XML de partners: " + e.getMessage());
         }
     }
 
-    public void indentarXML(File xmlFile) {
+    public void crearXMLPedidos(DocumentBuilderFactory factory) {
         try {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document document = docBuilder.parse(xmlFile);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            DOMImplementation implementation = builder.getDOMImplementation();
+            Document document = implementation.createDocument(null, "Pedidos", null);
+            document.setXmlVersion("1.0");
 
+            if (arrayPedidos != null && arrayPedidos.length > 0 && arrayPedidos[0].length == 7) {
+                for (int i = 0; i < arrayPedidos.length; i++) {
+                    Element pedidoElement = document.createElement("pedido");
+                    document.getDocumentElement().appendChild(pedidoElement);
+
+                    CrearElemento("id_pedido", arrayPedidos[i][0], pedidoElement, document);
+                    CrearElemento("id_partner", arrayPedidos[i][1], pedidoElement, document);
+                    CrearElemento("id_comercial", arrayPedidos[i][2], pedidoElement, document);
+
+                    String productos = arrayPedidos[i][3];
+                    String[] productosArray = productos.split("\n");
+
+                    for (String producto : productosArray) {
+                        String[] productoInfo = producto.split(", ");
+                        Log.d("DEBUG", "Datos del producto: " + Arrays.toString(productoInfo)); // Agregar esta línea para depurar
+
+                        Element productoElement = document.createElement("producto");
+                        pedidoElement.appendChild(productoElement);
+
+                        CrearElemento("cantidad", productoInfo[0].substring(productoInfo[0].indexOf(":") + 2), productoElement, document);
+                        CrearElemento("descuento", productoInfo[1].substring(productoInfo[1].indexOf(":") + 2), productoElement, document);
+                        CrearElemento("precio_un", productoInfo[2].substring(productoInfo[2].indexOf(":") + 2), productoElement, document);
+                    }
+
+                    CrearElemento("fecha", arrayPedidos[i][4], pedidoElement, document);
+                }
+            } else {
+                Toast.makeText(this, "No hay pedidos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Guardar el documento
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(new File(getFilesDir(), "ePedidos.xml"));
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(xmlFile);
             transformer.transform(source, result);
+
+            Toast.makeText(this, "Datos de pedidos guardados en el archivo XML ePedidos.xml", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Log.e("Error", "Error al indentar el archivo XML: " + e.getMessage());
+            Log.e("Error", "Error al crear el archivo XML de pedidos: " + e.getMessage());
         }
     }
-
 
     public void CrearElemento(String datoEmple, String valor, Element raiz, Document document) {
         Element elem = document.createElement(datoEmple);
         Text text = document.createTextNode(valor);
         raiz.appendChild(elem);
         elem.appendChild(text);
-    }
-
-    private void mostrarContenidoXML() {
-        try {
-            // Leer el contenido del archivo XML
-            String xmlContent = leerContenidoXML(fEnvio);
-
-            // Mostrar el contenido en un Toast
-            Toast.makeText(Enviar.this, "Contenido del XML:\n" + xmlContent, Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String leerContenidoXML(File xmlFile) {
-        // Implementa la lógica para leer el contenido del archivo XML y convertirlo a una cadena
-        // Aquí proporciono un ejemplo básico utilizando FileReader y BufferedReader
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(xmlFile));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-            br.close();
-            return sb.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("Error", "Error al leer envios: "+e);
-            return "Error al leer el contenido del XML";
-        }
     }
 }
