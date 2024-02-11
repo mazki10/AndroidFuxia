@@ -94,7 +94,6 @@ public class partners extends AppCompatActivity {
                     partners.get(i).get_email() + "', " + partners.get(i).get_zona() + ", '" +
                     partners.get(i).get_fecha() + "')";
 
-
             db.execSQL(insertQuery);
         }
     }
