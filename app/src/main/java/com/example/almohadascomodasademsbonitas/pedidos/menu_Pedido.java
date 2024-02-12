@@ -120,38 +120,6 @@ public class menu_Pedido extends AppCompatActivity {
 
 
     }
-    private void cargarPartnersDesdeXML(File file) {
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(file);
-
-            doc.getDocumentElement().normalize();
-
-            NodeList nodeList = doc.getElementsByTagName("partner");
-
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
-                if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) node;
-                    int id = Integer.parseInt(element.getElementsByTagName("id_partners").item(0).getTextContent());
-                    String nombre = element.getElementsByTagName("nombre").item(0).getTextContent();
-                    String cif = element.getElementsByTagName("cif").item(0).getTextContent();
-                    String direccion = element.getElementsByTagName("direccion").item(0).getTextContent();
-                    int telefono =  Integer.parseInt(element.getElementsByTagName("telefono").item(0).getTextContent());
-                    int comercial = Integer.parseInt(element.getElementsByTagName("comercial").item(0).getTextContent());
-                    String email = element.getElementsByTagName("email").item(0).getTextContent();
-                    int idZona = Integer.parseInt(element.getElementsByTagName("id_zona").item(0).getTextContent());
-                    String fecha = element.getElementsByTagName("fecha").item(0).getTextContent();
-                    Partner partner = new Partner(id, nombre,cif, direccion, telefono, comercial,email, idZona,fecha);
-                    partners.add(partner);
-
-                    }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private void cargarArticulosDesdeXML(File file) {
         try {

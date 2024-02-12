@@ -144,27 +144,6 @@
                 tools:layout_editor_absoluteY="276dp" />
 
             <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:fontFamily="monospace"
-                android:paddingRight="50dp"
-                android:text="@string/comercial"
-                android:textAlignment="textStart"
-                android:textColor="@color/gray"
-                android:textStyle="bold"
-                tools:layout_editor_absoluteX="32dp"
-                tools:layout_editor_absoluteY="401dp" />
-
-            <EditText
-                android:id="@+id/editTextText5"
-                android:layout_width="192dp"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="text"
-                android:paddingRight="50dp" />
-
-            <TextView
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="26dp"

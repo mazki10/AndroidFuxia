@@ -81,7 +81,7 @@ public class partners extends AppCompatActivity {
             if(!existeIdPartnerEnBaseDeDatos(datosDeXmlSinFormato.get(i))){
                 partners.add(new Partner(Integer.parseInt(datosDeXmlSinFormato.get(i)) ,
                         datosDeXmlSinFormato.get(i+1),datosDeXmlSinFormato.get(i+2),datosDeXmlSinFormato.get(i+3),
-                        Integer.parseInt(datosDeXmlSinFormato.get(i+4)),Integer.parseInt(datosDeXmlSinFormato.get(i+5)),
+                        Integer.parseInt(datosDeXmlSinFormato.get(i+4)),(datosDeXmlSinFormato.get(i+5)),
                         datosDeXmlSinFormato.get(i+6),Integer.parseInt(datosDeXmlSinFormato.get(i+7)) ,
                         datosDeXmlSinFormato.get(i+8)));
             }
@@ -90,7 +90,7 @@ public class partners extends AppCompatActivity {
             String insertQuery = "INSERT INTO PARTNERS (ID_PARTNER, NOMBRE, CIF, DIRECCION, TELEFONO, COMERCIAL, EMAIL, ZONA, FECHA) " +
                     "VALUES (" + partners.get(i).get_id() + ", '" + partners.get(i).get_nombre() + "', '" +
                     partners.get(i).get_cif() + "', '" + partners.get(i).get_direccion() + "', " +
-                    partners.get(i).get_telefono() + ", " + partners.get(i).get_comercial() + ", '" +
+                    partners.get(i).get_telefono() + ", '" + partners.get(i).get_comercial() + "', '" +
                     partners.get(i).get_email() + "', " + partners.get(i).get_zona() + ", '" +
                     partners.get(i).get_fecha() + "')";
 
@@ -180,13 +180,14 @@ public class partners extends AppCompatActivity {
             StringBuilder blockData = new StringBuilder();
             blockData.append(datos.get(i)).append("\n")
                     .append("Nombre: ").append(datos.get(i + 1)).append("\n")
-                    .append("Apellido: ").append(datos.get(i + 2)).append("\n")
-                    .append("Edad: ").append(datos.get(i + 3)).append("\n")
-                    .append("Dirección: ").append(datos.get(i + 4)).append("\n")
-                    .append("Ciudad: ").append(datos.get(i + 5)).append("\n")
-                    .append("Teléfono: ").append(datos.get(i + 6)).append("\n")
-                    .append("Email: ").append(datos.get(i + 7)).append("\n")
+                    .append("CIF: ").append(datos.get(i + 2)).append("\n")
+                    .append("Direccion: ").append(datos.get(i + 3)).append("\n")
+                    .append("Telefono: ").append(datos.get(i + 4)).append("\n")
+                    .append("Comercial: ").append(datos.get(i + 5)).append("\n")
+                    .append("Email: ").append(datos.get(i + 6)).append("\n")
+                    .append("Zona: ").append(datos.get(i + 7)).append("\n")
                     .append("Fecha de Registro: ").append(datos.get(i + 8)).append("\n");
+
 
             formatoListView.add(blockData.toString());
         }

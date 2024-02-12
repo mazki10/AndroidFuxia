@@ -27,7 +27,7 @@ import java.util.Locale;
 
 public class nuevo_partner extends AppCompatActivity {
 
-    private EditText editTextNombre, editTextDireccion, editTextTelefono, editTextComercial, editTextEmail, editTextCIF, editTextZona;
+    private EditText editTextNombre, editTextDireccion, editTextTelefono, editTextEmail, editTextCIF, editTextZona;
     private Partner nuevoPartner;
     private DBconexion dbHelper;
     private SQLiteDatabase db;
@@ -42,7 +42,6 @@ public class nuevo_partner extends AppCompatActivity {
         editTextDireccion = findViewById(R.id.editTextTextPostalAddress1);
         editTextTelefono = findViewById(R.id.editTextPhone);
         editTextEmail = findViewById(R.id.editTextTextEmailAddress);
-        editTextComercial = findViewById(R.id.editTextText5);
         editTextZona = findViewById(R.id.editTextNumber2);
         Button buttonGuardar = findViewById(R.id.btguardar);
         nuevoPartner = new Partner();
@@ -68,7 +67,6 @@ public class nuevo_partner extends AppCompatActivity {
             String CIF = editTextCIF.getText().toString();
             String direccion = editTextDireccion.getText().toString();
             String telefono = editTextTelefono.getText().toString();
-            String comercial = editTextComercial.getText().toString();
             String email = editTextEmail.getText().toString();
             String zona = editTextZona.getText().toString();
 
@@ -98,10 +96,6 @@ public class nuevo_partner extends AppCompatActivity {
                 throw new IllegalArgumentException("El correo electrónico no es válido");
             }
 
-            if (comercial.isEmpty()) {
-                throw new IllegalArgumentException("El campo comercial es obligatorio");
-            }
-
             if (zona.isEmpty()) {
                 throw new IllegalArgumentException("El campo zona es obligatorio");
             }
@@ -114,6 +108,7 @@ public class nuevo_partner extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat(formatoFecha, Locale.getDefault());
             String fechaFormateada = sdf.format(fechaActual);
 
+            String dniComercial = obtenerComercial();
             // Configurar el objeto nuevoPartner solo si la validación es exitosa
             nuevoPartner = new Partner();
             nuevoPartner.set_nombre(nombre);
@@ -121,7 +116,7 @@ public class nuevo_partner extends AppCompatActivity {
             nuevoPartner.set_direccion(direccion);
             nuevoPartner.set_telefono(Integer.valueOf(telefono));
             nuevoPartner.set_email(email);
-            nuevoPartner.set_comercial(Integer.valueOf(comercial));
+            nuevoPartner.set_comercial(dniComercial);
             nuevoPartner.set_zona(Integer.valueOf(zona));
             nuevoPartner.set_fecha(fechaFormateada);
 
@@ -151,9 +146,6 @@ public class nuevo_partner extends AppCompatActivity {
                 case "El correo electrónico es obligatorio":
                 case "El correo electrónico no es válido":
                     editTextEmail.requestFocus();
-                    break;
-                case "El campo comercial es obligatorio":
-                    editTextComercial.requestFocus();
                     break;
                 case "El campo zona es obligatorio":
                     editTextZona.requestFocus();
@@ -235,7 +227,6 @@ public class nuevo_partner extends AppCompatActivity {
 
             // Leer y mostrar el contenido del archivo para verificar
             String contenido = leerContenidoXML();
-            Toast.makeText(this, "Información añadida a XML correctamente:\n" + contenido, Toast.LENGTH_LONG).show();
 
         } catch (Exception e) {
             // Manejar excepciones
@@ -304,4 +295,24 @@ public class nuevo_partner extends AppCompatActivity {
             return "Error al leer el contenido del archivo XML: " + e.getMessage();
         }
     }
+    private String obtenerComercial(){
+        String dniComercial = null;
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT ID_COMERCIAL FROM LOGIN WHERE SESION = 1";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex("ID_COMERCIAL");
+            // Recuperamos el valor del DNI del cursor
+            dniComercial = cursor.getString(columnIndex);
+        }
+
+        cursor.close();
+        return dniComercial;
+    }
+
+
+
 }
