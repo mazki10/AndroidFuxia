@@ -1,6 +1,8 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -12,12 +14,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.w3c.dom.Document;
@@ -28,6 +28,11 @@ import org.xmlpull.v1.XmlSerializer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,150 +43,84 @@ import java.util.ArrayList;
 public class modificar_pedido extends AppCompatActivity {
 
     private ArrayAdapter<String> adapter;
-    String pedidoActualizado;
+    int idPedido;
+    ArrayList<String> datosDeXml;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.modificar_pedido);
 
-        //copiarXmlDesdeAssets();
+        // Copia el archivo XML desde assets a la memoria interna
+        copiarXmlDesdeAssets();
 
         ListView listView = findViewById(R.id.lvPartners);
-        ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+        datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
         listView.setAdapter(adapter);
 
-        Button btnBorrar = findViewById(R.id.btnModificar);
-        //Button btRrfs = findViewById(R.id.btRfr2);
+        Button btnModificar = findViewById(R.id.btnModificar);
 
-        btnBorrar.setOnClickListener(new View.OnClickListener() {
+        btnModificar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SparseBooleanArray checkedItemPositions = listView.getCheckedItemPositions();
+                // Aquí obtén el ID del pedido seleccionado, por ejemplo:
+                int idPedidoSeleccionado = obtenerIdPedidoSeleccionadoDesdeXml(listView);
 
-                // Iterar sobre las posiciones seleccionadas
-                for (int i = 0; i < checkedItemPositions.size(); i++) {
-                    int position = checkedItemPositions.keyAt(i);
+                // Crear un Intent para iniciar la otra actividad (ModificarDatosActivity)
+                Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
 
-                    // Verificar si el elemento en esta posición está seleccionado
-                    if (checkedItemPositions.valueAt(i)) {
-                        // Abre la actividad para modificar los datos del pedido seleccionado
-                        abrirModificarDatosActivity(position);
+                // Agregar el ID del pedido como extra al Intent
+                intent.putExtra("ID_PEDIDO", idPedidoSeleccionado);
 
-                        // Opcionalmente, puedes eliminar el elemento de la lista aquí
-                        // datosDeXml.remove(position);
-                    }
-                }
-
-                guardarDatosEnXmlEnMemoriaInterna(leerDatosDesdeXmlEnMemoriaInterna());
-
+                // Iniciar la otra actividad
+                startActivity(intent);
             }
         });
 
 
 
-     /*   btRrfs.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
-                adapter.clear();
-                adapter.addAll(datosDeXml);
-                adapter.notifyDataSetChanged();
-            }
-        });*/
     }
 
-    private void abrirModificarDatosActivity(int position) {
-        // Obtener los datos del pedido seleccionado
-        String pedidoSeleccionado = adapter.getItem(position);
+    private int obtenerIdPedidoSeleccionadoDesdeXml(ListView listView) {
+        int idPedidoSeleccionado = -1; // Valor predeterminado si no se selecciona ningún elemento
 
-        // Obtener la fecha y el precio final del pedido seleccionado
-        String fechaPedido = obtenerFechaPedido(pedidoSeleccionado);
-        double precioFinal = obtenerPrecioFinal(pedidoSeleccionado);
+        // Obtener el índice del elemento seleccionado en el ListView
+        int position = listView.getCheckedItemPosition();
 
-        // Crear un Intent para abrir la nueva actividad
-        Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
+        // Verificar si se ha seleccionado un elemento
+        if (position != ListView.INVALID_POSITION) {
+            // Obtener la lista de datos desde el XML
+            ArrayList<String> datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
-        // Agrega la posición del pedido seleccionado como extra en el intent
-        intent.putExtra("POSICION_PEDIDO", position);
-        // Agrega los datos del pedido seleccionado como extra en el intent
-        intent.putExtra("PEDIDO_SELECCIONADO", pedidoSeleccionado);
-        // Agrega la fecha como extra en el intent
-        intent.putExtra("FECHA_PEDIDO", fechaPedido);
-        // Agrega el precio final como extra en el intent
-        intent.putExtra("PRECIO_FINAL", precioFinal);
+            // Obtener el pedido seleccionado
+            String pedidoSeleccionado = datosDeXml.get(position);
 
-        // Inicia la nueva actividad
-        startActivity(intent);
-    }
+            // Analizar el pedido para extraer el ID (suponiendo que el ID está en la primera posición)
+            String[] partes = pedidoSeleccionado.split(" "); // Suponiendo que los datos están separados por espacios
+            idPedidoSeleccionado = Integer.parseInt(partes[0]); // Suponiendo que el ID es el primer elemento
 
-    // Método para obtener la fecha del pedido a partir de su representación como cadena
-    private String obtenerFechaPedido(String pedido) {
-        try {
-            // Crear un XmlPullParser
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(new StringReader(pedido));
-
-            // Variable para almacenar la fecha del pedido
-            String fechaPedido = "";
-
-            // Iterar sobre el XML
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG && "fecha".equals(parser.getName())) {
-                    // Se encontró la etiqueta <FECHA_PEDIDO>, leer su valor
-                    parser.next();
-                    fechaPedido = parser.getText();
-                    break;  // Salir del bucle una vez que se haya encontrado la fecha del pedido
-                }
-                eventType = parser.next();
-            }
-
-            return fechaPedido;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ""; // Devolver una cadena vacía en caso de error
+            // Puedes ajustar esta lógica según la estructura real de tus datos en el XML
         }
+
+        return idPedidoSeleccionado;
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-
-    // Método para obtener el precio final del pedido a partir de su representación como cadena
-    private double obtenerPrecioFinal(String pedido) {
-        try {
-            // Crear un XmlPullParser
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(new StringReader(pedido));
-
-            // Variable para almacenar el precio final del pedido
-            double precioFinal = 0.0;
-
-            // Iterar sobre el XML
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG && "precio_total".equals(parser.getName())) {
-                    // Se encontró la etiqueta <PRECIO_TOT>, leer su valor y convertirlo a double
-                    parser.next();
-                    precioFinal = Double.parseDouble(parser.getText());
-                    break;  // Salir del bucle una vez que se haya encontrado el precio final
-                }
-                eventType = parser.next();
-            }
-
-            return precioFinal;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0.0; // Devolver 0.0 en caso de error
-        }
+        // Leer datos desde el archivo XML y actualizar la lista
+        datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+        adapter.clear();
+        adapter.addAll(datosDeXml);
+        adapter.notifyDataSetChanged();
     }
-
 
     private void guardarDatosEnXmlEnMemoriaInterna(ArrayList<String> datosDeXml) {
         try {
-            FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput("pedidos2.xml", MODE_PRIVATE);
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setOutput(fos, "UTF-8");
             serializer.startDocument(null, Boolean.TRUE);
@@ -203,36 +142,11 @@ public class modificar_pedido extends AppCompatActivity {
     }
 
     // Método para leer datos desde el archivo XML
-
-
-    private void copiarXmlDesdeAssets() {
-        try {
-            // Verificar si el archivo ya existe en la memoria interna
-            File file = new File(getFilesDir(), "pedidos.xml");
-            if (!file.exists()) {
-                // Copiar el archivo desde assets a la memoria interna
-                InputStream is = getAssets().open("pedidos.xml");
-                FileOutputStream os = new FileOutputStream(file);
-
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = is.read(buffer)) > 0) {
-                    os.write(buffer, 0, length);
-                }
-
-                is.close();
-                os.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private ArrayList<String> leerDatosDesdeXmlEnMemoriaInterna() {
         ArrayList<String> datosDeXml = new ArrayList<>();
 
         try {
-            FileInputStream fis = openFileInput("pedidos.xml");
+            FileInputStream fis = openFileInput("pedidos2.xml");
 
             // Crea un XmlPullParser
             XmlPullParser parser = Xml.newPullParser();
@@ -273,19 +187,84 @@ public class modificar_pedido extends AppCompatActivity {
         return datosDeXml;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void copiarXmlDesdeAssets() {
+        try {
+            // Verificar si el archivo ya existe en la memoria interna
+            File file = new File(getFilesDir(), "pedidos2.xml");
+            if (!file.exists()) {
+                // Copiar el archivo desde assets a la memoria interna
+                InputStream is = getAssets().open("pedidos2.xml");
+                FileOutputStream os = new FileOutputStream(file);
 
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                if (data != null && data.hasExtra("PEDIDO_ACTUALIZADO")) {
-                     pedidoActualizado = data.getStringExtra("PEDIDO_ACTUALIZADO");
-                    // Aquí puedes hacer lo que necesites con el pedido actualizado
-                    // Por ejemplo, puedes mostrarlo en un Toast
-                    Toast.makeText(this, "Pedido Actualizado: " + pedidoActualizado, Toast.LENGTH_SHORT).show();
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, length);
                 }
+
+                is.close();
+                os.close();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
+
+    private void editarPedidoEnXml(int idPedido, int nuevoIdPartner, String nuevoIdComercial) {
+        try {
+            // Obtener el archivo XML
+            File xmlFile = new File(getFilesDir(), "pedidos2.xml");
+            if (!xmlFile.exists()) {
+                // Si el archivo no existe, salir de la función
+                return;
+            }
+
+            // Crear un DocumentBuilder para analizar el archivo XML
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(xmlFile);
+
+            // Obtener la lista de nodos 'pedido'
+            NodeList pedidoNodes = document.getElementsByTagName("pedido");
+
+            // Iterar sobre los nodos 'pedido'
+            for (int i = 0; i < pedidoNodes.getLength(); i++) {
+                Element pedidoElement = (Element) pedidoNodes.item(i);
+
+                // Obtener el atributo 'id' del pedido
+                int idPedidoActual = Integer.parseInt(pedidoElement.getAttribute("id"));
+
+                // Verificar si este es el pedido que deseas editar
+                if (idPedidoActual == idPedido) {
+                    // Obtener las etiquetas id_partner e id_comercial dentro del pedido
+                    NodeList idPartnerNodes = pedidoElement.getElementsByTagName("id_partner");
+                    NodeList idComercialNodes = pedidoElement.getElementsByTagName("id_comercial");
+
+                    // Verificar si hay exactamente un nodo id_partner y un nodo id_comercial en el pedido
+                    if (idPartnerNodes.getLength() == 1 && idComercialNodes.getLength() == 1) {
+                        Element idPartnerElement = (Element) idPartnerNodes.item(0);
+                        Element idComercialElement = (Element) idComercialNodes.item(0);
+
+                        // Modificar los valores de las etiquetas id_partner e id_comercial
+                        idPartnerElement.setTextContent(String.valueOf(nuevoIdPartner));
+                        idComercialElement.setTextContent(String.valueOf(nuevoIdComercial));
+
+                        // Guardar los cambios en el archivo XML
+                        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                        Transformer transformer = transformerFactory.newTransformer();
+                        DOMSource source = new DOMSource(document);
+                        StreamResult result = new StreamResult(xmlFile);
+                        transformer.transform(source, result);
+
+                        // Salir del bucle, ya que hemos encontrado y editado el pedido
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -24,7 +26,7 @@
         android:theme="@style/Theme.AlmohadasComodasAdemásBonitas"
         tools:targetApi="31" >
         <activity
-            android:name=".LogIn.InicioActivity"
+            android:name=".LogIn.InicioSesion"
             android:exported="false"
             android:label="@string/title_activity_inicio"
             android:theme="@style/Theme.AlmohadasComodasAdemásBonitas.NoActionBar" />

@@ -18,6 +18,30 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
 
+    <TextView
+        android:id="@+id/textViewPedidoActualizado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Datos Actualizados del Pedido:"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/tvPartners"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="8dp"/>
+
+    <TextView
+        android:id="@+id/tvDatosPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPedidoActualizado"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingTop="8dp"/>
+
+
     <ListView
         android:id="@+id/lvPartners"
         android:layout_width="365dp"

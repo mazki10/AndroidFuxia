@@ -95,7 +95,7 @@ public class baja_pedidos extends AppCompatActivity {
     }
     private void guardarDatosEnXmlEnMemoriaInterna(ArrayList<String> datosDeXml) {
         try {
-            FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput("pedidos2.xml", MODE_PRIVATE);
             XmlSerializer serializer = Xml.newSerializer();
             serializer.setOutput(fos, "UTF-8");
             serializer.startDocument(null, Boolean.TRUE);
@@ -122,7 +122,7 @@ public class baja_pedidos extends AppCompatActivity {
     private void copiarXmlDesdeAssets() {
         try {
             // Verificar si el archivo ya existe en la memoria interna
-            File file = new File(getFilesDir(), "pedidos.xml");
+            File file = new File(getFilesDir(), "pedidos2.xml");
             if (!file.exists()) {
                 // Copiar el archivo desde assets a la memoria interna
                 InputStream is = getAssets().open("pedidos.xml");
@@ -146,7 +146,7 @@ public class baja_pedidos extends AppCompatActivity {
         ArrayList<String> datosDeXml = new ArrayList<>();
 
         try {
-            FileInputStream fis = openFileInput("pedidos.xml");
+            FileInputStream fis = openFileInput("pedidos2.xml");
 
             // Crea un XmlPullParser
             XmlPullParser parser = Xml.newPullParser();

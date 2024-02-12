@@ -198,7 +198,8 @@ String dni_comercial = "iker";
             // Agrega "0" como descuento para cada pedido (puedes ajustar esto según tus necesidades)
             descuentos.add("0");
 
-            int precioUnitario = 30;  // Valor fijo de 30 para cada pedido
+            // Obtén el precio unitario del producto desde la base de datos
+            double precioUnitario = obtenerPrecioUnitarioDeBaseDeDatos(pedido.getImagen());
             preciosUnitarios.add(String.valueOf(precioUnitario));
             totalPrecioUnitario += precioUnitario;  // Suma el precio unitario al total
         }
@@ -217,8 +218,20 @@ String dni_comercial = "iker";
 
         // Muestra la suma total de precios unitarios en textView9
         TextView textViewTotalPrecioUnitario = findViewById(R.id.textView9);
-        textViewTotalPrecioUnitario.setText(String.valueOf(totalPrecioUnitario)+"€");
+        textViewTotalPrecioUnitario.setText(String.valueOf(totalPrecioUnitario) + "€");
     }
+
+    private double obtenerPrecioUnitarioDeBaseDeDatos(String nombreProducto) {
+        double precioUnitario = 0.0;
+        SQLiteDatabase database = dbconexion.getReadableDatabase();
+        Cursor cursor = database.rawQuery("SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = ?", new String[]{nombreProducto});
+        if (cursor != null && cursor.moveToFirst()) {
+            precioUnitario = cursor.getDouble(0);
+            cursor.close();
+        }
+        return precioUnitario;
+    }
+
 
     private void guardarEnXML(ArrayList<Pedido> listaPedidos) {
         try {
@@ -234,6 +247,7 @@ String dni_comercial = "iker";
             toast.show();
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
             // Si el archivo XML no existe o ha sido borrado, crea la etiqueta pedidos
+
             if (!isXmlFileExist()) {
                 xmlData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<pedidos>\n";
             } else {
@@ -267,29 +281,35 @@ String dni_comercial = "iker";
 
 
                 for (int i = 0; i < listaPedidos.size(); i++) {
-                    cantidad_total+=listaPedidos.get(i).getCantidad();
-                    // Agregar información de productos (puedes adaptar esta lógica según tus necesidades)
+                    cantidad_total += listaPedidos.get(i).getCantidad();
+                    // Agregar información de productos
                     xmlData += "    <producto>\n";
                     xmlData += "      <id_articulo>" + listaPedidos.get(i).getImagen() + "</id_articulo>\n";
                     xmlData += "      <cantidad>" + listaPedidos.get(i).getCantidad() + "</cantidad>\n";
-                    xmlData += "      <precio_un>30</precio_un>\n";
+                    // Obtener el precio unitario del producto desde la base de datos
+                    double precioUnitario = obtenerPrecioUnitarioDeBaseDeDatos(listaPedidos.get(i).getImagen());
+                    xmlData += "      <precio_un>" + precioUnitario + "</precio_un>\n";
                     xmlData += "    </producto>\n";
                     descripcion.add(listaPedidos.get(i).getImagen());
                     cantidad.add(listaPedidos.get(i).getCantidad());
-                    precioTotal += listaPedidos.get(i).getCantidad() * 30;
+                    precioTotal += listaPedidos.get(i).getCantidad() * precioUnitario;
                 }
+
 
                 if (cantidad_total>=1&&cantidad_total<=2){
                     descuento = 1.0;
+                    precioTotal= precioTotal*1.0;
                 }else if(cantidad_total>=3&&cantidad_total<=7) {
                     descuento = 15.0;
+                    precioTotal= precioTotal*0.15;
                 } else if (cantidad_total>=7&&cantidad_total<=20) {
                     descuento = 25.0;
+                    precioTotal= precioTotal*0.25;
                 } else if (cantidad_total>20) {
                     descuento = 50.0;
-                }
+                    precioTotal= precioTotal*0.5;
 
-                precioTotal= precioTotal * (descuento/100);
+                }
 
                 // Agregar la fecha, precio total y número de factura
                 xmlData += "    <fecha>" + fechaActual + "</fecha>\n";
@@ -304,7 +324,7 @@ String dni_comercial = "iker";
             xmlData += "</pedidos>\n";
 
             // Sobrescribir el archivo
-            FileOutputStream fos = openFileOutput("pedidos.xml", MODE_PRIVATE);
+            FileOutputStream fos = openFileOutput("pedidos2.xml", MODE_PRIVATE);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
             outputStreamWriter.write(xmlData);
 Toast toast2 = Toast.makeText(this,"empieza la parte de BBDD",Toast.LENGTH_SHORT);
