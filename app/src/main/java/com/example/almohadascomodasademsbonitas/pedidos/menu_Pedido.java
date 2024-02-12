@@ -158,27 +158,16 @@ public class menu_Pedido extends AppCompatActivity {
     private void verificarArchivosXML() {
         permitirAcceso = true; // Restablecer el valor por defecto
 
-        File filesFolder = getFilesDir();
-        File comercialesFile = new File(filesFolder, "comerciales.xml");
-        File partnersFile = new File(filesFolder, "partners.xml");
+        // Verificar la existencia de los datos en la tabla COMERCIALES
+        Cursor cursor = db.rawQuery("SELECT * FROM COMERCIALES", null);
 
-        // Verifica la existencia de los archivos en la carpeta interna
-        if (!comercialesFile.exists() || !partnersFile.exists()) {
-            mostrarAlertDialog("Error", "Los archivos comerciales.xml y/o partners.xml no se encontraron en la carpeta interna.");
+        // Verifica si hay algún registro en la tabla COMERCIALES
+        if (cursor.getCount() == 0) {
+            mostrarAlertDialog("Error", "No se encontraron datos en la tabla COMERCIALES.");
             permitirAcceso = false;
-            return;
         }
 
-        // Verifica si los archivos están vacíos
-        if (comercialesFile.length() == 0 || partnersFile.length() == 0) {
-            // Si al menos uno de los archivos está vacío, procede a rellenarlos
-            if (comercialesFile.length() == 0) {
-                escribirContenidoInicialComerciales(comercialesFile);
-            }
-            if (partnersFile.length() == 0) {
-                escribirContenidoInicialPartners(partnersFile);
-            }
-        }
+        cursor.close();
     }
 
 
