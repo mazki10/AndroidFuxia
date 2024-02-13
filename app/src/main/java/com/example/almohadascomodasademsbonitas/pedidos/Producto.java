@@ -13,6 +13,12 @@ public class Producto {
         this.precio_un = precio_un;
     }
 
+    public Producto(String descripcion, int cantidad, double precio_un) {
+        this.descripcion = descripcion;
+        this.cantidad = cantidad;
+        this.precio_un = precio_un;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }

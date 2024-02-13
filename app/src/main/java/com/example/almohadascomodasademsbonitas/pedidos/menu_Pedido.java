@@ -85,17 +85,17 @@ public class menu_Pedido extends AppCompatActivity {
         botonAlta.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    // Si no tienes permisos, solicitarlos al usuario
-
-                    verificarArchivosXML();
+                // Si no tienes permisos, solicitarlos al usuario
+                verificarArchivosXML();
                 if (permitirAcceso) {
+                    File file = new File(getFilesDir(), "articulos.xml");
+                    cargarArticulosDesdeXML(file); // Cargar datos desde el archivo XML
                     Intent intent = new Intent(menu_Pedido.this, actividad_pedido.class);
                     menu_Pedido.this.startActivity(intent);
-                }else{
+                } else {
                     //crearComercialesXML();
                     //crearPartnersXML();
                 }
-
             }
         });
 
@@ -117,12 +117,15 @@ public class menu_Pedido extends AppCompatActivity {
                 }
             }
         });
-
-
     }
 
+
+
     private void cargarArticulosDesdeXML(File file) {
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
         try {
+
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(file);
@@ -143,11 +146,23 @@ public class menu_Pedido extends AppCompatActivity {
                     int existencias = Integer.parseInt(element.getElementsByTagName("existencias").item(0).getTextContent());
                     int stockMax = Integer.parseInt(element.getElementsByTagName("stock_max").item(0).getTextContent());
                     int stockMin = Integer.parseInt(element.getElementsByTagName("stock_min").item(0).getTextContent());
-                    LocalDate fecUltEnt = LocalDate.parse(element.getElementsByTagName("fec_ult_ent").item(0).getTextContent());
-                    LocalDate fecUltSal = LocalDate.parse(element.getElementsByTagName("fec_ult_sal").item(0).getTextContent());
+                    String fecUltEnt = (element.getElementsByTagName("fec_ult_ent").item(0).getTextContent());
+                    String fecUltSal = (element.getElementsByTagName("fec_ult_sal").item(0).getTextContent());
 
-                    Articulo articulo = new Articulo(id, idProveedor, descripcion, precioVenta, precioCoste, existencias, stockMax, stockMin, fecUltEnt, fecUltSal);
+                    Articulo articulo = new Articulo(id, idProveedor, descripcion, precioVenta, precioCoste, existencias, stockMax, stockMin, fecUltEnt,fecUltSal );
                     articulos.add(articulo);
+
+                    if(!existeArticuloEnBaseDeDatos(id)){
+                        String insertQuery = "INSERT INTO ARTICULOS (ID_ARTICULO, ID_PROVEEDOR, DESCRIPCION, PRECIO_VENTA, PRECIO_COSTE, EXISTENCIAS, STOCK_MAX, STOCK_MIN, FEC_ULT_ENT, FEC_ULT_SAL) " +
+                                "VALUES (" + id + ", " + idProveedor + ", '" + descripcion + "', " +
+                                precioVenta + ", " + precioCoste + ", " + existencias + ", " +
+                                stockMax + ", " + stockMin + ",'"+fecUltEnt.toString()+"','"+fecUltSal.toString()+"')";
+                        db.execSQL(insertQuery);
+                        Log.d("Consulta", "Query de inserción ejecutado: " + insertQuery);
+
+                    }
+
+
                 }
             }
         } catch (Exception e) {
@@ -281,21 +296,38 @@ public class menu_Pedido extends AppCompatActivity {
 
 
     private void mostrarAlertDialog(String titulo, String mensaje) {
-            AlertDialog.Builder alerta = new AlertDialog.Builder(this);
+        AlertDialog.Builder alerta = new AlertDialog.Builder(this);
 
-            alerta.setMessage(mensaje)
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Cierra la aplicación o realiza otras acciones necesarias
-                          //  finish();
-                        }
-                    });
+        alerta.setMessage(mensaje)
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Cierra la aplicación o realiza otras acciones necesarias
+                        //  finish();
+                    }
+                });
 
-            AlertDialog dialog = alerta.create();
-            dialog.setTitle(titulo);
-            dialog.show();
+        AlertDialog dialog = alerta.create();
+        dialog.setTitle(titulo);
+        dialog.show();
+    }
+    private boolean existeArticuloEnBaseDeDatos(Integer idArticulo) {
+        db = dbHelper.getWritableDatabase();
+        String query = "SELECT COUNT(*) FROM ARTICULOS WHERE ID_ARTICULO = ?";
+        String[] selectionArgs = {idArticulo.toString()};
+        try {
+            // Ejecutar la consulta y obtener el resultado
+            Cursor cursor = db.rawQuery(query, selectionArgs);
+            if (cursor.moveToFirst()) {
+                int count = cursor.getInt(0);
+                cursor.close();
+                return count > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false; // Si hay algún error o no se encuentra el id_partner, retornar falso
+    }
 
 }

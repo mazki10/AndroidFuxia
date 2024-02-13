@@ -43,6 +43,7 @@ public class pagina2pedido extends AppCompatActivity {
 ArrayList <String> descripcion=new ArrayList<>();
 String dni_comercial = "iker";
     double precioTotal = 0;
+    double precioUnitario;
     //public pagina2pedido(DBconexion dbHelper) {
        // this.dbHelper = dbHelper;
     //}
@@ -50,7 +51,7 @@ String dni_comercial = "iker";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina2pedidos);
-        dbconexion = new  DBconexion(this,"ACAB2.db",null,1);
+        dbconexion = new  DBconexion(this,"ACAB2",null,1);
         SQLiteDatabase database = dbconexion.getWritableDatabase();
 
 
@@ -112,7 +113,7 @@ String dni_comercial = "iker";
     */
 
     private void borrarDatosXML() {
-        File file = new File(getFilesDir(), "pedidos.xml");
+        File file = new File(getFilesDir(), "pedidos2.xml");
         if (file.exists()) {
             try {
                 if (file.delete()) {
@@ -137,7 +138,7 @@ String dni_comercial = "iker";
     }
 
     private boolean isXmlFileExist() {
-        File file = new File(getFilesDir(), "pedidos.xml");
+        File file = new File(getFilesDir(), "pedidos2.xml");
         Toast toast = Toast.makeText(this,String.valueOf(file.exists()),Toast.LENGTH_SHORT);
         toast.show();
         return file.exists();
@@ -199,7 +200,7 @@ String dni_comercial = "iker";
             descuentos.add("0");
 
             // Obtén el precio unitario del producto desde la base de datos
-            double precioUnitario = obtenerPrecioUnitarioDeBaseDeDatos(pedido.getImagen());
+            precioUnitario = obtenerPrecioUnitarioDeBaseDeDatos(pedido.getImagen());
             preciosUnitarios.add(String.valueOf(precioUnitario));
             totalPrecioUnitario += precioUnitario;  // Suma el precio unitario al total
         }
@@ -224,7 +225,7 @@ String dni_comercial = "iker";
     private double obtenerPrecioUnitarioDeBaseDeDatos(String nombreProducto) {
         double precioUnitario = 0.0;
         SQLiteDatabase database = dbconexion.getReadableDatabase();
-        Cursor cursor = database.rawQuery("SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = ?", new String[]{nombreProducto});
+        Cursor cursor = database.rawQuery("SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = '"+nombreProducto+"'",null);
         if (cursor != null && cursor.moveToFirst()) {
             precioUnitario = cursor.getDouble(0);
             cursor.close();
@@ -369,15 +370,21 @@ toast2.show();
                             descripcion.get(i).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
                     db.execSQL(insertQuery);
                     Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
+
+                    String insertQuery1 = "UPDATE ARTICULOS SET EXISTNCIAS = EXISTENCIAS - 1 WHERE DESCRIPCION = '"+ descripcion.get(i).toString()+"'";
+                    db.execSQL(insertQuery1);
+
                 }
 
                 for (int i = 0; i < cantidad.size(); i++) {
                     String insertQuery = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
                             "VALUES (" + contadorIdPedido + ", " + (i + 1) + ", " + cantidad.get(i).toString() + ", " +
-                            descuento + ", " + 30 + ", " + precioTotal + ")";
+                            descuento + ", " + precioUnitario + ", " + precioTotal + ")";
                     db.execSQL(insertQuery);
                     Log.d("Insertion", "Inserting lin_pedido: " + insertQuery);
                 }
+
+
 
                 db.setTransactionSuccessful();
             } catch (Exception e) {
@@ -413,7 +420,7 @@ toast2.show();
     }
     private String leerContenidoXML() {
         try {
-            FileInputStream fis = openFileInput("pedidos.xml");
+            FileInputStream fis = openFileInput("pedidos2.xml");
             InputStreamReader inputStreamReader = new InputStreamReader(fis);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder stringBuilder = new StringBuilder();

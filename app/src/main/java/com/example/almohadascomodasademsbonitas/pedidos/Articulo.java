@@ -11,8 +11,8 @@ public class Articulo {
     private int  existencias;
     private int stock_max;
     private int stock_min;
-    private LocalDate fec_ult_ent;
-    private LocalDate fec_ult_sal;
+    private String fec_ult_ent;
+    private String fec_ult_sal;
 
     public Articulo() {
         this.id_articulo = 0;
@@ -23,11 +23,11 @@ public class Articulo {
         this.existencias = 0;
         this.stock_max = 0;
         this.stock_min = 0;
-        this.fec_ult_ent = LocalDate.of(0,0,0);
-        this.fec_ult_sal = LocalDate.of(0,0,0);
+        this.fec_ult_ent ="";
+        this.fec_ult_sal = "";
     }
 
-    public Articulo(int id_articulo, int id_proveedor, String descripcion, Double precio_venta, Double precio_coste, int existencias, int stock_max, int stock_min, LocalDate fec_ult_ent, LocalDate fec_ult_sal) {
+    public Articulo(int id_articulo, int id_proveedor, String descripcion, Double precio_venta, Double precio_coste, int existencias, int stock_max, int stock_min, String fec_ult_ent, String fec_ult_sal) {
         this.id_articulo = id_articulo;
         this.id_proveedor = id_proveedor;
         this.descripcion = descripcion;
@@ -104,19 +104,19 @@ public class Articulo {
         this.stock_min = stock_min;
     }
 
-    public LocalDate getFec_ult_ent() {
+    public String getFec_ult_ent() {
         return fec_ult_ent;
     }
 
-    public void setFec_ult_ent(LocalDate fec_ult_ent) {
+    public void setFec_ult_ent(String fec_ult_ent) {
         this.fec_ult_ent = fec_ult_ent;
     }
 
-    public LocalDate getFec_ult_sal() {
+    public String getFec_ult_sal() {
         return fec_ult_sal;
     }
 
-    public void setFec_ult_sal(LocalDate fec_ult_sal) {
+    public void setFec_ult_sal(String fec_ult_sal) {
         this.fec_ult_sal = fec_ult_sal;
     }
 }

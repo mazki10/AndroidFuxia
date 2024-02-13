@@ -60,7 +60,9 @@
             android:label="Nuevo Partner" />
         <activity
             android:name=".pedidos.actividad_pedido"
-            android:exported="false" />
+            android:exported="false">
+    </activity>
+
         <activity
             android:name=".pedidos.ModificarDatosActivity"
             android:exported="false" />

@@ -69,9 +69,9 @@ public class actividad_pedido extends AppCompatActivity {
     LocalDate fecha;
     ArrayList<HashMap<String, String>> comerciales;
     ArrayList<HashMap<String, String>> partners;
-TextView textViewPrecio;
-TextView textViewStock_max;
-TextView textViewExistencias;
+    TextView textViewPrecio;
+    TextView textViewStock_max;
+    TextView textViewExistencias;
     //Estas dos linea son una prueba
     int comercialEleguido=0;
     int partnerEleguido=0;
@@ -99,7 +99,7 @@ TextView textViewExistencias;
 
 
 
-      Consulta();
+        Consulta();
 
         if (!datosArticulosDDBB.isEmpty()) {
             textViewExistencias.setText(String.valueOf(datosArticulosDDBB.get(0).getExistencias()));
@@ -117,9 +117,9 @@ TextView textViewExistencias;
                 AlertDialog.Builder alerta = new AlertDialog.Builder(actividad_pedido.this);
 
                 alerta.setMessage(" 1. pedido con una cantidad de 1 - 2 almohadas no tiene descuento \n \n" +
-                        " 2. pedidos con una cantidad de 3 - 7 almohadas tienen 15% de descuento \n \n" +
-                        " 3. pedidos con una cantida de 7 - 20 almohadas tienen 25% de descuento \n \n" +
-                        " 4. pedidos superiores a 20 almohadas tienen 50% de descuento")
+                                " 2. pedidos con una cantidad de 3 - 7 almohadas tienen 15% de descuento \n \n" +
+                                " 3. pedidos con una cantida de 7 - 20 almohadas tienen 25% de descuento \n \n" +
+                                " 4. pedidos superiores a 20 almohadas tienen 50% de descuento")
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -196,17 +196,17 @@ TextView textViewExistencias;
             @Override
             public void onClick(View v) {
                 try {
-                // Verifica si el valor del EditText es 0
-                if (editText.getText().toString().equals("0")) {
-                    // Muestra un Toast indicando que no se ha elegido ningún producto
-                    Toast.makeText(actividad_pedido.this, "No has elegido ningún producto.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Llama al método incrementarNumeroEnTextView solo cuando se confirma la selección
-                    incrementarNumeroEnTextView();
+                    // Verifica si el valor del EditText es 0
+                    if (editText.getText().toString().equals("0")) {
+                        // Muestra un Toast indicando que no se ha elegido ningún producto
+                        Toast.makeText(actividad_pedido.this, "No has elegido ningún producto.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Llama al método incrementarNumeroEnTextView solo cuando se confirma la selección
+                        incrementarNumeroEnTextView();
 
-                    // Cambia el valor del EditText a 0
-                    editText.setText("0");
-                }
+                        // Cambia el valor del EditText a 0
+                        editText.setText("0");
+                    }
                 } catch (NumberFormatException e) {
                     // Manejar la excepción, por ejemplo, mostrando un mensaje de error o asignando un valor predeterminado.
                     e.printStackTrace();
@@ -265,6 +265,9 @@ TextView textViewExistencias;
 
 
     }
+
+
+
 
     private void incrementarNumeroEnTextView() {
         Log.d("actividad_pedido", "Imagen seleccionada en incrementarNumeroEnTextView(): " + imagenSeleccionada);
@@ -456,68 +459,10 @@ TextView textViewExistencias;
 
 
     private void beginXMLparsingComerciales() {
-        try {
-            File file = new File(getFilesDir(), "comerciales.xml");
-
-            // Verificar si el archivo existe antes de intentar leerlo
-            if (file.exists()) {
-                InputStream is = new FileInputStream(file);
-
-                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-                Document doc = documentBuilder.parse(is);
-
         try{
-            doc = documentBuilder.parse(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
+            updateSpinnerComerciales();
 
-        Element element = doc.getDocumentElement();
-        element.normalize();
-
-        NodeList nodeList = doc.getElementsByTagName("comercial");
-
-        for(int i=0;i<nodeList.getLength();i++){
-            Node node = nodeList.item(i);
-
-            if(node.getNodeType() == Node.ELEMENT_NODE){
-                Element element2 = (Element) node;
-                String nombre = element2.getElementsByTagName("nombre").item(0).getTextContent();
-                String apell1 = element2.getElementsByTagName("apellido1").item(0).getTextContent();
-                String apell2 = element2.getElementsByTagName("apellido2").item(0).getTextContent();
-                String dni = element2.getElementsByTagName("dni").item(0).getTextContent();
-                String direccion = element2.getElementsByTagName("direccion").item(0).getTextContent();
-                String email = element2.getElementsByTagName("email").item(0).getTextContent();
-                String zona1 = element2.getElementsByTagName("zona1").item(0).getTextContent();
-                String zona2 = element2.getElementsByTagName("zona2").item(0).getTextContent();
-                addingValuesToHashMapComerciales(nombre,apell1,apell2,dni,direccion,email,zona1,zona2);
-
-
-
-            }
-        }
-
-        //ListView lv = findViewById(R.id.idLvJson);
-        //ListAdapter adapter = new SimpleAdapter(MainActivity.this,comerciales,R.layout.list_item,new String[]{"nombre","apellido1","apellido2","dni","direccion","email","zona1","zona2"},
-        //      new int[]{R.id.idName,R.id.idSurname1,R.id.idSurname2,R.id.idDni,R.id.idDireccion,R.id.idEmail,R.id.idZona1,R.id.idZona2}) ;
-        //lv.setAdapter(adapter);
-
-
-        updateSpinnerComerciales();
-            } else {
-                Log.e("XML Parsing", "El archivo XML 'comerciales.xml' no existe");
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -529,8 +474,8 @@ TextView textViewExistencias;
 
         // Obtén los nombres de los comerciales para mostrar en el Spinner
         ArrayList<String> nombresComerciales = new ArrayList<>();
-        for (HashMap<String, String> comercial : comerciales) {
-            nombresComerciales.add(comercial.get("nombre"));
+        for (Comercial comercial : datosComercialDDBB) {
+            nombresComerciales.add(comercial.getNombre());
         }
 
         // Crea un ArrayAdapter para el Spinner
@@ -546,10 +491,9 @@ TextView textViewExistencias;
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Aquí puedes realizar acciones cuando se selecciona un elemento en el Spinner
                 // Puedes obtener el comercial seleccionado usando la posición
-                // Ejemplo: HashMap<String, String> comercialSeleccionado = comerciales.get(position);
-                comercialEleguido = position;
-                nombreComercialElegido = comerciales.get(position).get("nombre");
-
+                // Ejemplo: Comercial comercialSeleccionado = datosComercialDDBB.get(position);
+                // También puedes obtener el nombre directamente del spinner si es necesario
+                nombreComercialElegido = nombresComerciales.get(position);
             }
 
             @Override
@@ -562,26 +506,26 @@ TextView textViewExistencias;
 
     public void Consulta(){
 //DATOS DE BBDD ARTICULOS
-         int id_articulo;
-         int id_proveedor;
-         String descripcion;
-         Double precio_venta;
-         Double precio_coste;
-         int  existencias;
-         int stock_max;
-         int stock_min;
-         LocalDate fec_ult_ent;
-         LocalDate fec_ult_sal;
+        int id_articulo;
+        int id_proveedor;
+        String descripcion;
+        Double precio_venta;
+        Double precio_coste;
+        int  existencias;
+        int stock_max;
+        int stock_min;
+        String fec_ult_ent;
+        String fec_ult_sal;
 
 //DATOS DE BBDD COMERCIALES
-         String nombre;
-         String appellido1;
-         String apellido2;
-         String dni;
-         String direccion;
-         String email;
-         int zona1;
-         int zona2;
+        String nombre;
+        String appellido1;
+        String apellido2;
+        String dni;
+        String direccion;
+        String email;
+        int zona1;
+        int zona2;
 
 
         DBconexion dbconexion = new  DBconexion(actividad_pedido.this,"ACAB2",null,1);
@@ -622,12 +566,13 @@ TextView textViewExistencias;
             existencias  = filaArt.getInt(5);
             stock_max = filaArt.getInt(6);
             stock_min = filaArt.getInt(7);
-            fec_ult_ent =  LocalDate.parse(filaArt.getString(8));
-            fec_ult_sal =  LocalDate.parse(filaArt.getString(9));
+            fec_ult_ent =  filaArt.getString(8);
+            fec_ult_sal =  filaArt.getString(9);
 
             Log.d("Consulta", "Articulo: Descripcion=" + descripcion + ", PrecioVenta=" + precio_venta + ", Existencias=" + existencias + ", ...");
 
             datosArticulosDDBB.add(new Articulo(id_articulo,id_proveedor,descripcion,precio_venta,precio_coste,existencias,stock_max,stock_min,fec_ult_ent,fec_ult_sal));
+
         }
 
         filaArt.close();
@@ -662,56 +607,55 @@ TextView textViewExistencias;
             if (file.exists()) {
                 InputStream is = new FileInputStream(file);
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = null;
 
-        try{
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
+                try{
+                    documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                }
 
-        Document doc = null;
+                Document doc = null;
 
-        try{
-            doc = documentBuilder.parse(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
+                try{
+                    doc = documentBuilder.parse(is);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                }
 
-        Element element = doc.getDocumentElement();
-        element.normalize();
+                Element element = doc.getDocumentElement();
+                element.normalize();
 
-        NodeList nodeList = doc.getElementsByTagName("partner");
+                NodeList nodeList = doc.getElementsByTagName("partner");
 
-        for(int i=0;i<nodeList.getLength();i++){
-            Node node = nodeList.item(i);
+                for(int i=0;i<nodeList.getLength();i++){
+                    Node node = nodeList.item(i);
 
-            if(node.getNodeType() == Node.ELEMENT_NODE){
-                Element element2 = (Element) node;
-                String id_partners = element2.getElementsByTagName("id_partners").item(0).getTextContent();
-                String cif = element2.getElementsByTagName("cif").item(0).getTextContent();
-                String direccion = element2.getElementsByTagName("direccion").item(0).getTextContent();
-                String telefono = element2.getElementsByTagName("telefono").item(0).getTextContent();
-                String email = element2.getElementsByTagName("email").item(0).getTextContent();
-                String persona_de_contacto = element2.getElementsByTagName("persona_de_contacto").item(0).getTextContent();
-                String id_zona = element2.getElementsByTagName("id_zona").item(0).getTextContent();
-                addingValuesToHashMapPartners(id_partners,cif,direccion,telefono,email,persona_de_contacto,id_zona);
-
+                    if(node.getNodeType() == Node.ELEMENT_NODE){
+                        Element element2 = (Element) node;
+                        String id_partners = element2.getElementsByTagName("id_partners").item(0).getTextContent();
+                        String cif = element2.getElementsByTagName("cif").item(0).getTextContent();
+                        String direccion = element2.getElementsByTagName("direccion").item(0).getTextContent();
+                        String telefono = element2.getElementsByTagName("telefono").item(0).getTextContent();
+                        String email = element2.getElementsByTagName("email").item(0).getTextContent();
+                        String id_zona = element2.getElementsByTagName("zona").item(0).getTextContent();
+                        addingValuesToHashMapPartners(id_partners,cif,direccion,telefono,email,id_zona);
 
 
-            }
-        }
 
-        //ListView lv = findViewById(R.id.idLvJson);
-        //ListAdapter adapter = new SimpleAdapter(MainActivity.this,comerciales,R.layout.list_item,new String[]{"nombre","apellido1","apellido2","dni","direccion","email","zona1","zona2"},
-        //      new int[]{R.id.idName,R.id.idSurname1,R.id.idSurname2,R.id.idDni,R.id.idDireccion,R.id.idEmail,R.id.idZona1,R.id.idZona2}) ;
-        //lv.setAdapter(adapter);
+                    }
+                }
+
+                //ListView lv = findViewById(R.id.idLvJson);
+                //ListAdapter adapter = new SimpleAdapter(MainActivity.this,comerciales,R.layout.list_item,new String[]{"nombre","apellido1","apellido2","dni","direccion","email","zona1","zona2"},
+                //      new int[]{R.id.idName,R.id.idSurname1,R.id.idSurname2,R.id.idDni,R.id.idDireccion,R.id.idEmail,R.id.idZona1,R.id.idZona2}) ;
+                //lv.setAdapter(adapter);
 
 
-        updateSpinnerPartners();
+                updateSpinnerPartners();
             } else {
                 Log.e("XML Parsing", "El archivo XML 'partners.xml' no existe");
             }
@@ -759,14 +703,13 @@ TextView textViewExistencias;
     }
 
 
-    private void addingValuesToHashMapPartners(String id_partners, String cif, String direccion, String telefono, String email, String persona_de_contacto, String id_zona) {
+    private void addingValuesToHashMapPartners(String id_partners, String cif, String direccion, String telefono, String email, String id_zona) {
         HashMap<String,String>partner = new HashMap<>();
         partner.put("id_partners",id_partners);
         partner.put("cif",cif);
         partner.put("direccion",direccion);
         partner.put("telefono",telefono);
         partner.put("email",email);
-        partner.put("persona_de_contacto",persona_de_contacto);
         partner.put("id_zona",id_zona);
 
 
