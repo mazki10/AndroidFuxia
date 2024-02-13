@@ -38,8 +38,10 @@ public class pagina2pedido extends AppCompatActivity {
     Double descuento;
     int cantidad_total=0;
     private int precioPorProducto;
-    ArrayList<Integer>cantidad=new ArrayList<>();
+    Integer cantidad;
     private DBconexion dbconexion;
+    private SQLiteDatabase db;
+
 ArrayList <String> descripcion=new ArrayList<>();
 String dni_comercial = "iker";
     double precioTotal = 0;
@@ -112,30 +114,7 @@ String dni_comercial = "iker";
     contadorIdPedido = 0;
     */
 
-    private void borrarDatosXML() {
-        File file = new File(getFilesDir(), "pedidos2.xml");
-        if (file.exists()) {
-            try {
-                if (file.delete()) {
-                    Toast.makeText(this, "Datos XML eliminados correctamente.", Toast.LENGTH_SHORT).show();
 
-                    // Restablecer los contadores a 0 después de eliminar el archivo
-                    contadorIdPedido = 0;
-                  //  contadorNFactura = 0;
-
-                    // Vuelve a crear el documento XML
-                    guardarEnXML(listaPedidos);
-                } else {
-                    Toast.makeText(this, "Error al eliminar datos XML.", Toast.LENGTH_SHORT).show();
-                }
-            } catch (SecurityException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Error de seguridad al eliminar datos XML.", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, "No hay datos XML para eliminar.", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     private boolean isXmlFileExist() {
         File file = new File(getFilesDir(), "pedidos2.xml");
@@ -292,7 +271,7 @@ String dni_comercial = "iker";
                     xmlData += "      <precio_un>" + precioUnitario + "</precio_un>\n";
                     xmlData += "    </producto>\n";
                     descripcion.add(listaPedidos.get(i).getImagen());
-                    cantidad.add(listaPedidos.get(i).getCantidad());
+                    cantidad = listaPedidos.get(i).getCantidad();
                     precioTotal += listaPedidos.get(i).getCantidad() * precioUnitario;
                 }
 
@@ -334,53 +313,35 @@ toast2.show();
 // Crea o obtén una instancia de la base de datos
      //       pagina2pedido pagina2pedidoActivity = new pagina2pedido(dbHelper);
 
-            SQLiteDatabase db = getWritableDatabase();
-
-// Inicia una transacción
+            dbconexion = new DBconexion(this, "ACAB2.db", null, 1);
+            db = dbconexion.getWritableDatabase();
             db.beginTransaction();
             try {
 
-
-                // Insertar datos en la tabla CAB_PEDIDOS
-              //  ContentValues cabValues = new ContentValues();
-              //  cabValues.put("ID_PEDIDO", contadorIdPedido);
-              //  cabValues.put("ID_COMERCIAL", comerciales);
-              //  cabValues.put("ID_PARTNER", partners);
-              //  cabValues.put("DESCRIPCION", "Descripción del pedido"); // Reemplaza con la descripción adecuada
-              //  cabValues.put("FECHA_PEDIDO", fecha);
-              //  cabValues.put("FECHA_ENVIO", fecha); // Cambiar si hay una fecha de envío diferente
-              //  cabValues.put("ENTREGADO", 0); // Cambiar a 1 si el pedido está entregado
-              //  db.insert("CAB_PEDIDOS", null, cabValues);
-
-                // Insertar datos en la tabla LIN_PEDIDOS
-              //  for (Pedido pedido : listaPedidos) {
-              //      ContentValues linValues = new ContentValues();
-              //      linValues.put("ID_PEDIDO", contadorIdPedido);
-              //      linValues.put("ID_LINEA", 0); // Puedes usar un contador para las líneas del pedido si lo necesitas
-              //      linValues.put("CANTIDAD", pedido.getCantidad());
-              //      linValues.put("DESCUENTO", descuento); // Ajusta según sea necesario
-              //      linValues.put("PRECIO_UN", 30); // Precio unitario fijo
-               //     linValues.put("PRECIO_TOTAL", precioTotal); // Precio total calculado
-               //     db.insert("LIN_PEDIDOS", null, linValues);
-             //   }
-
-                for (int i = 0; i < descripcion.size(); i++) {
-                    String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_COMERCIAL, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
-                            "VALUES (" + contadorIdPedido + ", '" + dni_comercial + "', " + partners + ", '" +
-                            descripcion.get(i).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
-                    db.execSQL(insertQuery);
-                    Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
-
-                    String insertQuery1 = "UPDATE ARTICULOS SET EXISTNCIAS = EXISTENCIAS - 1 WHERE DESCRIPCION = '"+ descripcion.get(i).toString()+"'";
-                    db.execSQL(insertQuery1);
-
+                String query = "SELECT MAX(ID_PEDIDO) FROM CAB_PEDIDOS";
+                Cursor cursor = db.rawQuery(query, null);
+                int nuevoId = 1;
+                // Mueve el cursor al primer resultado
+                if (cursor.moveToFirst()) {
+                    // Obtiene el valor máximo actual
+                    int maxId = cursor.getInt(0);
+                    // Calcula el nuevo ID agregándole uno al máximo actual
+                    nuevoId = maxId + 1;
                 }
+                String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_COMERCIAL, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+                        "VALUES (" + nuevoId + ", '" + dni_comercial + "', " + partners + ", '" +
+                        descripcion.get(0).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
+                db.execSQL(insertQuery);
+                Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
 
-                for (int i = 0; i < cantidad.size(); i++) {
-                    String insertQuery = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
-                            "VALUES (" + contadorIdPedido + ", " + (i + 1) + ", " + cantidad.get(i).toString() + ", " +
-                            descuento + ", " + precioUnitario + ", " + precioTotal + ")";
-                    db.execSQL(insertQuery);
+                String insertQuery1 = "UPDATE ARTICULOS SET EXISTENCIAS = (EXISTENCIAS - "+ cantidad +") WHERE DESCRIPCION = '"+ descripcion.get(0).toString()+"'";
+                db.execSQL(insertQuery1);
+
+                for (int i = 0; i < listaPedidos.size(); i++) {
+                    String insertQuery2 = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
+                            "VALUES (" + nuevoId + ", " + (i + 1) + ", " + listaPedidos.get(i).getCantidad() + ", " +
+                            descuento + ", " + listaPedidos.get(i).getPrecio_un() + ", " + listaPedidos.get(i).getPrecio_total() + ")";
+                    db.execSQL(insertQuery2);
                     Log.d("Insertion", "Inserting lin_pedido: " + insertQuery);
                 }
 

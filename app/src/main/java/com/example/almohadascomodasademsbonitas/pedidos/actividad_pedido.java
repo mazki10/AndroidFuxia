@@ -60,6 +60,8 @@ public class actividad_pedido extends AppCompatActivity {
     private ArrayList<Pedido> listaPedidos = new ArrayList<>();
     private String nombreComercialElegido;
     EditText editText;
+    private DBconexion dbHelper;
+    private SQLiteDatabase db;
     TextView tvfecha;
     RecyclerView rvLista;
     private TextView TextConf;  // Añade esta línea
@@ -95,7 +97,7 @@ public class actividad_pedido extends AppCompatActivity {
         textViewExistencias = findViewById(R.id.textViewexistencias);
         textViewPrecio = findViewById(R.id.textViewprecio);
         textViewStock_max = findViewById(R.id.textViewstock_max);
-
+        rvLista = findViewById(R.id.lista);
 
 
 
@@ -306,7 +308,7 @@ public class actividad_pedido extends AppCompatActivity {
                 int contadorIdPedido = (listaPedidos.isEmpty()) ? 1 : listaPedidos.get(listaPedidos.size() - 1).getIdPedido() + 1;
 
                 // Crea un objeto Pedido y agrégalo al ArrayList
-                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto,partnerEleguido,comercialEleguido,"", 0,0, fecha,0);//SE NECESITA BBDD PARA SEGUIR CON ESTO
+                Pedido nuevoPedido = new Pedido(nombreProducto, cantidadPedido, contadorIdPedido,precioProducto,partnerEleguido,comercialEleguido,"", 0,precioProducto, fecha,(precioProducto*cantidadPedido));//SE NECESITA BBDD PARA SEGUIR CON ESTO
                 listaPedidos.add(nuevoPedido);
 
                 // Imprime información del nuevo pedido (ajústalo según tus necesidades)
@@ -347,26 +349,19 @@ public class actividad_pedido extends AppCompatActivity {
     }
 
     private int obtenerprecioArticulo(String nombre) {
-        switch (nombre) {
-            case "jordi":
-                return 30;
-            case "bale":
-                return 30;
-            case "bob":
-                return 30;
-            case "cartas":
-                return 30;
-            case "hello":
-                return 30;
-            case "patriota":
-                return 30;
-            case "pistola":
-                return 30;
-            case "verde":
-                return 30;
-            default:
-                return 0;
+        int precioArticulo = 0;
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = "+nombre+"";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            int columnIndex = cursor.getColumnIndex("ID_COMERCIAL");
+            // Recuperamos el valor del DNI del cursor
+            precioArticulo = Integer.parseInt(cursor.getString(columnIndex)) ;
         }
+        return precioArticulo;
     }
 
 
@@ -555,7 +550,7 @@ public class actividad_pedido extends AppCompatActivity {
             datosComercialDDBB.add(new Comercial(nombre,appellido1,apellido2,dni,direccion,email,zona1,zona2));
         }
 
-
+        filaArt.moveToFirst();
         while (filaArt.moveToNext()) {
 
             id_articulo = filaArt.getInt(0);

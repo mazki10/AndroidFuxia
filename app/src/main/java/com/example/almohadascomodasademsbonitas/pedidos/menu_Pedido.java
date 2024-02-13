@@ -67,14 +67,12 @@ public class menu_Pedido extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pedidos);
-
-        dbHelper = new DBconexion(menu_Pedido.this, "ACAB2", null, 1);
-        db = dbHelper.getWritableDatabase();
         botonAlta = findViewById(R.id.buttonAlta);
         botonBaja = findViewById(R.id.buttonBaja);
         botonModificacion = findViewById(R.id.buttonModificar);
         botonSalir = findViewById(R.id.buttonSalir);
-
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        db = dbHelper.getWritableDatabase();
         botonSalir.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +120,7 @@ public class menu_Pedido extends AppCompatActivity {
 
 
     private void cargarArticulosDesdeXML(File file) {
-        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
         try {
 
@@ -186,113 +184,22 @@ public class menu_Pedido extends AppCompatActivity {
     }
 
 
-    private String leerDatosArchivo(File file) throws IOException {
-        Log.d("Archivo", "Leyendo archivo desde: " + file.getAbsolutePath());
-
-        FileInputStream inputStream = new FileInputStream(file);
-        StringBuilder stringBuilder = new StringBuilder();
-        int character;
-        while ((character = inputStream.read()) != -1) {
-            stringBuilder.append((char) character);
-        }
-        inputStream.close();
-
-        String contenidoArchivo = stringBuilder.toString();
-        Log.d("Archivo", "Contenido del archivo leído: " + contenidoArchivo);
-
-        return contenidoArchivo;
-    }
 
 
 
-    private void escribirDatosEnArchivo(String data, File file) throws IOException {
-        FileOutputStream outputStream = new FileOutputStream(file);
-        outputStream.write(data.getBytes());
-        outputStream.close();
-    }
-
-
-    private void escribirContenidoNuevoArchivo(File sourceFile, File destinationFile) throws IOException {
-        FileInputStream inputStream = new FileInputStream(sourceFile);
-        FileOutputStream outputStream = new FileOutputStream(destinationFile);
-
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = inputStream.read(buffer)) > 0) {
-            outputStream.write(buffer, 0, length);
-        }
-
-        inputStream.close();
-        outputStream.close();
-    }
-
-
-    private void escribirContenidoInicialPartners(File partnersFile) {
-        try {
-            FileWriter writer = new FileWriter(partnersFile);
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            writer.write("<partners>\n");
-
-            writer.write("</partners>\n");
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al escribir el contenido inicial en el archivo partners.xml.");
-            permitirAcceso = false;
-        }
-    }
 
 
 
-    private void copyFile(File source, File destination) {
-        try {
-            FileInputStream inputStream = new FileInputStream(source);
-            FileOutputStream outputStream = new FileOutputStream(destination);
 
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
 
-            inputStream.close();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error de copia", "Error al copiar el archivo: " + e.getMessage());
-            permitirAcceso = false;
-        }
-    }
 
-    private void escribirContenidoInicialComerciales(File comercialesFile) {
-        try {
-            FileOutputStream outputStream = new FileOutputStream(comercialesFile);
-            StringBuilder contenidoInicial = new StringBuilder();
-            contenidoInicial.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            contenidoInicial.append("<comerciales>\n");
 
-            for (Comercial comercial : comerciales) {
-                contenidoInicial.append("    <comercial>\n");
-                contenidoInicial.append("        <nombre>").append(comercial.getNombre()).append("</nombre>\n");
-                contenidoInicial.append("        <apellido1>").append(comercial.getAppellido1()).append("</apellido1>\n");
-                contenidoInicial.append("        <apellido2>").append(comercial.getApellido2()).append("</apellido2>\n");
-                contenidoInicial.append("        <dni>").append(comercial.getDni()).append("</dni>\n");
-                contenidoInicial.append("        <direccion>").append(comercial.getDireccion()).append("</direccion>\n");
-                contenidoInicial.append("        <email>").append(comercial.getEmail()).append("</email>\n");
-                contenidoInicial.append("        <zona1>").append(comercial.getZona1()).append("</zona1>\n");
-                contenidoInicial.append("        <zona2>").append(comercial.getZona2()).append("</zona2>\n");
-                contenidoInicial.append("    </comercial>\n");
-            }
 
-            contenidoInicial.append("</comerciales>\n");
-            outputStream.write(contenidoInicial.toString().getBytes());
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mostrarAlertDialog("Error", "Error al escribir el contenido inicial en el archivo comerciales.xml.");
-            permitirAcceso = false;
-        }
-    }
+
+
+
+
+
 
 
     private void mostrarAlertDialog(String titulo, String mensaje) {
@@ -313,6 +220,7 @@ public class menu_Pedido extends AppCompatActivity {
         dialog.show();
     }
     private boolean existeArticuloEnBaseDeDatos(Integer idArticulo) {
+        dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
         String query = "SELECT COUNT(*) FROM ARTICULOS WHERE ID_ARTICULO = ?";
         String[] selectionArgs = {idArticulo.toString()};
