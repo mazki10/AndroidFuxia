@@ -1,6 +1,8 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
@@ -12,6 +14,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.w3c.dom.Document;
@@ -36,6 +39,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class modificar_pedido extends AppCompatActivity {
@@ -53,11 +59,23 @@ public class modificar_pedido extends AppCompatActivity {
       //  copiarXmlDesdeAssets();
 
         ListView listView = findViewById(R.id.lvPartners);
-        datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
+        //datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
-        listView.setAdapter(adapter);
+
+        int cont = contPedidos();
+
+        if (cont!=0){
+            datosDeXml=mostrarDatosBBDD();
+            adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
+            listView.setAdapter(adapter);
+        }
+
+
+
+
+
+
 
         // Agregar el OnItemClickListener aquí
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -70,20 +88,30 @@ public class modificar_pedido extends AppCompatActivity {
                 String[] lines = selectedItem.split("\n");
                 if (lines.length > 0) {
                     String idPartner = lines[0];
+
+                    String idPedidoStr = idPartner.split(":")[1].trim();
+                    int idPedido = Integer.parseInt(idPedidoStr);
                  //  String descripcionPedido = lines[11]; // Suponiendo que la descripción está en la segunda línea
-                    //String cantidad = lines[14];
-                   // String precioUnitario = lines[17];
-                    String precioTotal = lines[25];
-                    ArrayList<Producto> productos = obtenerProductosDelPedido(Integer.parseInt(idPartner));
+
+                    String Nom_comercial = lines[1].split(":")[1].trim();
+                    String Nom_partner = lines[2].split(":")[1].trim();
+                    String descripcion = lines[3].split(":")[1].trim();
+
+                    String precioTotalStr = lines[lines.length-1].split(":")[1].trim();
+                    double precio_total = Double.parseDouble(precioTotalStr);
+
+                 //   ArrayList<Producto> productos = obtenerProductosDelPedido(Integer.parseInt(idPedidoStr));
 
                     // Crear un Intent para iniciar la otra actividad (ModificarDatosActivity)
                     Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
 
                     // Agregar los datos del pedido como extras al Intent
-                    intent.putExtra("ID_PEDIDO", Integer.parseInt(idPartner));
-                    //intent.putExtra("DESCRIPCION_PEDIDO", descripcionPedido);
-                    //intent.putExtra("PRECIO_UNITARIO", Double.parseDouble(precioUnitario));
-                 //   intent.putExtra("PRECIO_TOTAL", Double.parseDouble(precioTotal));
+                    intent.putExtra("ID_PEDIDO", idPedido);
+                    intent.putExtra("COMERCIAL", Nom_comercial);
+                    intent.putExtra("PARTNER", Nom_partner);
+                    intent.putExtra("DESCRIPCION", descripcion);
+                    intent.putExtra("PRECIO_TOTAL", precio_total);
+
                   //  intent.putExtra("CANTIDAD", Double.parseDouble(cantidad));
 
                     // Iniciar la otra actividad
@@ -187,19 +215,180 @@ public class modificar_pedido extends AppCompatActivity {
         return productos;
     }
 
-    @Override
+
+    public int contPedidos(){
+        int cont=0;
+
+
+        DBconexion  dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String consulta = "SELECT COUNT(ID_PEDIDO) FROM CAB_PEDIDOS";
+        Cursor cursor = db.rawQuery(consulta,null);
+
+        if (cursor.moveToFirst()) {
+            cont = cursor.getInt(0);
+        }
+
+            return cont;
+    }
+
+
+    public ArrayList<String> mostrarDatosBBDD() {
+        ArrayList<String> datos = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor linea = db.rawQuery("SELECT \n" +
+                "    CAB_PEDIDOS.ID_PEDIDO, \n" +
+                "    COMERCIALES.NOMBRE AS Nombre_Comercial, \n" +
+                "    PARTNERS.NOMBRE AS Nombre_Partner, \n" +
+                "    DESCRIPCION, \n" +
+                "    SUM(LIN_PEDIDOS.CANTIDAD) AS Cantidad_Total, \n" +
+                "    AVG(LIN_PEDIDOS.PRECIO_UN) AS Precio_Unitario_Promedio, \n" +
+                "    MAX(CAB_PEDIDOS.FECHA_PEDIDO) AS Fecha_Pedido, \n" +
+                "    SUM(LIN_PEDIDOS.PRECIO_TOTAL) AS Precio_Total \n" +
+                "FROM \n" +
+                "    PARTNERS \n" +
+                "JOIN \n" +
+                "    CAB_PEDIDOS ON PARTNERS.ID_PARTNER = CAB_PEDIDOS.ID_PARTNER \n" +
+                "JOIN \n" +
+                "    COMERCIALES ON COMERCIALES.DNI = CAB_PEDIDOS.ID_COMERCIAL \n" +
+                "JOIN \n" +
+                "    LIN_PEDIDOS ON CAB_PEDIDOS.ID_PEDIDO = LIN_PEDIDOS.ID_PEDIDO \n" +
+                "GROUP BY \n" +
+                "    CAB_PEDIDOS.ID_PEDIDO, \n" +
+                "    COMERCIALES.NOMBRE, \n" +
+                "    PARTNERS.NOMBRE, \n" +
+                "    DESCRIPCION;", null);
+
+        while (linea.moveToNext()) {
+            int id_pedido = linea.getInt(0);
+            String nombreComercial = linea.getString(1);
+            String nombrepartner = linea.getString(2);
+            String descripcion = linea.getString(3);
+            int cantidadPedidos = linea.getInt(4);
+            double precio_un = linea.getDouble(5);
+
+            String fechaStr = linea.getString(6); // Aquí obtenemos la fecha como cadena de texto
+            LocalDate fecha = null;
+            if (fechaStr != null && !fechaStr.isEmpty()) {
+                try {
+                    fecha = LocalDate.parse(fechaStr.substring(0, 4), formatter); // Tomamos los primeros 10 caracteres para la fecha
+                } catch (DateTimeParseException e) {
+                    // Manejar el caso en que la fecha no se pueda analizar correctamente
+                    e.printStackTrace(); // Otra opción: mostrar un mensaje de error al usuario
+                }
+            }
+
+
+            double precio_total = linea.getDouble(7);
+
+            // Construye la cadena de texto para agregar a la lista
+            StringBuilder textBuilder = new StringBuilder();
+            textBuilder.append("Id_Pedido:").append(id_pedido).append("\n")
+                    .append("Comercial:").append(nombreComercial).append("\n")
+                    .append("Partner:").append(nombrepartner).append("\n")
+                    .append("Descripcion:").append(descripcion).append("\n")
+                    .append("Cantidad:").append(cantidadPedidos).append("\n")
+                    .append("Precio Unitario:").append(precio_un).append("\n");
+            if (fecha != null) {
+                textBuilder.append("Fecha:").append(fecha).append("\n");
+            }
+            textBuilder.append("Precio Total:").append(precio_total).append("\n");
+
+            datos.add(textBuilder.toString());
+        }
+
+        return datos;
+    }
+
+
+
+
+   /*  @Override
     protected void onResume() {
         super.onResume();
 
-        // Leer datos desde el archivo XML y actualizar la lista
-        datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
-        adapter.clear();
-        adapter.addAll(datosDeXml);
-        adapter.notifyDataSetChanged();
+         ListView listView = findViewById(R.id.lvPartners);
+         //datosDeXml = leerDatosDesdeXmlEnMemoriaInterna();
 
-        // Llamar a la función para iniciar el análisis XML
-        beginXMLparsingPedidos();
-    }
+         // Crea un ArrayAdapter para enlazar los datos a la interfaz de usuario
+
+         int cont = contPedidos();
+
+         if (cont!=0){
+             datosDeXml=mostrarDatosBBDD();
+             adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, datosDeXml);
+             listView.setAdapter(adapter);
+         }
+
+
+
+         // Agregar el OnItemClickListener aquí
+         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+             @Override
+             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                 // Obtiene el valor del elemento en la posición seleccionada
+                 String selectedItem = (String) parent.getItemAtPosition(position);
+
+                 // Extraer la ID del socio
+                 String[] lines = selectedItem.split("\n");
+                 if (lines.length > 0) {
+                     String idPartner = lines[0];
+
+                     String idPedidoStr = idPartner.split(":")[1].trim();
+                     int idPedido = Integer.parseInt(idPedidoStr);
+                     //  String descripcionPedido = lines[11]; // Suponiendo que la descripción está en la segunda línea
+
+                     String Nom_comercial = lines[1].split(":")[1].trim();
+                     String Nom_partner = lines[2].split(":")[1].trim();
+                     String descripcion = lines[3].split(":")[1].trim();
+
+                     String precioTotalStr = lines[lines.length-1].split(":")[1].trim();
+                     double precio_total = Double.parseDouble(precioTotalStr);
+
+                     //   ArrayList<Producto> productos = obtenerProductosDelPedido(Integer.parseInt(idPedidoStr));
+
+                     // Crear un Intent para iniciar la otra actividad (ModificarDatosActivity)
+                     Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
+
+                     // Agregar los datos del pedido como extras al Intent
+                     intent.putExtra("ID_PEDIDO", idPedido);
+                     intent.putExtra("COMERCIAL", Nom_comercial);
+                     intent.putExtra("PARTNER", Nom_partner);
+                     intent.putExtra("DESCRIPCION", descripcion);
+                     intent.putExtra("PRECIO_TOTAL", precio_total);
+
+                     //  intent.putExtra("CANTIDAD", Double.parseDouble(cantidad));
+
+                     // Iniciar la otra actividad
+                     startActivity(intent);
+                 }
+             }
+         });
+         Button btnModificar = findViewById(R.id.btnModificar);
+
+         btnModificar.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 // Aquí obtén el ID del pedido seleccionado, por ejemplo:
+                 int idPedidoSeleccionado = obtenerIdPedidoSeleccionadoDesdeXml(listView);
+                 String descripcionPedidoSeleccionado = obtenerDescripcionPedidoSeleccionadoDesdeXml(listView);
+
+                 // Crear un Intent para iniciar la otra actividad (ModificarDatosActivity)
+                 Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
+
+                 // Agregar el ID del pedido como extra al Intent
+                 intent.putExtra("ID_PEDIDO", idPedidoSeleccionado);
+                 intent.putExtra("DESCRIPCION_PEDIDO", descripcionPedidoSeleccionado);
+
+                 // Iniciar la otra actividad
+                 startActivity(intent);
+             }
+         });
+    }*/
 
     private void beginXMLparsingPedidos() {
         try {

@@ -45,6 +45,9 @@
     <string name="modificacion">MODIFICAR</string>
     <string name="volver">SALIR</string>
     <string name="pe">PEDIDOS</string>
+    <string name="pro">PRODUCTO:</string>
+    <string name="fec_p">FECHA PEDIDO:</string>
+    <string name="fec_e">FECHA ENVIO:</string>
 
 
     //AGENDA

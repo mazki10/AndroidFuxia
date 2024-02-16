@@ -353,11 +353,11 @@ public class actividad_pedido extends AppCompatActivity {
         dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getReadableDatabase();
 
-        String query = "SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = "+nombre+"";
+        String query = "SELECT PRECIO_VENTA FROM ARTICULOS WHERE DESCRIPCION = '"+nombre+"'";
         Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
-            int columnIndex = cursor.getColumnIndex("ID_COMERCIAL");
+            int columnIndex = cursor.getColumnIndex("PRECIO_VENTA");
             // Recuperamos el valor del DNI del cursor
             precioArticulo = Integer.parseInt(cursor.getString(columnIndex)) ;
         }
@@ -523,7 +523,7 @@ public class actividad_pedido extends AppCompatActivity {
         int zona2;
 
 
-        DBconexion dbconexion = new  DBconexion(actividad_pedido.this,"ACAB2",null,1);
+        DBconexion dbconexion = new  DBconexion(actividad_pedido.this,"ACAB2.db",null,1);
         SQLiteDatabase database = dbconexion.getWritableDatabase();
 
         Cursor filaCOM = database.rawQuery
@@ -550,7 +550,7 @@ public class actividad_pedido extends AppCompatActivity {
             datosComercialDDBB.add(new Comercial(nombre,appellido1,apellido2,dni,direccion,email,zona1,zona2));
         }
 
-        filaArt.moveToFirst();
+    //    filaArt.moveToFirst();
         while (filaArt.moveToNext()) {
 
             id_articulo = filaArt.getInt(0);

@@ -1,6 +1,5 @@
 package com.example.almohadascomodasademsbonitas.pedidos;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.almohadascomodasademsbonitas.BBDD.DBconexion;
-import com.example.almohadascomodasademsbonitas.MainActivity;
 import com.example.almohadascomodasademsbonitas.R;
 
 import org.w3c.dom.Document;
@@ -27,8 +25,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,19 +43,30 @@ public class ModificarDatosActivity extends AppCompatActivity {
 
     private EditText editTextComercial;
     private EditText editTextPartner;
-     EditText editTextDescripcion;
+    EditText editTextDescripcion;
     private EditText editTextFechaPedido;
     private EditText editTextFechaEnvio;
     private Button btnGuardarCambios;
     String comercial;
     String partner;
-    String fecha_envio;
-    String fecha_pedido;
+   // String fecha_envio;
+   // String fecha_pedido;
     int idPedido;
     String descripcionPedido;
     double precioUnitario;
     double precioTotal;
     double cantidad;
+    LocalDate fecha_pedido;
+    LocalDate fecha_envio;
+    String comFinal;
+    String paFinal;
+    String deFinal;
+    String fecha_enviotxt;
+    String fechEfinal;
+    LocalDate fecha_envio1;
+    String fecha_pedidotxt;
+    LocalDate fecha_pedido1;
+    String fechPfinal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,46 +77,260 @@ public class ModificarDatosActivity extends AppCompatActivity {
         editTextPartner = findViewById(R.id.partner);
         editTextFechaPedido = findViewById(R.id.fecha_pedido);
         editTextFechaEnvio = findViewById(R.id.fecha_envio);
+        editTextDescripcion = findViewById(R.id.editTextDescripcion);
         btnGuardarCambios = findViewById(R.id.btnGuardarCambios);
 
         // Obtener los datos enviados desde modificar_pedido
-        idPedido = getIntent().getIntExtra("ID_PEDIDO", -1);
-        descripcionPedido = getIntent().getStringExtra("DESCRIPCION_PEDIDO");
-         precioUnitario = getIntent().getDoubleExtra("PRECIO_UNITARIO", 0.0);
-         precioTotal = getIntent().getDoubleExtra("PRECIO_TOTAL", 0.0);
-        cantidad = getIntent().getDoubleExtra("CANTIDAD", 0.0);
-
+        idPedido = getIntent().getIntExtra("ID_PEDIDO",0);
+        comercial = getIntent().getStringExtra("COMERCIAL");
+        partner = getIntent().getStringExtra("PARTNER");
+        descripcionPedido = getIntent().getStringExtra("DESCRIPCION");
+        precioTotal = getIntent().getDoubleExtra("PRECIO_TOTAL",0.0);
+        fecha_pedido = buscarFechaPedido();
+        fecha_envio = buscarFechaEnvio();
         // Llenar los EditText con los datos recibidos
-        leerPedidoPorId(idPedido);
+        //leerPedidoPorId(idPedido);
+
+        editTextComercial.setText(comercial);
+        editTextPartner.setText(partner);
+        editTextDescripcion.setText(descripcionPedido);
+        editTextFechaPedido.setText(String.valueOf(fecha_pedido));
+        editTextFechaEnvio.setText(String.valueOf(fecha_envio));
 
         btnGuardarCambios.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Obtiene el texto de los EditText y lo almacena en variables
                 comercial = editTextComercial.getText().toString();
+
+                if(comercial.equals("")){
+                    comercial = getIntent().getStringExtra("COMERCIAL");;
+                    editTextComercial.setText(comercial);
+                    comFinal = comercial;
+                }else{
+                   if (buscarComercial(comercial)){
+                       comFinal = comercial;
+                   }else {
+                       Toast.makeText(ModificarDatosActivity.this,"Comercial no esta registrado",Toast.LENGTH_SHORT);
+                   }
+                }
+
                 partner = editTextPartner.getText().toString();
-                fecha_envio = editTextFechaEnvio.getText().toString();
-                fecha_pedido = editTextFechaPedido.getText().toString();
 
-                // Aquí puedes realizar cualquier operación con los datos ingresados
-                // Por ejemplo, mostrar los valores en un Toast
-                Toast.makeText(ModificarDatosActivity.this, "Comercial: " + comercial + ", Partner: " + partner + ", Fecha de Envío: " + fecha_envio + ", Fecha de Pedido: " + fecha_pedido, Toast.LENGTH_SHORT).show();
+                if(partner.equals("")){
+                    partner = getIntent().getStringExtra("PARTNER");;
+                    editTextPartner.setText(partner);
+                    paFinal = partner;
+                }else{
+                    if (buscarPartner(partner)){
+                        paFinal = partner;
+                    }else {
+                        Toast.makeText(ModificarDatosActivity.this,"Partner no esta registrado",Toast.LENGTH_SHORT);
+                    }
+                }
 
-                // Llama a la función para eliminar el pedido existente de la base de datos
-                borrarenBBDD();
+                descripcionPedido = editTextDescripcion.getText().toString();
 
-                // Llama a la función para añadir un nuevo pedido al XML con los datos de los EditText
-                añadirNuevoPedido();
+                if(descripcionPedido.equals("")){
+                    descripcionPedido = getIntent().getStringExtra("DESCRIPCION");
+                    editTextDescripcion.setText(descripcionPedido);
+                    deFinal = descripcionPedido;
+                }else{
+                    if (buscarDescripcion(descripcionPedido)){
+                        deFinal = descripcionPedido;
+                    }else {
+                        Toast.makeText(ModificarDatosActivity.this,"Producto no esta registrado",Toast.LENGTH_SHORT);
+                    }
+                }
 
-                // Llama a la función para actualizar el pedido en la base de datos
-                actualizarEnBBDD();
 
+                fecha_enviotxt = editTextFechaEnvio.getText().toString();
+
+                if (fecha_enviotxt.equals("")) {
+                    fecha_enviotxt = fecha_envio.toString(); // Aquí asumo que fecha_envio ya está en el formato deseado
+                } else {
+                    // Intenta parsear el String en un objeto LocalDate
+                    try {
+                        fecha_envio1 = LocalDate.parse(fecha_enviotxt, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        // Si la fecha se parsea correctamente, conviértela al formato de la base de datos
+                        fechEfinal = fecha_envio1.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                    } catch (DateTimeParseException e) {
+                        // Si el formato no es válido, muestra un mensaje de error
+                        Toast.makeText(ModificarDatosActivity.this, "Formato de fecha incorrecto", Toast.LENGTH_SHORT).show();
+                        return; // Sale del método onClick porque la fecha es inválida
+                    }
+                }
+
+                fecha_pedidotxt = editTextFechaPedido.getText().toString();
+
+                if (fecha_pedidotxt.equals("")) {
+                    fecha_pedidotxt = fecha_pedido.toString(); // Utiliza la fecha de pedido por ahora
+                } else {
+                    // Intenta parsear la cadena como una fecha con el formato 'yyyy-MM-dd'
+                    try {
+                        fecha_pedido1 = LocalDate.parse(fecha_pedidotxt, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        fechPfinal = fecha_pedido1.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                    } catch (DateTimeParseException e) {
+                        // Si el formato no es válido, muestra un mensaje de error
+                        Toast.makeText(ModificarDatosActivity.this, "Formato de fecha incorrecto", Toast.LENGTH_SHORT).show();
+                        return; // Sale del método onClick porque la fecha es inválida
+                    }
+                }
+
+
+
+                String dni="";
+
+                DBconexion dbHelper = new DBconexion(ModificarDatosActivity.this, "ACAB2.db", null, 1);
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+                String consultaCom = "SELECT DNI FROM COMERCIALES WHERE NOMBRE = '"+comFinal+"'";
+                Cursor cursor = db.rawQuery(consultaCom,null);
+
+                if (cursor.moveToFirst()){
+                    dni = cursor.getString(0);
+                }
+
+
+                int id_partner=0;
+
+                String consultaPart = "SELECT ID_PARTNER FROM PARTNERS WHERE NOMBRE = '"+paFinal+"'";
+                cursor = db.rawQuery(consultaPart,null);
+
+                if (cursor.moveToFirst()){
+                    id_partner = cursor.getInt(0);
+                }
+                String actualizar = "UPDATE CAB_PEDIDOS SET ID_COMERCIAL = '"+dni+"', ID_PARTNER = "+id_partner+", DESCRIPCION = '"+deFinal+"', FECHA_PEDIDO = '"+fechPfinal+"', FECHA_ENVIO = '"+fechEfinal+"' WHERE ID_PEDIDO = "+idPedido;
+                db.execSQL(actualizar);
                 Intent intent = new Intent(ModificarDatosActivity.this, menu_Pedido.class);
                 startActivity(intent);
 
             }
         });
     }
+
+    public boolean buscarDescripcion(String nombre){
+        boolean esta = false;
+        String n;
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Asegúrate de encerrar el valor de 'nombre' entre comillas simples en la consulta SQL
+        String consulta = "SELECT ID_ARTICULO FROM ARTICULOS WHERE DESCRIPCION = ?";
+        Cursor cursor = db.rawQuery(consulta, new String[]{nombre});
+
+        if (cursor.moveToFirst()) {
+            n = cursor.getString(0); // Obtener la fecha como una cadena
+            // Si se encuentra un resultado, establece 'esta' como verdadero
+            esta = true;
+        }
+
+        // Cierra el cursor y la base de datos
+        cursor.close();
+        db.close();
+
+        return esta;
+    }
+
+    public boolean buscarComercial(String nombre){
+        boolean esta = false;
+        String n;
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Asegúrate de encerrar el valor de 'nombre' entre comillas simples en la consulta SQL
+        String consulta = "SELECT APELLIDO1 FROM COMERCIALES WHERE NOMBRE = ?";
+        Cursor cursor = db.rawQuery(consulta, new String[]{nombre});
+
+        if (cursor.moveToFirst()) {
+            n = cursor.getString(0); // Obtener la fecha como una cadena
+            // Si se encuentra un resultado, establece 'esta' como verdadero
+            esta = true;
+        }
+
+        // Cierra el cursor y la base de datos
+        cursor.close();
+        db.close();
+
+        return esta;
+    }
+
+
+    public boolean buscarPartner(String nombre){
+        boolean esta = false;
+        int n;
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Asegúrate de encerrar el valor de 'nombre' entre comillas simples en la consulta SQL
+        String consulta = "SELECT ID_PARTNER FROM PARTNERS WHERE NOMBRE = ?";
+        Cursor cursor = db.rawQuery(consulta, new String[]{nombre});
+
+        if (cursor.moveToFirst()) {
+            n = cursor.getInt(0); // Obtener la fecha como una cadena
+            // Si se encuentra un resultado, establece 'esta' como verdadero
+            esta = true;
+        }
+
+        // Cierra el cursor y la base de datos
+        cursor.close();
+        db.close();
+
+        return esta;
+    }
+
+    public LocalDate buscarFechaPedido(){
+        LocalDate fecha = null; // Inicializar la fecha como nula
+
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String consulta = "SELECT FECHA_PEDIDO FROM CAB_PEDIDOS WHERE ID_PEDIDO = "+idPedido+"";
+        Cursor cursor = db.rawQuery(consulta,null);
+
+        if (cursor.moveToFirst()) {
+            String fechaString = cursor.getString(0); // Obtener la fecha como una cadena
+            if (fechaString != null && !fechaString.isEmpty()) { // Verificar si la cadena no es nula ni está vacía
+                try {
+                    // Intentar analizar la cadena de fecha con el formato esperado
+                    fecha = LocalDate.parse(fechaString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                } catch (DateTimeParseException e) {
+                    // Si ocurre un error al analizar la fecha, imprimir un mensaje de error y devolver null
+                    Log.e("ModificarDatosActivity", "Error al analizar la fecha de envío: " + e.getMessage());
+                }
+            }
+        }
+
+        return fecha;
+    }
+
+    public LocalDate buscarFechaEnvio(){
+        LocalDate fecha = null; // Inicializar la fecha como nula
+
+        DBconexion dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        String consulta = "SELECT FECHA_ENVIO FROM CAB_PEDIDOS WHERE ID_PEDIDO = " + idPedido;
+        Cursor cursor = db.rawQuery(consulta, null);
+
+        if (cursor.moveToFirst()) {
+            String fechaString = cursor.getString(0); // Obtener la fecha como una cadena
+            if (fechaString != null && !fechaString.isEmpty()) { // Verificar si la cadena no es nula ni está vacía
+                try {
+                    // Intentar analizar la cadena de fecha con el formato esperado
+                    fecha = LocalDate.parse(fechaString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                } catch (DateTimeParseException e) {
+                    // Si ocurre un error al analizar la fecha, imprimir un mensaje de error y devolver null
+                    Log.e("ModificarDatosActivity", "Error al analizar la fecha de envío: " + e.getMessage());
+                }
+            }
+        }
+
+        return fecha;
+    }
+
 
     public void borrarenBBDD() {
         try {
@@ -238,7 +462,7 @@ public class ModificarDatosActivity extends AppCompatActivity {
             }
 
             Element fechaElement = doc.createElement("fecha");
-            fechaElement.appendChild(doc.createTextNode(fecha_pedido)); // Utiliza la fecha de pedido por ahora
+           // fechaElement.appendChild(doc.createTextNode(fecha_pedido)); // Utiliza la fecha de pedido por ahora
             pedidoElement.appendChild(fechaElement);
             pedidoElement.appendChild(doc.createTextNode("\n  ")); // Salto de línea y sangría
 
@@ -391,7 +615,7 @@ public class ModificarDatosActivity extends AppCompatActivity {
            SQLiteDatabase database = bbdd.getWritableDatabase();
 
            // Crea el ContentValues con los nuevos valores
-           database.execSQL("UPDATE CAB_PEDIDOS SET ID_COMERCIAL = '"+comercial+"', ID_PARTNER = "+partner+", FECHA_PEDIDO = '"+fecha_pedido+"', FECHA_ENVIO = '"+fecha_envio+" 'WHERE ID_PEDIDO = " + idPedido+"'");
+           database.execSQL("UPDATE CAB_PEDIDOS SET ID_COMERCIAL = '"+comercial+"', ID_PARTNER = "+partner+", FECHA_PEDIDO = '"+fecha_pedido+"', FECHA_ENVIO = '"+fecha_envio+"' WHERE ID_PEDIDO = " + idPedido);
 
 
 

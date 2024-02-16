@@ -53,7 +53,7 @@ String dni_comercial = "iker";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pagina2pedidos);
-        dbconexion = new  DBconexion(this,"ACAB2",null,1);
+        dbconexion = new  DBconexion(this,"ACAB2.db",null,1);
         SQLiteDatabase database = dbconexion.getWritableDatabase();
 
 
