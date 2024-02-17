@@ -202,7 +202,7 @@ public class ModificarDatosActivity extends AppCompatActivity {
                 if (cursor.moveToFirst()){
                     id_partner = cursor.getInt(0);
                 }
-                String actualizar = "UPDATE CAB_PEDIDOS SET ID_COMERCIAL = '"+dni+"', ID_PARTNER = "+id_partner+", DESCRIPCION = '"+deFinal+"', FECHA_PEDIDO = '"+fechPfinal+"', FECHA_ENVIO = '"+fechEfinal+"' WHERE ID_PEDIDO = "+idPedido;
+                String actualizar = "UPDATE CAB_PEDIDOS SET ID_COMERCIAL = '"+dni+"', ID_PARTNER = "+id_partner+", DESCRIPCION = '"+deFinal+"', FECHA_PEDIDO = '"+fechPfinal+"', FECHA_ENVIO = '"+fechEfinal+"' WHERE ID_PEDIDO = "+idPedido+" AND DESCRIPCION = '"+getIntent().getStringExtra("DESCRIPCION")+"'";
                 db.execSQL(actualizar);
                 Intent intent = new Intent(ModificarDatosActivity.this, menu_Pedido.class);
                 startActivity(intent);

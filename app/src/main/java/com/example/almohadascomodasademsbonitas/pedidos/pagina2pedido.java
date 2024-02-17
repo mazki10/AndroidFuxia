@@ -328,21 +328,23 @@ toast2.show();
                     // Calcula el nuevo ID agregándole uno al máximo actual
                     nuevoId = maxId + 1;
                 }
-                String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_COMERCIAL, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
-                        "VALUES (" + nuevoId + ", '" + dni_comercial + "', " + partners + ", '" +
-                        descripcion.get(0).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
-                db.execSQL(insertQuery);
-                Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
+                for (int i = 0; i < listaPedidos.size(); i++) {
 
-                String insertQuery1 = "UPDATE ARTICULOS SET EXISTENCIAS = (EXISTENCIAS - "+ cantidad +") WHERE DESCRIPCION = '"+ descripcion.get(0).toString()+"'";
-                db.execSQL(insertQuery1);
+                    String insertQuery = "INSERT INTO CAB_PEDIDOS (ID_PEDIDO, ID_COMERCIAL, ID_PARTNER, DESCRIPCION, FECHA_PEDIDO, FECHA_ENVIO, ENTREGADO) " +
+                            "VALUES (" + nuevoId + ", '" + dni_comercial + "', " + partners + ", '" +
+                            descripcion.get(i).toString() + "', '" + fecha + "', '" + fecha + "', 1)";
+                    db.execSQL(insertQuery);
+                    Log.d("Insertion", "Inserting cab_pedido: " + insertQuery);
 
+                    String insertQuery1 = "UPDATE ARTICULOS SET EXISTENCIAS = (EXISTENCIAS - " + cantidad + ") WHERE DESCRIPCION = '" + descripcion.get(0).toString() + "'";
+                    db.execSQL(insertQuery1);
+                }
                 for (int i = 0; i < listaPedidos.size(); i++) {
                     String insertQuery2 = "INSERT INTO LIN_PEDIDOS (ID_PEDIDO, ID_LINEA, CANTIDAD, DESCUENTO, PRECIO_UN, PRECIO_TOTAL) " +
                             "VALUES (" + nuevoId + ", " + (i + 1) + ", " + listaPedidos.get(i).getCantidad() + ", " +
                             descuento + ", " + listaPedidos.get(i).getPrecio_un() + ", " + listaPedidos.get(i).getPrecio_total() + ")";
                     db.execSQL(insertQuery2);
-                    Log.d("Insertion", "Inserting lin_pedido: " + insertQuery);
+                    Log.d("Insertion", "Inserting lin_pedido: " + insertQuery2);
                 }
 
 
