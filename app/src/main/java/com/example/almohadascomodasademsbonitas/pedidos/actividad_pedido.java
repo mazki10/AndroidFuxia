@@ -371,7 +371,8 @@ public class actividad_pedido extends AppCompatActivity {
         dia = fecha1.get(Calendar.DAY_OF_MONTH);
         mes = fecha1.get(Calendar.MONTH)+1;
         anio = fecha1.get(Calendar.YEAR);
-        tvfecha.setText(dia+"/"+mes+"/"+anio);
+
+        tvfecha.setText(anio+"-0"+mes+"-"+dia);
 
         fecha = LocalDate.of(anio,mes,dia);
     }

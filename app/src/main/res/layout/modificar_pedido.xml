@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     android:paddingLeft="15dp">
 
-    <Button
-        android:id="@+id/btnModificar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/modificacion"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
-
     <TextView
         android:id="@+id/textViewPedidoActualizado"
         android:layout_width="wrap_content"
@@ -47,12 +35,12 @@
         android:layout_width="365dp"
         android:layout_height="512dp"
         android:choiceMode="multipleChoice"
-        app:layout_constraintBottom_toTopOf="@+id/btnModificar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.703" />
+        app:layout_constraintVertical_bias="0.611" />
 
     <TextView
         android:id="@+id/tvPartners"

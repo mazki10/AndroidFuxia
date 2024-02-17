@@ -119,26 +119,9 @@ public class modificar_pedido extends AppCompatActivity {
                 }
             }
         });
-        Button btnModificar = findViewById(R.id.btnModificar);
+        //Button btnModificar = findViewById(R.id.btnModificar);
 
-        btnModificar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Aquí obtén el ID del pedido seleccionado, por ejemplo:
-                int idPedidoSeleccionado = obtenerIdPedidoSeleccionadoDesdeXml(listView);
-                String descripcionPedidoSeleccionado = obtenerDescripcionPedidoSeleccionadoDesdeXml(listView);
 
-                // Crear un Intent para iniciar la otra actividad (ModificarDatosActivity)
-                Intent intent = new Intent(modificar_pedido.this, ModificarDatosActivity.class);
-
-                // Agregar el ID del pedido como extra al Intent
-                intent.putExtra("ID_PEDIDO", idPedidoSeleccionado);
-                intent.putExtra("DESCRIPCION_PEDIDO", descripcionPedidoSeleccionado);
-
-                // Iniciar la otra actividad
-                startActivity(intent);
-            }
-        });
 
     }
     // Método para abrir la actividad de modificar socio
