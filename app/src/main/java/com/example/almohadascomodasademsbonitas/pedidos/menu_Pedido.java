@@ -70,15 +70,9 @@ public class menu_Pedido extends AppCompatActivity {
         botonAlta = findViewById(R.id.buttonAlta);
         botonBaja = findViewById(R.id.buttonBaja);
         botonModificacion = findViewById(R.id.buttonModificar);
-        botonSalir = findViewById(R.id.buttonSalir);
         dbHelper = new DBconexion(this, "ACAB2.db", null, 1);
         db = dbHelper.getWritableDatabase();
-        botonSalir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+
 
         botonAlta.setOnClickListener(new View.OnClickListener() {
             @Override
